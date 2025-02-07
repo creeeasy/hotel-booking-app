@@ -1,0 +1,25 @@
+{
+    "project_info": {
+        "project_number": "110430873871",
+        "project_id": "fatiel",
+        "storage_bucket": "fatiel.firebasestorage.app"
+    },
+    "client": [{
+        "client_info": {
+            "mobilesdk_app_id": "1:110430873871:android:43727ba57d3b045ac6367a",
+            "android_client_info": {
+                "package_name": "com.example.fatiel"
+            }
+        },
+        "oauth_client": [],
+        "api_key": [{
+            "current_key": "AIzaSyAHs1ZBUYp3u5QqI3J1Q1qEVXvZn5JE3Ac"
+        }],
+        "services": {
+            "appinvite_service": {
+                "other_platform_oauth_client": []
+            }
+        }
+    }],
+    "configuration_version": "1"
+}

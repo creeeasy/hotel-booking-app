@@ -1,4 +1,4 @@
-# hotel_booking_app
+# fatiel
 
 A new Flutter project.
 
