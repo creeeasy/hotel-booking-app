@@ -1,5 +1,8 @@
+import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
+import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -18,11 +21,10 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: ThemeColors.greyColor, // Light background
+        backgroundColor: ThemeColors.greyColor,
         appBar: AppBar(
-          backgroundColor:
-              ThemeColors.greyColor, // AppBar matches the background
-          elevation: 0, // Optional: Remove shadow for a clean light theme look
+          backgroundColor: ThemeColors.greyColor,
+          elevation: 0,
           centerTitle: true,
           title: const Text(
             'Verification Email',
@@ -34,8 +36,11 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
             ),
           ),
         ),
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 24.0), // Adjusted padding for better layout
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -54,35 +59,24 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextButton(
-                onPressed: () async {
-                  // context.read<auth_bloc>().add(const AuthEventLogOut());
-                },
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(
-                        vertical: 14.0,
-                        horizontal:
-                            28.0), // Slightly larger padding for better touch
+              ElevatedButton(
+                onPressed: () =>
+                    {context.read<AuthBloc>().add(const AuthEventLogOut())},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ThemeColors.primaryColor,
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  backgroundColor: MaterialStateProperty.all(
-                    ThemeColors.primaryColor, // Golden accent button
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          10.0), // More rounded corners for a modern look
-                    ),
-                  ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Back to Login',
                   style: TextStyle(
-                    color: ThemeColors.whiteColor, // White text for contrast
-                    fontSize: 16, // Slightly bigger text for better readability
-                    fontWeight:
-                        FontWeight.w500, // Medium weight for a balanced look
-                    letterSpacing: 0.5, // Adds subtle letter spacing
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.4,
+                    color: ThemeColors.whiteColor,
                   ),
                 ),
               ),

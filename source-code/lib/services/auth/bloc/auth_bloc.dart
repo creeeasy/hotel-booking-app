@@ -11,33 +11,76 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state);
     });
 
-    on<AuthEventRegister>(((event, emit) async {
+    on<AuthEventShouldRegister>(((event, emit) {
       emit(const AuthStateRegistering(exception: null, isLoading: false));
+    }));
+    on<AuthEventVisitorRegister>(((event, emit) {
+      emit(
+          const AuthStateVisitorRegistering(exception: null, isLoading: false));
+    }));
+    on<AuthEventHotelRegister>(((event, emit) {
+      emit(const AuthStateHotelRegistering(exception: null, isLoading: false));
+    }));
+
+    on<AuthEventHotelRegistering>((event, emit) async {
+      emit(const AuthStateHotelRegistering(exception: null, isLoading: false));
       final email = event.email;
       final password = event.password;
+      final hotelName = event.hotelName;
 
-      emit(const AuthStateRegistering(
+      emit(const AuthStateHotelRegistering(
         exception: null,
         isLoading: true,
       ));
 
       try {
-        await provider.createUser(email: email, password: password);
+        await provider.createHotel(
+          email: email,
+          password: password,
+          hotelName: hotelName,
+        );
         await provider.sendEmailVerification();
         emit(const AuthStateNeedsVerification(
           isLoading: false,
         ));
       } on Exception catch (e) {
-        emit(AuthStateRegistering(
+        emit(AuthStateHotelRegistering(
           exception: e,
           isLoading: false,
         ));
       }
-    }));
+    });
+    on<AuthEventVisitorRegistering>((event, emit) async {
+      emit(
+          const AuthStateVisitorRegistering(exception: null, isLoading: false));
+      final email = event.email;
+      final password = event.password;
+      final firstName = event.firstName;
+      final lastName = event.lastName;
 
-    on<AuthEventShouldRegister>(((event, emit) {
-      emit(const AuthStateRegistering(exception: null, isLoading: false));
-    }));
+      emit(const AuthStateVisitorRegistering(
+        exception: null,
+        isLoading: true,
+      ));
+
+      try {
+        await provider.createVisitor(
+          email: email,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+        );
+        await provider.sendEmailVerification();
+        emit(const AuthStateNeedsVerification(
+          isLoading: false,
+        ));
+      } on Exception catch (e) {
+        emit(AuthStateVisitorRegistering(
+          exception: e,
+          isLoading: false,
+        ));
+      }
+    });
 
     on<AuthEventForgotPassword>((event, emit) async {
       emit(const AuthStateForgotPassword(

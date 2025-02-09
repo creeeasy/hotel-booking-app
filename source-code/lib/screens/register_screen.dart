@@ -1,8 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:fatiel/constants/colors/theme_colors.dart';
-import 'package:fatiel/screens/register/hotel_registration_screen.dart';
-import 'package:fatiel/screens/register/visitor_registration_screen.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:flutter/gestures.dart';
@@ -73,12 +71,9 @@ class _RegisterViewState extends State<RegisterView> {
                           0.7, // Buttons take 70% of the screen width
                       child: TextButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    VisitorRegistrationView()),
-                          );
+                          context
+                              .read<AuthBloc>()
+                              .add(const AuthEventVisitorRegister());
                         },
                         style: TextButton.styleFrom(
                           backgroundColor:
@@ -110,11 +105,9 @@ class _RegisterViewState extends State<RegisterView> {
                           0.7, // Buttons take 70% of the screen width
                       child: TextButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HotelRegistrationView()),
-                          );
+                          context
+                              .read<AuthBloc>()
+                              .add(const AuthEventHotelRegister());
                         },
                         style: TextButton.styleFrom(
                           backgroundColor:

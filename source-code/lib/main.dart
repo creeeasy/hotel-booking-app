@@ -78,10 +78,15 @@ class _TrafficState extends State<Traffic> {
         return const VerifyEmailView();
       } else if (state is AuthStateLoggedOut) {
         return const LoginView();
+        // return const VisitorRegistrationView();
       } else if (state is AuthStateForgotPassword) {
         return const ForgotPasswordView();
       } else if (state is AuthStateRegistering) {
         return RegisterView();
+      } else if (state is AuthStateHotelRegistering) {
+        return const HotelRegistrationView();
+      } else if (state is AuthStateVisitorRegistering) {
+        return const VisitorRegistrationView();
       } else {
         return Scaffold(
           body: circularProgressIndicatorWidget(),

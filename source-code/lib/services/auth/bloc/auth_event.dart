@@ -20,14 +20,16 @@ class AuthEventLogOut extends AuthEvent {
   const AuthEventLogOut();
 }
 
-class AuthEventRegister extends AuthEvent {
-  final String email;
-  final String password;
-  const AuthEventRegister(this.email, this.password);
-}
-
 class AuthEventShouldRegister extends AuthEvent {
   const AuthEventShouldRegister();
+}
+
+class AuthEventVisitorRegister extends AuthEvent {
+  const AuthEventVisitorRegister();
+}
+
+class AuthEventHotelRegister extends AuthEvent {
+  const AuthEventHotelRegister();
 }
 
 class AuthEventSendEmailVerification extends AuthEvent {
@@ -37,4 +39,20 @@ class AuthEventSendEmailVerification extends AuthEvent {
 class AuthEventForgotPassword extends AuthEvent {
   final String? email;
   const AuthEventForgotPassword({this.email});
+}
+
+class AuthEventVisitorRegistering extends AuthEvent {
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String password;
+  const AuthEventVisitorRegistering(
+      this.firstName, this.lastName, this.email, this.password);
+}
+
+class AuthEventHotelRegistering extends AuthEvent {
+  final String hotelName;
+  final String email;
+  final String password;
+  const AuthEventHotelRegistering(this.hotelName, this.email, this.password);
 }

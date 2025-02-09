@@ -1,44 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/firebase_options.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/auth_user.dart';
 import 'package:fatiel/services/auth/auth_provider.dart' as auth;
+
 typedef AuthProviderImplement = auth.AuthProvider;
+
 class FirebaseAuthProvider implements AuthProviderImplement {
-  @override
-  Future<AuthUser?> createUser(
-      {required String email, required String password}) async {
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final user = currentUser;
-      if (user != null) {
-        return user;
-      } else {
-        return null;
-      }
-    } on FirebaseAuthException catch (error) {
-      switch (error.code) {
-        case 'invalid-email':
-          throw InvalidEmailException();
-        case 'weak-password':
-          throw WeakPasswordException();
-        case 'email-already-in-use':
-          throw EmailAlreadyInUseException();
-        case 'missing-password':
-          throw MissingPasswordException();
-
-        default:
-          throw GenericException();
-      }
-    } catch (error) {
-      throw GenericException();
-    }
-  }
-
   @override
   Future<AuthUser?> logIn(
       {required String email, required String password}) async {
@@ -124,6 +94,94 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       await FirebaseAuth.instance.signOut();
     } else {
       throw UserNotLoggedInException();
+    }
+  }
+
+  Future<AuthUser?> createVisitor({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+  }) async {
+    try {
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = userCredential.user;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('visitors')
+            .doc(user.uid)
+            .set({
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+        });
+        return AuthUser.currentUser(user);
+      } else {
+        return null;
+      }
+    } on FirebaseAuthException catch (error) {
+      switch (error.code) {
+        case 'invalid-email':
+          throw InvalidEmailException();
+        case 'weak-password':
+          throw WeakPasswordException();
+        case 'email-already-in-use':
+          throw EmailAlreadyInUseException();
+        case 'missing-password':
+          throw MissingPasswordException();
+        default:
+          throw GenericException();
+      }
+    } catch (error) {
+      throw GenericException();
+    }
+  }
+
+  Future<AuthUser?> createHotel({
+    required String email,
+    required String password,
+    required String hotelName,
+  }) async {
+    try {
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = userCredential.user;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('hotels')
+            .doc(user.uid)
+            .set({
+          'hotelName': hotelName,
+          'email': email,
+        });
+        return AuthUser.currentUser(user);
+      } else {
+        return null;
+      }
+    } on FirebaseAuthException catch (error) {
+      switch (error.code) {
+        case 'invalid-email':
+          throw InvalidEmailException();
+        case 'weak-password':
+          throw WeakPasswordException();
+        case 'email-already-in-use':
+          throw EmailAlreadyInUseException();
+        case 'missing-password':
+          throw MissingPasswordException();
+        default:
+          throw GenericException();
+      }
+    } catch (error) {
+      throw GenericException();
     }
   }
 }

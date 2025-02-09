@@ -7,12 +7,34 @@ class AuthService implements AuthProvider {
 
   AuthService(this.provider);
   factory AuthService.firebase() {
-    return AuthService(FirebaseAuthProvider() as AuthProvider);
+    return AuthService(FirebaseAuthProvider());
   }
   @override
-  Future<AuthUser?> createUser(
-      {required String email, required String password}) {
-    return provider.createUser(email: email, password: password);
+  Future<AuthUser?> createVisitor({
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+  }) {
+    return provider.createVisitor(
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+    );
+  }
+
+  @override
+  Future<AuthUser?> createHotel({
+    required String email,
+    required String password,
+    required String hotelName,
+  }) {
+    return provider.createHotel(
+      email: email,
+      password: password,
+      hotelName: hotelName,
+    );
   }
 
   @override

@@ -18,6 +18,21 @@ class AuthStateUninitialized extends AuthState {
       : super(isLoading: isLoading);
 }
 
+class AuthStateHotelRegistering extends AuthState {
+  final Exception? exception;
+
+  const AuthStateHotelRegistering({required this.exception, required isLoading})
+      : super(isLoading: isLoading);
+}
+
+class AuthStateVisitorRegistering extends AuthState {
+  final Exception? exception;
+
+  const AuthStateVisitorRegistering(
+      {required this.exception, required isLoading})
+      : super(isLoading: isLoading);
+}
+
 class AuthStateRegistering extends AuthState {
   final Exception? exception;
 
