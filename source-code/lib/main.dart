@@ -1,10 +1,11 @@
+import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
+import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/loading/loading_screen.dart';
 import 'package:fatiel/screens/forgot_password_screen.dart';
-import 'package:fatiel/screens/home_screen.dart';
 import 'package:fatiel/screens/login_screen.dart';
 import 'package:fatiel/screens/register_screen.dart';
 import 'package:fatiel/screens/reset_password_screen.dart';
@@ -37,9 +38,8 @@ class MyApp extends StatelessWidget {
           registerViewRoute: (context) => RegisterView(),
           forgotPasswordViewRoute: (context) => const ForgotPasswordView(),
           resetPasswordViewRoute: (context) => const ResetPassowrdView(),
-          homePageViewRoute: (context) => const HomeView(
-                title: "Welcome Home",
-              ),
+          hotelHomePageViewRoute: (context) => const HotelHomeView(),
+          visitorHomePageViewRoute: (context) => const VisitorHomeScreen(),
           verificationEmailViewRoute: (context) => const VerifyEmailView(),
           visitorRegistrationRoute: (context) =>
               const VisitorRegistrationView(), // Add the visitor registration route
@@ -70,10 +70,10 @@ class _TrafficState extends State<Traffic> {
         LoadingScreen().hide();
       }
     }, builder: ((context, state) {
-      if (state is AuthStateLoggedIn) {
-        return const HomeView(
-          title: "Welcome home",
-        );
+      if (state is AuthStateHotelLoggedIn) {
+        return const HotelHomeView();
+      } else if (state is AuthStateVisitorLoggedIn) {
+        return const VisitorHomeScreen();
       } else if (state is AuthStateNeedsVerification) {
         return const VerifyEmailView();
       } else if (state is AuthStateLoggedOut) {

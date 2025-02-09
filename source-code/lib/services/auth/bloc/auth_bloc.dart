@@ -1,3 +1,4 @@
+import 'package:fatiel/enum/user_role.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/services/auth/auth_provider.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -123,10 +124,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (!user.isEmailVerified) {
           emit(const AuthStateNeedsVerification(isLoading: false));
         } else {
-          emit(AuthStateLoggedIn(
-            user: user,
-            isLoading: false,
-          ));
+          if (user.role == UserRole.hotel) {
+            emit(AuthStateHotelLoggedIn(
+              user: user,
+              isLoading: false,
+            ));
+          } else {
+            emit(AuthStateVisitorLoggedIn(
+              user: user,
+              isLoading: false,
+            ));
+          }
         }
       }
     }));
@@ -157,10 +165,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLoading: false,
           ));
 
-          emit(AuthStateLoggedIn(
-            user: user,
-            isLoading: false,
-          ));
+          if (user.role == UserRole.hotel) {
+            emit(AuthStateHotelLoggedIn(
+              user: user,
+              isLoading: false,
+            ));
+          } else {
+            emit(AuthStateVisitorLoggedIn(
+              user: user,
+              isLoading: false,
+            ));
+          }
         }
       } on Exception catch (exception) {
         emit(

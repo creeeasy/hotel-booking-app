@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
@@ -10,6 +11,22 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    checkUser();
+    super.initState();
+  }
+
+  void checkUser() {
+    final user = FirebaseAuth.instance.currentUser;
+    final name = user?.displayName;
+    final email = user?.email;
+    print("name");
+    print(name);
+    print("email");
+    print(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

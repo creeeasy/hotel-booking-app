@@ -40,9 +40,15 @@ class AuthStateRegistering extends AuthState {
       : super(isLoading: isLoading);
 }
 
-class AuthStateLoggedIn extends AuthState {
+class AuthStateVisitorLoggedIn extends AuthState {
   final AuthUser user;
-  const AuthStateLoggedIn({required this.user, required bool isLoading})
+  const AuthStateVisitorLoggedIn({required this.user, required bool isLoading})
+      : super(isLoading: isLoading);
+}
+
+class AuthStateHotelLoggedIn extends AuthState {
+  final AuthUser user;
+  const AuthStateHotelLoggedIn({required this.user, required bool isLoading})
       : super(isLoading: isLoading);
 }
 

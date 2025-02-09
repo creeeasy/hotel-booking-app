@@ -1,3 +1,4 @@
+import 'package:fatiel/enum/user_role.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +21,18 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       final user = currentUser;
 
       if (user != null) {
-        return user;
+        final visitorDoc = await FirebaseFirestore.instance
+            .collection("visitors")
+            .doc(user.id)
+            .get();
+        final userRole = visitorDoc.exists ? UserRole.visitor : UserRole.hotel;
+
+        return AuthUser(
+          id: user.id,
+          email: user.email,
+          isEmailVerified: user.isEmailVerified,
+          role: userRole,
+        );
       } else {
         return null;
       }
@@ -118,7 +130,6 @@ class FirebaseAuthProvider implements AuthProviderImplement {
             .set({
           'firstName': firstName,
           'lastName': lastName,
-          'email': email,
         });
         return AuthUser.currentUser(user);
       } else {
@@ -161,7 +172,6 @@ class FirebaseAuthProvider implements AuthProviderImplement {
             .doc(user.uid)
             .set({
           'hotelName': hotelName,
-          'email': email,
         });
         return AuthUser.currentUser(user);
       } else {
