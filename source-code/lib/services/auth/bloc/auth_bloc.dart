@@ -1,4 +1,6 @@
 import 'package:fatiel/enum/user_role.dart';
+import 'package:fatiel/models/Hotel.dart';
+import 'package:fatiel/models/Visitor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/services/auth/auth_provider.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -115,6 +117,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ));
       }
     });
+
     on<AuthEventInitialize>(((event, emit) async {
       await provider.firebaseIntialize();
       final user = provider.currentUser;
@@ -124,37 +127,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (!user.isEmailVerified) {
           emit(const AuthStateNeedsVerification(isLoading: false));
         } else {
-          if (user.role == UserRole.hotel) {
+          final authenticatedUser = await provider.getUser();
+          if (authenticatedUser!.role == UserRole.hotel) {
             emit(AuthStateHotelLoggedIn(
-              user: user,
               isLoading: false,
+              user: authenticatedUser as Hotel,
             ));
           } else {
             emit(AuthStateVisitorLoggedIn(
-              user: user,
               isLoading: false,
+              user: authenticatedUser as Visitor,
             ));
           }
         }
       }
     }));
+
     on<AuthEventLogIn>((event, emit) async {
       emit(const AuthStateLoggedOut(
         exception: null,
         isLoading: true,
-        loadingText: 'Please wait while i log you in',
+        loadingText: 'Please wait while I log you in',
       ));
-      //  emit(const AuthStateLoading());
+
       final email = event.email;
       final password = event.password;
 
       try {
-        // Very good idea
-        // await Future.delayed(const Duration(seconds: 3));
-        final user = await provider.logIn(
-          email: email,
-          password: password,
-        );
+        final user = await provider.logIn(email: email, password: password);
+
         if (!user!.isEmailVerified) {
           emit(const AuthStateNeedsVerification(
             isLoading: false,
@@ -164,16 +165,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             exception: null,
             isLoading: false,
           ));
-
-          if (user.role == UserRole.hotel) {
+          final authenticatedUser = await provider.getUser();
+          if (authenticatedUser.role == UserRole.hotel) {
             emit(AuthStateHotelLoggedIn(
-              user: user,
               isLoading: false,
+              user: authenticatedUser as Hotel,
             ));
           } else {
             emit(AuthStateVisitorLoggedIn(
-              user: user,
               isLoading: false,
+              user: authenticatedUser as Visitor,
             ));
           }
         }
@@ -186,6 +187,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     });
+
     on<AuthEventLogOut>((event, emit) async {
       try {
         await provider.logOut();

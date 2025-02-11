@@ -1,4 +1,6 @@
 import 'package:fatiel/enum/user_role.dart';
+import 'package:fatiel/models/Hotel.dart';
+import 'package:fatiel/models/Visitor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -193,5 +195,38 @@ class FirebaseAuthProvider implements AuthProviderImplement {
     } catch (error) {
       throw GenericException();
     }
+  }
+
+  @override
+  Future<dynamic> getUser() async {
+    final user = currentUser!;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    final DocumentSnapshot hotelDoc =
+        await firestore.collection('hotels').doc(user.id).get();
+
+    if (hotelDoc.exists) {
+      final data = hotelDoc.data() as Map<String, dynamic>;
+      return Hotel(
+        id: user.id,
+        email: user.email,
+        isEmailVerified: user.isEmailVerified,
+        role: UserRole.hotel,
+        name: data['hotelName'] ?? 'Unknown',
+      );
+    }
+
+    final DocumentSnapshot visitorDoc =
+        await firestore.collection('visitors').doc(user.id).get();
+
+    final data = visitorDoc.data() as Map<String, dynamic>;
+    return Visitor(
+      id: user.id,
+      email: user.email,
+      isEmailVerified: user.isEmailVerified,
+      role: UserRole.visitor,
+      firstName: data['firstName'] ?? '',
+      lastName: data['lastName'] ?? '',
+    );
   }
 }

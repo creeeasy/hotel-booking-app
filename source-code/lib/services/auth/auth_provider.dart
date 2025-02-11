@@ -1,6 +1,7 @@
 import 'package:fatiel/services/auth/auth_user.dart';
 
 abstract class AuthProvider {
+  Future<dynamic> getUser();
   Future<AuthUser?> createVisitor(
       {required String email,
       required String password,

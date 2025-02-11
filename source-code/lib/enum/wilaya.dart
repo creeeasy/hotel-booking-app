@@ -62,4 +62,9 @@ enum Wilaya {
   final String name;
 
   const Wilaya(this.ind, this.name);
+  static List<Wilaya> get wilayasList => Wilaya.values;
+  static Wilaya? fromIndex(int index) {
+    return Wilaya.values.firstWhere((wilaya) => wilaya.ind == index,
+        orElse: () => throw ArgumentError("Invalid index"));
+  }
 }

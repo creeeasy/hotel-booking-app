@@ -1,15 +1,18 @@
 import 'package:equatable/equatable.dart';
+import 'package:fatiel/models/Hotel.dart';
+import 'package:fatiel/models/Visitor.dart';
 import 'package:flutter/foundation.dart' show immutable;
-import 'package:fatiel/services/auth/auth_user.dart';
 
 @immutable
 abstract class AuthState {
   final bool isLoading;
   final String? loadingText;
+  final dynamic currentUser;
 
   const AuthState({
     required this.isLoading,
     this.loadingText = 'Please wait a moment...',
+    this.currentUser,
   });
 }
 
@@ -41,15 +44,15 @@ class AuthStateRegistering extends AuthState {
 }
 
 class AuthStateVisitorLoggedIn extends AuthState {
-  final AuthUser user;
+  final Visitor user;
   const AuthStateVisitorLoggedIn({required this.user, required bool isLoading})
-      : super(isLoading: isLoading);
+      : super(isLoading: isLoading, currentUser: user);
 }
 
 class AuthStateHotelLoggedIn extends AuthState {
-  final AuthUser user;
+  final Hotel user;
   const AuthStateHotelLoggedIn({required this.user, required bool isLoading})
-      : super(isLoading: isLoading);
+      : super(isLoading: isLoading, currentUser: user);
 }
 
 class AuthStateNeedsVerification extends AuthState {

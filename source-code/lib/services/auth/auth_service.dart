@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/services/auth/auth_provider.dart';
 import 'package:fatiel/services/auth/auth_user.dart';
 import 'package:fatiel/services/auth/firebase_auth_provider.dart';
@@ -63,13 +62,9 @@ class AuthService implements AuthProvider {
 
   @override
   Future<void> logOut() => provider.logOut();
-  Future<String?> getUserRole() async {
-    AuthUser? user = provider.currentUser;
-    if (user == null) return null;
 
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(user.id).get();
-
-    return userDoc.toString();
+  @override
+  Future<dynamic> getUser() {
+    return provider.getUser();
   }
 }
