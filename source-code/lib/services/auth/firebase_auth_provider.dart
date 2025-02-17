@@ -212,7 +212,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         email: user.email,
         isEmailVerified: user.isEmailVerified,
         role: UserRole.hotel,
-        name: data['hotelName'] ?? 'Unknown',
+        hotelName: data['hotelName'] ?? 'Unknown',
       );
     }
 
@@ -227,6 +227,8 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       role: UserRole.visitor,
       firstName: data['firstName'] ?? '',
       lastName: data['lastName'] ?? '',
+      favorites: List<String>.from(data["favorites"] ?? []),
+      bookings: List<String>.from(data["bookings"] ?? []),
     );
   }
 }

@@ -6,15 +6,18 @@ import 'package:fatiel/enum/user_role.dart';
 class Visitor extends AuthUser {
   final String firstName;
   final String lastName;
+  final List<String>? favorites;
+  final List<String>? bookings;
 
-  Visitor({
-    required super.id,
-    required super.email,
-    required super.isEmailVerified,
-    required super.role,
-    required this.firstName,
-    required this.lastName,
-  });
+  Visitor(
+      {required super.id,
+      required super.email,
+      required super.isEmailVerified,
+      required super.role,
+      required this.firstName,
+      required this.lastName,
+      this.favorites,
+      this.bookings});
 
   factory Visitor.fromFirebaseUser(User user) {
     return Visitor(
@@ -24,6 +27,8 @@ class Visitor extends AuthUser {
       email: user.email ?? '',
       role: UserRole.visitor,
       isEmailVerified: user.emailVerified,
+      favorites: [],
+      bookings: [],
     );
   }
 
@@ -35,6 +40,8 @@ class Visitor extends AuthUser {
       'email': email,
       'role': role?.name,
       'isEmailVerified': isEmailVerified,
+      'favorites': favorites ?? [],
+      'bookings': bookings ?? [],
     };
   }
 
@@ -47,6 +54,8 @@ class Visitor extends AuthUser {
       email: data['email'] ?? '',
       role: _parseRole(data['role']),
       isEmailVerified: data['isEmailVerified'] ?? false,
+      favorites: List<String>.from(data['favorites'] ?? []),
+      bookings: List<String>.from(data['bookings'] ?? []),
     );
   }
 
@@ -70,11 +79,11 @@ class Visitor extends AuthUser {
         print('Invalid role string: $roleString. Defaulting to visitor.');
       }
     }
-    return UserRole.visitor; // Default to visitor if role is null or invalid
+    return UserRole.visitor;
   }
 
   @override
   String toString() {
-    return 'Visitor(id: $id, firstName: $firstName, lastName: $lastName, email: $email, role: $role, isEmailVerified: $isEmailVerified)';
+    return 'Visitor(id: $id, firstName: $firstName, lastName: $lastName, email: $email, role: $role, isEmailVerified: $isEmailVerified, favorites: $favorites, bookings: $bookings)';
   }
 }

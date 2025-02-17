@@ -1,6 +1,10 @@
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
+import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
+import 'package:fatiel/screens/visitor/booking_screen.dart';
+import 'package:fatiel/screens/visitor/explore_screen.dart';
+import 'package:fatiel/screens/visitor/favorite_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,6 +48,10 @@ class MyApp extends StatelessWidget {
           visitorRegistrationRoute: (context) =>
               const VisitorRegistrationView(), // Add the visitor registration route
           hotelRegistrationRoute: (context) => const HotelRegistrationView(),
+          hotelDetailsRoute: (context) => const HotelDetailsView(),
+          favoritesViewRoute: (context) => const FavoritePage(),
+          exploreViewRoute: (context) => ExploreView(),
+          bookingsViewRoute: (context) => const BookingView(),
         },
         home: const Traffic());
   }

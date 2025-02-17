@@ -63,6 +63,12 @@ enum Wilaya {
 
   const Wilaya(this.ind, this.name);
   static List<Wilaya> get wilayasList => Wilaya.values;
+  static List<Wilaya> get getRandomWilayasList {
+    List<Wilaya> shuffledList = List.from(wilayasList);
+    shuffledList.shuffle();
+    return shuffledList.take(5).toList();
+  }
+
   static Wilaya? fromIndex(int index) {
     return Wilaya.values.firstWhere((wilaya) => wilaya.ind == index,
         orElse: () => throw ArgumentError("Invalid index"));

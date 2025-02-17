@@ -7,3 +7,7 @@ const visitorHomePageViewRoute = '/visitor-home-page/';
 const verificationEmailViewRoute = '/verification-email/';
 const visitorRegistrationRoute = '/visitor-register/';
 const hotelRegistrationRoute = '/hotel-register/';
+const hotelDetailsRoute = '/hotel-details/';
+const favoritesViewRoute = '/favorites/';
+const exploreViewRoute = '/explore/';
+const bookingsViewRoute = '/bookings/';
