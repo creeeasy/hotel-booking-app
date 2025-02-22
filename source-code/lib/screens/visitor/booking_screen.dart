@@ -4,7 +4,6 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/widgets/hotel_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BookingView extends StatefulWidget {
@@ -39,6 +38,7 @@ class _BookingViewState extends State<BookingView>
       builder: (context, state) {
         final currentVisitor = state.currentUser as Visitor;
         final bookings = currentVisitor.bookings ?? [];
+        final favorites = currentVisitor.favorites ?? [];
         return Scaffold(
           body: ListView.builder(
             itemCount: bookings.length,
@@ -62,11 +62,12 @@ class _BookingViewState extends State<BookingView>
                             arguments: "dHNQ0AKCIrWeqpKR81Q0fbfORZM2")
                       },
                   child: HotelRowOneWidget(
+                    isFavorite: (favorites).contains(favorites[index]),
                     visitorId: currentVisitor.id,
                     hotelId: bookings[index],
                     animation: animation,
                     animationController: animationController,
-                    callback: () {},
+                    onRemoveFromFavorites: () {},
                   ));
             },
           ),

@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/services/auth/auth_user.dart';
-import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:fatiel/enum/user_role.dart';
 
 class Visitor extends AuthUser {
@@ -8,6 +9,7 @@ class Visitor extends AuthUser {
   final String lastName;
   final List<String>? favorites;
   final List<String>? bookings;
+  final int? location;
 
   Visitor(
       {required super.id,
@@ -17,18 +19,27 @@ class Visitor extends AuthUser {
       required this.firstName,
       required this.lastName,
       this.favorites,
-      this.bookings});
+      this.bookings,
+      this.location});
 
-  factory Visitor.fromFirebaseUser(User user) {
+  factory Visitor.fromFirebaseUser(
+    AuthUser user, {
+    String? firstName,
+    String? lastName,
+    List<String>? favorites,
+    List<String>? bookings,
+    int? location,
+  }) {
     return Visitor(
-      id: user.uid,
-      firstName: '',
-      lastName: '',
-      email: user.email ?? '',
+      id: user.id,
+      firstName: firstName ?? '',
+      lastName: lastName ?? '',
+      email: user.email,
       role: UserRole.visitor,
-      isEmailVerified: user.emailVerified,
-      favorites: [],
-      bookings: [],
+      isEmailVerified: user.isEmailVerified,
+      favorites: favorites ?? [],
+      bookings: bookings ?? [],
+      location: location,
     );
   }
 
@@ -42,11 +53,13 @@ class Visitor extends AuthUser {
       'isEmailVerified': isEmailVerified,
       'favorites': favorites ?? [],
       'bookings': bookings ?? [],
+      'location': location,
     };
   }
 
   factory Visitor.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    log(data.toString());
     return Visitor(
       id: data['id'] ?? '',
       firstName: data['firstName'] ?? '',
@@ -56,6 +69,7 @@ class Visitor extends AuthUser {
       isEmailVerified: data['isEmailVerified'] ?? false,
       favorites: List<String>.from(data['favorites'] ?? []),
       bookings: List<String>.from(data['bookings'] ?? []),
+      location: data['location'] != null ? data['location'] as int : null,
     );
   }
 
@@ -68,6 +82,26 @@ class Visitor extends AuthUser {
     } catch (e) {
       print('Error updating visitor: $e');
       rethrow;
+    }
+  }
+
+  static Future<List<String>> getUserFavorites(String userId) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('visitors')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
+        List<String> favorites = List<String>.from(data?['favorites'] ?? []);
+        return favorites;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      log('Error fetching user favorites: $e');
+      return [];
     }
   }
 

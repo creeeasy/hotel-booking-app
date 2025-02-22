@@ -1,8 +1,9 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/widgets/image_error_widget.dart';
 import 'package:flutter/material.dart';
 
 class NetworkImageWithLoader extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
   final BoxFit fit;
 
   const NetworkImageWithLoader({
@@ -13,8 +14,12 @@ class NetworkImageWithLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl == null || imageUrl!.isEmpty) {
+      return const ImageErrorWidget();
+    }
+
     return Image.network(
-      imageUrl,
+      imageUrl!,
       fit: fit,
       loadingBuilder: (BuildContext context, Widget child,
           ImageChunkEvent? loadingProgress) {
@@ -25,17 +30,15 @@ class NetworkImageWithLoader extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Center(
-                  child: SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: CircularProgressIndicator(
-                      color: VisitorThemeColors.primaryColor,
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              (loadingProgress.expectedTotalBytes ?? 1)
-                          : null,
-                    ),
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: CircularProgressIndicator(
+                    color: VisitorThemeColors.primaryColor,
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            (loadingProgress.expectedTotalBytes ?? 1)
+                        : null,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -50,19 +53,7 @@ class NetworkImageWithLoader extends StatelessWidget {
       },
       errorBuilder:
           (BuildContext context, Object exception, StackTrace? stackTrace) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.broken_image, color: Colors.grey, size: 50),
-              const SizedBox(height: 8),
-              const Text(
-                'Failed to load image',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        );
+        return const ImageErrorWidget();
       },
     );
   }

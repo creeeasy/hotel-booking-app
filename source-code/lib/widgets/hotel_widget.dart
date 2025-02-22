@@ -1,53 +1,48 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:developer';
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/screens/hotel_details_page.dart';
+import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:fatiel/utils/rating_utils.dart';
+import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/hotel/network_image_widget.dart';
 import 'package:fatiel/widgets/rating_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HotelRowOneWidget extends StatefulWidget {
-  const HotelRowOneWidget({
-    super.key,
-    required this.visitorId,
-    this.isShowDate = false,
-    this.callback,
-    required this.hotelId,
-    this.animationController,
-    this.animation,
-  });
+  const HotelRowOneWidget(
+      {super.key,
+      required this.visitorId,
+      this.isShowDate = false,
+      required this.hotelId,
+      this.animationController,
+      required this.isFavorite,
+      this.animation,
+      this.onRemoveFromFavorites});
   final String visitorId;
+  final bool isFavorite;
   final bool isShowDate;
-  final VoidCallback? callback;
   final String hotelId;
   final AnimationController? animationController;
   final Animation? animation;
+  final VoidCallback? onRemoveFromFavorites;
   @override
   State<HotelRowOneWidget> createState() => _HotelRowOneWidgetState();
 }
 
 class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
   bool isRemoved = false;
-  bool isLoading = false;
   Future<void> handleFavoriteTap() async {
-    setState(() => isLoading = true);
-
-    bool result = await Hotel.removeHotelFromFav(
+    await Hotel.removeHotelFromFav(
       hotelId: widget.hotelId,
       visitorId: widget.visitorId,
     );
-
-    setState(() {
-      isRemoved = result;
-      isLoading = false;
-    });
+    if (widget.onRemoveFromFavorites != null) {
+      widget.onRemoveFromFavorites!();
+    }
   }
 
   @override
@@ -56,40 +51,25 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
         future: Hotel.getHotelById(widget.hotelId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Center(
-                child: SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      VisitorThemeColors.primaryColor,
-                    ),
-                  ),
-                ),
-              ),
-            );
+            return CardLoadingIndicator();
           } else if (snapshot.hasData) {
             final hotel = snapshot.data as Hotel;
             return InkWell(
               onTap: () {
-                log(hotel.email.toString());
                 Navigator.of(context)
                     .pushNamed(hotelDetailsRoute, arguments: hotel.id);
               },
-              child: AnimatedBuilder(
-                animation: widget.animationController!,
-                builder: (BuildContext context, Widget? child) {
-                  return FadeTransition(
-                    opacity: widget.animation as Animation<double>,
-                    child: Transform(
-                      transform: Matrix4.translationValues(
-                          0.0, 50 * (1.0 - widget.animation!.value), 0.0),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 24, right: 24, top: 8, bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 24, right: 24, top: 8, bottom: 16),
+                child: AnimatedBuilder(
+                  animation: widget.animationController!,
+                  builder: (BuildContext context, Widget? child) {
+                    return FadeTransition(
+                      opacity: widget.animation as Animation<double>,
+                      child: Transform(
+                        transform: Matrix4.translationValues(
+                            0.0, 50 * (1.0 - widget.animation!.value), 0.0),
                         child: Column(
                           children: <Widget>[
                             widget.isShowDate
@@ -99,8 +79,7 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                     child: Text(
                                       "fsdfsdf",
                                       style: TextStyle(
-                                        color: VisitorThemeColors.blackColor,
-                                      ),
+                                          color: VisitorThemeColors.blackColor),
                                     ),
                                   )
                                 : const SizedBox(),
@@ -124,11 +103,15 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                     Column(
                                       children: <Widget>[
                                         AspectRatio(
-                                            aspectRatio: 2,
-                                            child: NetworkImageWithLoader(
-                                              // imageUrl: hotelId!.imagePath,
-                                              imageUrl: "hotelId!.imagePath",
-                                            )),
+                                          aspectRatio: 2,
+                                          child: NetworkImageWithLoader(
+                                            imageUrl:
+                                                (hotel.images?.isNotEmpty ==
+                                                        true)
+                                                    ? hotel.images![0]
+                                                    : null,
+                                          ),
+                                        ),
                                         Container(
                                           color: VisitorThemeColors.whiteColor,
                                           child: Row(
@@ -262,22 +245,6 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                       ],
                                     ),
                                     Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      bottom: 0,
-                                      left: 0,
-                                      child: InkWell(
-                                        highlightColor: Colors.transparent,
-                                        splashColor: VisitorThemeColors
-                                            .primaryColor
-                                            .withOpacity(0.1),
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(16.0),
-                                        ),
-                                        onTap: () async {},
-                                      ),
-                                    ),
-                                    Positioned(
                                       top: 8,
                                       right: 8,
                                       child: Container(
@@ -288,68 +255,24 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                         child: Material(
                                           color: Colors.transparent,
                                           child: AnimatedSwitcher(
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                            transitionBuilder: (Widget child,
-                                                Animation<double> animation) {
-                                              return FadeTransition(
-                                                opacity: animation,
-                                                child: ScaleTransition(
-                                                  scale: animation,
-                                                  child: child,
-                                                ),
-                                              );
-                                            },
-                                            child: isLoading
-                                                ? SizedBox(
-                                                    height: 30,
-                                                    width: 30,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      strokeWidth: 2.5,
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                              Color>(
-                                                        VisitorThemeColors
-                                                            .primaryColor,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : InkWell(
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                      Radius.circular(32.0),
-                                                    ),
-                                                    onTap: () async {
-                                                      setState(() {
-                                                        isLoading = true;
-                                                      });
-
-                                                      bool result = await Hotel
-                                                          .removeHotelFromFav(
-                                                        hotelId: widget.hotelId,
-                                                        visitorId:
-                                                            widget.visitorId,
-                                                      );
-
-                                                      setState(() {
-                                                        isRemoved = result;
-                                                        isLoading = false;
-                                                      });
-                                                    },
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Icon(
-                                                        Icons.favorite,
-                                                        color:
-                                                            VisitorThemeColors
-                                                                .primaryColor,
-                                                      ),
-                                                    ),
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              transitionBuilder: (Widget child,
+                                                  Animation<double> animation) {
+                                                return FadeTransition(
+                                                  opacity: animation,
+                                                  child: ScaleTransition(
+                                                    scale: animation,
+                                                    child: child,
                                                   ),
-                                          ),
+                                                );
+                                              },
+                                              child: FavoriteButton(
+                                                isFavorite: widget.isFavorite,
+                                                onTap: () async {
+                                                  await handleFavoriteTap();
+                                                },
+                                              )),
                                         ),
                                       ),
                                     ),
@@ -360,9 +283,9 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                           ],
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             );
           } else {

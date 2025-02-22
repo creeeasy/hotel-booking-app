@@ -229,6 +229,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       lastName: data['lastName'] ?? '',
       favorites: List<String>.from(data["favorites"] ?? []),
       bookings: List<String>.from(data["bookings"] ?? []),
+      location: data['location'] != null ? data['location'] as int : null,
     );
   }
 }

@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
+
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/TopBarType.dart';
 import 'package:fatiel/models/Hotel.dart';
 import 'package:fatiel/models/Visitor.dart';
@@ -9,6 +12,7 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
+import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/hotel/explore_city_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -42,24 +46,13 @@ class _ExploreViewState extends State<ExploreView>
     super.dispose();
   }
 
-  Future<void> onLogout() async {
-    await showGenericDialog<void>(
-        context: context,
-        title: "Log out",
-        content: "Are you sure you want to logout",
-        optionBuilder: () => {
-              'Cancel': null,
-              'OK': () => context.read<AuthBloc>().add(const AuthEventLogOut()),
-            });
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final currentVisitor = state.currentUser as Visitor;
-
         return Scaffold(
+          backgroundColor: VisitorThemeColors.whiteColor,
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -88,12 +81,26 @@ class _ExploreViewState extends State<ExploreView>
                     ),
                     IconButton(
                       icon: const Icon(Icons.logout, color: Colors.red),
-                      onPressed: onLogout,
+                      onPressed: () async {
+                        final shouldLogout = await showGenericDialog<bool>(
+                          context: context,
+                          title: 'Log out',
+                          content: 'Are you sure you want to log out?',
+                          optionBuilder: () =>
+                              {'Cancel': false, 'Log Out': true},
+                        ).then((value) => value ?? false);
+
+                        if (shouldLogout) {
+                          context.read<AuthBloc>().add(const AuthEventLogOut());
+                        }
+                      },
                     ),
                   ],
                 ),
                 SizedBox(height: 20),
-                ExploreSectionWidget(),
+                ExploreSectionWidget(
+                  location: currentVisitor.location,
+                ),
                 SizedBox(height: 20),
                 Padding(
                   padding:
@@ -113,17 +120,9 @@ class _ExploreViewState extends State<ExploreView>
                   future: Hotel.getHotelStatistics(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            VisitorThemeColors.primaryColor,
-                          ),
-                        ),
-                      ));
+                      return CardLoadingIndicator(
+                        backgroundColor: VisitorThemeColors.whiteColor,
+                      );
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData) {
@@ -144,9 +143,9 @@ class _ExploreViewState extends State<ExploreView>
                           return ExploreCityWidget(
                             wilaya: wilaya,
                             count: hotelsCount,
-                            onTap: () {
-                              print('${wilaya.ind} clicked!');
-                            },
+                            onTap: () => Navigator.pushNamed(
+                                context, wilayaDetailsViewRoute,
+                                arguments: wilaya.ind),
                           );
                         }).toList(),
                       );

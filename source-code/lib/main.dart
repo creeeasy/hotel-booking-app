@@ -6,6 +6,7 @@ import 'package:fatiel/screens/visitor/booking_screen.dart';
 import 'package:fatiel/screens/visitor/explore_screen.dart';
 import 'package:fatiel/screens/visitor/favorite_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
+import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/loading/loading_screen.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
           favoritesViewRoute: (context) => const FavoritePage(),
           exploreViewRoute: (context) => ExploreView(),
           bookingsViewRoute: (context) => const BookingView(),
+          wilayaDetailsViewRoute: (context) => const WilayaDetailsPageView(),
         },
         home: const Traffic());
   }

@@ -11,3 +11,4 @@ const hotelDetailsRoute = '/hotel-details/';
 const favoritesViewRoute = '/favorites/';
 const exploreViewRoute = '/explore/';
 const bookingsViewRoute = '/bookings/';
+const wilayaDetailsViewRoute = '/wilaya-details-view/';

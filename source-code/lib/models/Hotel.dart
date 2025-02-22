@@ -86,32 +86,43 @@ class Hotel extends AuthUser {
       'ratings': ratings,
       'images': images,
       'availableRooms': availableRooms,
-      "pricePerNight": pricePerNight,
+      'pricePerNight': pricePerNight,
     };
   }
 
   factory Hotel.fromFirestore(DocumentSnapshot doc, String? hotelId) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Hotel(
-        id: hotelId ?? "",
-        hotelName: data['hotelName'] ?? '',
-        email: "",
-        role: UserRole.hotel,
-        isEmailVerified: true,
-        location: data['location'] ?? '',
-        ratings: List<Map<String, double>>.from((data['ratings'] ?? [])
-            .map((rating) => Map<String, double>.from(rating))),
-        images: List<String>.from(data['images'] ?? []),
-        availableRooms: data['availableRooms'] ?? 0,
-        pricePerNight: data['pricePerNight'],
-        description: data['description'],
-        thumbnail: data['thumbnail'],
-        mapLink: data['mapLink'],
-        contactInfo: data['contactInfo'],
-        facilities: List<String>.from(data['facilities'] ?? []),
-        checkInTime: data['checkInTime'],
-        checkOutTime: data['checkOutTime']);
+      id: hotelId ?? '',
+      hotelName: data['hotelName'] as String? ?? '',
+      email: '',
+      role: UserRole.hotel,
+      isEmailVerified: true,
+      location: data['location'] as int?,
+      ratings: (data['ratings'] as List<dynamic>?)
+              ?.map((rating) => Map<String, double>.from(rating.map(
+                  (key, value) => MapEntry(key, (value as num).toDouble()))))
+              .toList() ??
+          [],
+      images: (data['images'] as List<dynamic>?)
+              ?.map((image) => image as String)
+              .toList() ??
+          [],
+      availableRooms: data['availableRooms'] as int? ?? 0,
+      pricePerNight: (data['pricePerNight'] as num?)?.toDouble(),
+      description: data['description'] as String?,
+      thumbnail: data['thumbnail'] as String?,
+      mapLink: data['mapLink'] as String?,
+      contactInfo: data['contactInfo'] as String?,
+      facilities: (data['facilities'] as List<dynamic>?)
+              ?.map((facility) => facility as String)
+              .toList() ??
+          [],
+      checkInTime: data['checkInTime'] as String?,
+      checkOutTime: data['checkOutTime'] as String?,
+    );
   }
+
   static Future<Hotel> getHotelById(String hotelId) async {
     try {
       final doc = await FirebaseFirestore.instance
@@ -125,8 +136,44 @@ class Hotel extends AuthUser {
     }
   }
 
-  static Future<bool> removeHotelFromFav(
-      {required String hotelId, required String visitorId}) async {
+  static Future<List<Hotel>> getHotelsByWilaya(int wilayaId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('hotels')
+          .where('location', isEqualTo: wilayaId)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Hotel.fromFirestore(doc, doc.id))
+          .toList();
+    } catch (e) {
+      log('Error fetching hotels by wilaya: $e');
+      return [];
+    }
+  }
+
+  static Future<bool> addHotelToFav({
+    required String hotelId,
+    required String visitorId,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("visitors")
+          .doc(visitorId)
+          .update({
+        "favorites": FieldValue.arrayUnion([hotelId]),
+      });
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
+
+  static Future<bool> removeHotelFromFav({
+    required String hotelId,
+    required String visitorId,
+  }) async {
     try {
       await FirebaseFirestore.instance
           .collection("visitors")
@@ -136,6 +183,7 @@ class Hotel extends AuthUser {
       });
       return true;
     } catch (e) {
+      log(e.toString());
       return false;
     }
   }
@@ -170,7 +218,7 @@ class Hotel extends AuthUser {
           .doc(hotel.id)
           .update(hotel.toFirestore());
     } catch (e) {
-      print('Error updating hotel: $e');
+      log('Error updating hotel: $e');
       rethrow;
     }
   }
@@ -179,7 +227,7 @@ class Hotel extends AuthUser {
     try {
       return UserRole.values.byName(roleString);
     } catch (e) {
-      print('Invalid role string: $roleString. Defaulting to hotel.');
+      log('Invalid role string: $roleString. Defaulting to hotel.');
       return UserRole.hotel;
     }
   }
@@ -187,11 +235,11 @@ class Hotel extends AuthUser {
   @override
   String toString() {
     return '''
-  Hotel(
-    id: $id,
-    name: $hotelName,
-  )
-  ''';
+      Hotel(
+        id: $id,
+        name: $hotelName,
+      )
+    ''';
   }
 
   static Future<List<Hotel>> getPopularHotel() async {
@@ -200,7 +248,7 @@ class Hotel extends AuthUser {
           await FirebaseFirestore.instance.collection('hotels').get();
 
       List<Hotel> hotels = querySnapshot.docs
-          .map((doc) => Hotel.fromFirestore(doc, null))
+          .map((doc) => Hotel.fromFirestore(doc, doc.id))
           .toList();
 
       // Sort hotels by average rating (descending)
@@ -234,7 +282,7 @@ class Hotel extends AuthUser {
           .get();
 
       List<Hotel> nearbyHotels = querySnapshot.docs
-          .map((doc) => Hotel.fromFirestore(doc, null))
+          .map((doc) => Hotel.fromFirestore(doc, doc.id))
           .toList();
 
       return nearbyHotels;

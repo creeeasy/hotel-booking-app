@@ -37,52 +37,110 @@ class _FavoritePageState extends State<FavoritePage>
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final currentUser = state.currentUser as Visitor;
-        final favorites = currentUser.favorites ?? [];
-        return SafeArea(
-          child: Scaffold(
-            backgroundColor: VisitorThemeColors.whiteColor,
-            appBar: AppBar(
-              backgroundColor: VisitorThemeColors.whiteColor,
-              elevation: 0,
-              centerTitle: true,
-              title: const Text(
-                'Favorites',
-                style: TextStyle(
-                  color: VisitorThemeColors.blackColor,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
+
+        return FutureBuilder<List<String>>(
+          future: Visitor.getUserFavorites(currentUser.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+              ));
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return _buildNoFavoritesUI();
+            }
+
+            final List<String> favorites = snapshot.data!;
+
+            return SafeArea(
+              child: Scaffold(
+                backgroundColor: VisitorThemeColors.whiteColor,
+                appBar: AppBar(
+                  backgroundColor: VisitorThemeColors.whiteColor,
+                  elevation: 0,
+                  centerTitle: true,
+                  title: const Text(
+                    'Favorites',
+                    style: TextStyle(
+                      color: VisitorThemeColors.blackColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                body: ListView.builder(
+                  itemCount: favorites.length,
+                  padding: const EdgeInsets.only(top: 8),
+                  itemBuilder: (context, index) {
+                    final int count =
+                        favorites.length > 10 ? 10 : favorites.length;
+                    final Animation<double> animation = Tween<double>(
+                      begin: 0.0,
+                      end: 1.0,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: animationController,
+                        curve: Interval((1 / count) * index, 1.0,
+                            curve: Curves.fastOutSlowIn),
+                      ),
+                    );
+                    animationController.forward();
+
+                    return HotelRowOneWidget(
+                      isFavorite: favorites.contains(favorites[index]),
+                      visitorId: currentUser.id,
+                      hotelId: favorites[index],
+                      animation: animation,
+                      animationController: animationController,
+                      onRemoveFromFavorites: () {
+                        setState(() {});
+                      },
+                    );
+                  },
                 ),
               ),
-            ),
-            body: ListView.builder(
-              itemCount: favorites.length,
-              padding: const EdgeInsets.only(top: 8),
-              itemBuilder: (context, index) {
-                final int count = favorites.length > 10 ? 10 : favorites.length;
-                final Animation<double> animation = Tween<double>(
-                  begin: 0.0,
-                  end: 1.0,
-                ).animate(
-                  CurvedAnimation(
-                    parent: animationController,
-                    curve: Interval((1 / count) * index, 1.0,
-                        curve: Curves.fastOutSlowIn),
-                  ),
-                );
-                animationController.forward();
-
-                return HotelRowOneWidget(
-                  visitorId: currentUser.id,
-                  hotelId: favorites[index],
-                  animation: animation,
-                  animationController: animationController,
-                );
-              },
-            ),
-          ),
+            );
+          },
         );
       },
+    );
+  }
+
+  /// Widget for the "No Favorites" UI
+  Widget _buildNoFavoritesUI() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.favorite_border,
+            size: 80,
+            color: Colors.grey.shade400,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'No favorites yet!',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Tap the heart icon to add hotels to your favorites.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black38,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
