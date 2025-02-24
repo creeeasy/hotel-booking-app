@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';

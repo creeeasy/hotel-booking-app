@@ -1,11 +1,8 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
-import 'package:fatiel/models/Visitor.dart';
 import 'package:fatiel/screens/visitor/widget/booking_widget.dart';
-import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BookingView extends StatefulWidget {
   const BookingView({super.key});
@@ -16,24 +13,33 @@ class BookingView extends StatefulWidget {
 
 class _BookingViewState extends State<BookingView>
     with SingleTickerProviderStateMixin {
-  late AnimationController animationController;
-  late BookingStatus selectedTab;
+  late AnimationController _animationController;
+  BookingStatus _selectedTab = BookingStatus.pending;
 
   @override
   void initState() {
     super.initState();
-    selectedTab = BookingStatus.pending;
-    animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
       vsync: this,
-    );
-    animationController.forward();
+    )..forward();
+
+    VisitorBookingsStream.listenToBookings(_selectedTab);
   }
 
   @override
   void dispose() {
-    animationController.dispose();
+    _animationController.dispose();
     super.dispose();
+  }
+
+  void _onTabChange(BookingStatus newTab) {
+    if (_selectedTab == newTab) return;
+
+    setState(() {
+      _selectedTab = newTab;
+      VisitorBookingsStream.listenToBookings(newTab);
+    });
   }
 
   @override
@@ -41,97 +47,103 @@ class _BookingViewState extends State<BookingView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "Bookings",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.search,
-                  size: 28,
-                ),
-                color: VisitorThemeColors.primaryColor,
-                onPressed: () {},
-                tooltip: 'Search',
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: _tabView(
-            selectedTab: selectedTab,
-            onTabChange: (BookingStatus newTab) {
-              setState(() {
-                selectedTab = newTab;
-              });
+        _buildHeader(),
+        _buildTabView(),
+        Expanded(
+          key: ValueKey(_selectedTab),
+          child: StreamBuilder<List<String>>(
+            stream: VisitorBookingsStream.bookingsStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingIndicator();
+              }
+
+              if (snapshot.hasError) {
+                return _buildError(snapshot.error.toString());
+              }
+
+              final bookings = snapshot.data ?? [];
+              return bookings.isEmpty
+                  ? _buildNoBookingsUI()
+                  : _buildBookingsList(bookings);
             },
           ),
         ),
-        BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            final currentUserId = (state.currentUser as Visitor).id;
-            return Expanded(
-              child: FutureBuilder<List<String>>(
-                future: Visitor.getUserBookings(currentUserId, selectedTab),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color:
-                          VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
-                    ));
-                  }
-
-                  if (snapshot.hasError) {
-                    return Center(child: Text("Error: ${snapshot.error}"));
-                  }
-
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return _buildNoBookingsUI();
-                  }
-                  final bookings = snapshot.data!;
-
-                  return ListView.builder(
-                    itemCount: bookings.length,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    itemBuilder: (context, index) {
-                      final count = bookings.length > 10 ? 10 : bookings.length;
-                      final animation = Tween<double>(
-                        begin: 0.0,
-                        end: 1.0,
-                      ).animate(
-                        CurvedAnimation(
-                          parent: animationController,
-                          curve: Interval(
-                            (1 / count) * index,
-                            1.0,
-                            curve: Curves.fastOutSlowIn,
-                          ),
-                        ),
-                      );
-
-                      return FadeTransition(
-                        opacity: animation,
-                        child: BookingWidget(bookingId: bookings[index]),
-                      );
-                    },
-                  );
-                },
-              ),
-            );
-          },
-        ),
       ],
     );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            "Bookings",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.search, size: 28),
+            color: VisitorThemeColors.primaryColor,
+            onPressed: () {},
+            tooltip: 'Search',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabView() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: _tabView(selectedTab: _selectedTab, onTabChange: _onTabChange),
+    );
+  }
+
+  Widget _buildBookingsList(List<String> bookings) {
+    final itemCount =
+        bookings.length.clamp(1, 10); // Limits max animation count
+
+    return ListView.builder(
+      itemCount: bookings.length,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      itemBuilder: (context, index) {
+        final animation = Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Interval(
+              (1 / itemCount) * index,
+              1.0,
+              curve: Curves.fastOutSlowIn,
+            ),
+          ),
+        );
+
+        return FadeTransition(
+          opacity: animation,
+          child: BookingWidget(bookingId: bookings[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(
+        color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+      ),
+    );
+  }
+
+  Widget _buildError(String error) {
+    return Center(child: Text("Error: $error"));
   }
 }
 

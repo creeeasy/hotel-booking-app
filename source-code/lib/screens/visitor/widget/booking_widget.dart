@@ -89,7 +89,10 @@ class BookingWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Center(
-                  child: ActionButton(bookingStatus: booking.status),
+                  child: ActionButton(
+                    bookingStatus: booking.status,
+                    bookingId: booking.id,
+                  ),
                 ),
               ],
             ),

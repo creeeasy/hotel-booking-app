@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/services/stream/visitor.dart';
+import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteButton extends StatefulWidget {
@@ -16,7 +16,7 @@ class FavoriteButton extends StatefulWidget {
 }
 
 class _FavoriteButtonState extends State<FavoriteButton> {
-  final visitorStream = VisitorStream();
+  final visitorStream = VisitorFavoritesStream();
 
   bool isLoading = false;
   bool? isFavorite; // Nullable to prevent uninitialized state errors
@@ -28,7 +28,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   }
 
   Future<void> _initializeFavoriteState() async {
-    final favoritesList = await visitorStream.favoritesStream.first;
+    final favoritesList = await VisitorFavoritesStream.favoritesStream.first;
     if (mounted) {
       setState(() {
         isFavorite = favoritesList.contains(widget.hotelId);
@@ -37,14 +37,15 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   }
 
   Future<void> handleFavoriteTap() async {
-    if (isFavorite == null) return; // Prevent actions if state isn't initialized
+    if (isFavorite == null)
+      return; // Prevent actions if state isn't initialized
 
     setState(() => isLoading = true);
 
     if (isFavorite!) {
-      await visitorStream.removeFavorite(widget.hotelId);
+      await VisitorFavoritesStream.removeFavorite(widget.hotelId);
     } else {
-      await visitorStream.addFavorite(widget.hotelId);
+      await VisitorFavoritesStream.addFavorite(widget.hotelId);
     }
 
     if (mounted) {
@@ -86,8 +87,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                   color: isFavorite!
                       ? VisitorThemeColors.deepPurpleAccent
                       : Colors.grey,
-                  semanticLabel:
-                      isFavorite! ? "Remove from favorites" : "Add to favorites",
+                  semanticLabel: isFavorite!
+                      ? "Remove from favorites"
+                      : "Add to favorites",
                 ),
         ),
       ),

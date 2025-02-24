@@ -72,6 +72,22 @@ class Booking {
     }
   }
 
+  static Future<bool> cancelBooking(String bookingId) async {
+    log(bookingId);
+    try {
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .update({
+        'status': BookingStatus.cancelled.name,
+      });
+      return true;
+    } catch (e) {
+      log('Error canceling booking: $e');
+      return false;
+    }
+  }
+
   static Future<List<Booking>> getBookingsByUser(String visitorId) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance

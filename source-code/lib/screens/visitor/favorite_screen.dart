@@ -1,10 +1,7 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/models/Visitor.dart';
-import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:fatiel/widgets/hotel_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FavoritePage extends StatefulWidget {
   const FavoritePage({super.key});
@@ -19,11 +16,12 @@ class _FavoritePageState extends State<FavoritePage>
 
   @override
   void initState() {
+    super.initState();
     animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    super.initState();
+    VisitorFavoritesStream.listenToFavorites();
   }
 
   @override
@@ -34,71 +32,64 @@ class _FavoritePageState extends State<FavoritePage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        final currentUser = state.currentUser as Visitor;
+    return StreamBuilder<List<String>>(
+      stream: VisitorFavoritesStream.favoritesStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+              child: CircularProgressIndicator(
+            color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+          ));
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return _buildNoFavoritesUI();
+        }
 
-        return FutureBuilder<List<String>>(
-          future: Visitor.getUserFavorites(currentUser.id),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                  child: CircularProgressIndicator(
-                color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
-              ));
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return _buildNoFavoritesUI();
-            }
+        final List<String> favorites = snapshot.data!;
 
-            final List<String> favorites = snapshot.data!;
-
-            return SafeArea(
-              child: Scaffold(
-                backgroundColor: VisitorThemeColors.whiteColor,
-                appBar: AppBar(
-                  backgroundColor: VisitorThemeColors.whiteColor,
-                  elevation: 0,
-                  centerTitle: true,
-                  title: const Text(
-                    'Favorites',
-                    style: TextStyle(
-                      color: VisitorThemeColors.blackColor,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-                body: ListView.builder(
-                  itemCount: favorites.length,
-                  padding: const EdgeInsets.only(top: 8),
-                  itemBuilder: (context, index) {
-                    final int count =
-                        favorites.length > 10 ? 10 : favorites.length;
-                    final Animation<double> animation = Tween<double>(
-                      begin: 0.0,
-                      end: 1.0,
-                    ).animate(
-                      CurvedAnimation(
-                        parent: animationController,
-                        curve: Interval((1 / count) * index, 1.0,
-                            curve: Curves.fastOutSlowIn),
-                      ),
-                    );
-                    animationController.forward();
-
-                    return HotelRowOneWidget(
-                      hotelId: favorites[index],
-                      animation: animation,
-                      animationController: animationController,
-                    );
-                  },
+        return SafeArea(
+          child: Scaffold(
+            backgroundColor: VisitorThemeColors.whiteColor,
+            appBar: AppBar(
+              backgroundColor: VisitorThemeColors.whiteColor,
+              elevation: 0,
+              centerTitle: true,
+              title: const Text(
+                'Favorites',
+                style: TextStyle(
+                  color: VisitorThemeColors.blackColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
               ),
-            );
-          },
+            ),
+            body: ListView.builder(
+              itemCount: favorites.length,
+              padding: const EdgeInsets.only(top: 8),
+              itemBuilder: (context, index) {
+                final int count = favorites.length > 10 ? 10 : favorites.length;
+                final Animation<double> animation = Tween<double>(
+                  begin: 0.0,
+                  end: 1.0,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animationController,
+                    curve: Interval((1 / count) * index, 1.0,
+                        curve: Curves.fastOutSlowIn),
+                  ),
+                );
+                animationController.forward();
+
+                return HotelRowOneWidget(
+                  hotelId: favorites[index],
+                  animation: animation,
+                  animationController: animationController,
+                );
+              },
+            ),
+          ),
         );
       },
     );

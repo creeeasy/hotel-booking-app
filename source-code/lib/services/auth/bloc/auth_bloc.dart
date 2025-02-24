@@ -1,6 +1,8 @@
 import 'package:fatiel/enum/user_role.dart';
 import 'package:fatiel/models/Hotel.dart';
 import 'package:fatiel/models/Visitor.dart';
+import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
+import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/services/auth/auth_provider.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -134,6 +136,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               user: authenticatedUser as Hotel,
             ));
           } else {
+            VisitorBookingsStream.listenToBookings(null);
+            VisitorFavoritesStream.listenToFavorites();
+
             emit(AuthStateVisitorLoggedIn(
               isLoading: false,
               user: authenticatedUser as Visitor,
@@ -172,6 +177,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               user: authenticatedUser as Hotel,
             ));
           } else {
+            VisitorBookingsStream.listenToBookings(null);
+            VisitorFavoritesStream.listenToFavorites();
+
             emit(AuthStateVisitorLoggedIn(
               isLoading: false,
               user: authenticatedUser as Visitor,
