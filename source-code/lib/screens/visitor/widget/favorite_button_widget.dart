@@ -1,16 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/services/stream/visitor.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteButton extends StatefulWidget {
-  final Future<void> Function() onTap;
-  final bool isFavorite;
-
+  final String hotelId;
   const FavoriteButton({
     Key? key,
-    required this.onTap,
-    required this.isFavorite,
+    required this.hotelId,
   }) : super(key: key);
 
   @override
@@ -18,26 +16,41 @@ class FavoriteButton extends StatefulWidget {
 }
 
 class _FavoriteButtonState extends State<FavoriteButton> {
+  final visitorStream = VisitorStream();
+
   bool isLoading = false;
-  late bool isFavorite;
+  bool? isFavorite; // Nullable to prevent uninitialized state errors
 
   @override
   void initState() {
     super.initState();
-    isFavorite = widget.isFavorite;
+    _initializeFavoriteState();
   }
 
-  Future<void> triggerClick() async {
-    if (isLoading) return;
+  Future<void> _initializeFavoriteState() async {
+    final favoritesList = await visitorStream.favoritesStream.first;
+    if (mounted) {
+      setState(() {
+        isFavorite = favoritesList.contains(widget.hotelId);
+      });
+    }
+  }
+
+  Future<void> handleFavoriteTap() async {
+    if (isFavorite == null) return; // Prevent actions if state isn't initialized
 
     setState(() => isLoading = true);
 
-    await widget.onTap();
+    if (isFavorite!) {
+      await visitorStream.removeFavorite(widget.hotelId);
+    } else {
+      await visitorStream.addFavorite(widget.hotelId);
+    }
 
     if (mounted) {
       setState(() {
+        isFavorite = !isFavorite!;
         isLoading = false;
-        isFavorite = !isFavorite;
       });
     }
   }
@@ -46,7 +59,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(32.0),
-      onTap: isLoading ? null : triggerClick,
+      onTap: (isLoading || isFavorite == null) ? null : handleFavoriteTap,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: AnimatedSwitcher(
@@ -55,9 +68,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
             scale: animation,
             child: widget,
           ),
-          child: isLoading
+          child: isFavorite == null
               ? SizedBox(
-                  key: ValueKey<bool>(isLoading),
+                  key: ValueKey<bool?>(isFavorite),
                   height: 24,
                   width: 24,
                   child: CircularProgressIndicator(
@@ -68,13 +81,13 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                   ),
                 )
               : Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  key: ValueKey<bool>(isFavorite),
-                  color: isFavorite
+                  isFavorite! ? Icons.favorite : Icons.favorite_border,
+                  key: ValueKey<bool?>(isFavorite),
+                  color: isFavorite!
                       ? VisitorThemeColors.deepPurpleAccent
                       : Colors.grey,
                   semanticLabel:
-                      isFavorite ? "Remove from favorites" : "Add to favorites",
+                      isFavorite! ? "Remove from favorites" : "Add to favorites",
                 ),
         ),
       ),

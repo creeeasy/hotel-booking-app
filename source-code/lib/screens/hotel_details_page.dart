@@ -1,14 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/models/Visitor.dart';
 import 'package:fatiel/models/facility_icons.dart';
 import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/utils/rating_utils.dart';
 import 'package:fatiel/widgets/image_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -307,6 +306,82 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                     ),
                   ],
                 ),
+                SizedBox(height: 20),
+                Text(
+                  "Ratings",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: VisitorThemeColors.deepPurpleAccent,
+                  ),
+                ),
+                SizedBox(height: 8),
+                hotel.ratings.isEmpty
+                    ? Text(
+                        'No Reviews available',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: VisitorThemeColors.blackColor,
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 8),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: VisitorThemeColors
+                                  .whiteColor, // White background for contrast
+                              border: Border.all(
+                                  color: VisitorThemeColors.greyColor,
+                                  width: 1.5),
+                              borderRadius: BorderRadius.circular(
+                                  12), // Slightly rounded edges
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black
+                                      .withOpacity(0.1), // Subtle shadow
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.star,
+                                        color: Colors.amber,
+                                        size: 28), // More vibrant star color
+                                    SizedBox(width: 6),
+                                    Text(
+                                      getTotalRating(hotel.ratings)
+                                          .toStringAsFixed(1),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: VisitorThemeColors.blackColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  '${hotel.ratings.length} Reviews',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: VisitorThemeColors.deepPurpleAccent,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                 SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -383,113 +458,119 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        final favorites = (state.currentUser as Visitor).favorites ?? [];
-        return Column(
-          children: [
-            SizedBox(
-              height: 400,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: widget.images.isNotEmpty ? widget.images.length : 1,
-                onPageChanged: (index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    child: Hero(
-                      tag: widget.images.isEmpty
-                          ? UniqueKey().toString()
-                          : widget.images[index],
-                      child: Stack(
-                        children: [
-                          widget.images.isEmpty
-                              ? ImageErrorWidget(title: "No image available")
-                              : CachedNetworkImage(
-                                  imageUrl: widget.images[index],
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error,
-                                          color: Colors.red),
-                                ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: VisitorThemeColors.whiteColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
-                                  transitionBuilder: (Widget child,
-                                      Animation<double> animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: ScaleTransition(
-                                        scale: animation,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: FavoriteButton(
-                                    onTap: () async {
-                                      print("object");
-                                      await handleFavoriteTap(
-                                          (state.currentUser as Visitor).id);
-                                    },
-                                    isFavorite:
-                                        (favorites).contains(favorites[index]),
+    return Column(
+      children: [
+        SizedBox(
+          height: 400,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.images.isNotEmpty ? widget.images.length : 1,
+            onPageChanged: (index) {
+              setState(() {
+                currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                child: Hero(
+                  tag: widget.images.isEmpty
+                      ? UniqueKey().toString()
+                      : widget.images[index],
+                  child: Stack(
+                    children: [
+                      widget.images.isEmpty
+                          ? ImageErrorWidget(title: "No image available")
+                          : Image.network(
+                              widget.images[index],
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            (loadingProgress
+                                                    .expectedTotalBytes ??
+                                                1)
+                                        : null,
                                   ),
-                                ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.error,
+                                      color: Colors.red, size: 48),
+                            ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: VisitorThemeColors.whiteColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              transitionBuilder:
+                                  (Widget child, Animation<double> animation) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: ScaleTransition(
+                                    scale: animation,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: FavoriteButton(
+                                hotelId: widget.hotelId,
                               ),
                             ),
                           ),
-                          Positioned(
-                            top: 8,
-                            left: 8,
-                            child: GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: const Icon(
-                                Icons.chevron_left,
-                                color: Colors.white,
-                                size:
-                                    32, // Slightly increased for better visibility
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (widget.images.isNotEmpty)
-              ThumbnailList(
-                images: widget.images,
-                currentIndex: currentIndex,
-                onThumbnailTap: (index) {
-                  if (currentIndex != index) {
-                    setState(() {
-                      currentIndex = index;
-                    });
-                    _pageController.jumpToPage(index);
-                  }
-                },
-              ),
-          ],
-        );
-      },
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: const Icon(
+                            Icons.chevron_left,
+                            color: Colors.white,
+                            size:
+                                32, // Slightly increased for better visibility
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (widget.images.isNotEmpty)
+          ThumbnailList(
+            images: widget.images,
+            currentIndex: currentIndex,
+            onThumbnailTap: (index) {
+              if (currentIndex != index) {
+                setState(() {
+                  currentIndex = index;
+                });
+                _pageController.jumpToPage(index);
+              }
+            },
+          ),
+      ],
     );
   }
 }
@@ -512,35 +593,65 @@ class ThumbnailList extends StatelessWidget {
       height: 80,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: images.length,
+        itemCount: images.isNotEmpty ? images.length : 1, // Prevents index error
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Directly navigate to the selected image
-              onThumbnailTap(index);
+              if (images.isNotEmpty) {
+                onThumbnailTap(index);
+              }
             },
             child: Container(
-              margin: EdgeInsets.only(right: 10),
+              margin: const EdgeInsets.only(right: 10),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: currentIndex == index
-                      ? VisitorThemeColors
-                          .deepPurpleAccent // Highlight border for the current image
+                  color: images.isNotEmpty && currentIndex == index
+                      ? VisitorThemeColors.deepPurpleAccent
                       : Colors.transparent,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  if (images.isNotEmpty && currentIndex == index)
+                    BoxShadow(
+                      color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.3),
+                      blurRadius: 6,
+                      spreadRadius: 2,
+                    ),
+                ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  imageUrl: images[index],
-                  fit: BoxFit.cover,
-                  height: 64,
-                  width: 64,
-                  errorWidget: (context, url, error) =>
-                      const Icon(Icons.error, color: Colors.red),
-                ),
+                child: images.isNotEmpty
+                    ? Image.network(
+                        images[index],
+                        fit: BoxFit.cover,
+                        height: 64,
+                        width: 64,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 64,
+                            width: 64,
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 64,
+                          width: 64,
+                          color: Colors.grey.shade300,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.error, color: Colors.red, size: 32),
+                        ),
+                      )
+                    : Container(
+                        height: 64,
+                        width: 64,
+                        color: Colors.grey.shade300,
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.image_not_supported, size: 32),
+                      ),
               ),
             ),
           );

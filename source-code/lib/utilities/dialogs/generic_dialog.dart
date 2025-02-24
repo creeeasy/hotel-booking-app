@@ -1,6 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();
 
@@ -21,7 +22,7 @@ Future<T?> showGenericDialog<T>({
         ),
         title: Text(
           title,
-          style: GoogleFonts.poppins(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: ThemeColors.blackColor,
@@ -29,7 +30,7 @@ Future<T?> showGenericDialog<T>({
         ),
         content: Text(
           content,
-          style: GoogleFonts.poppins(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
             color: ThemeColors.blackColor,
@@ -43,7 +44,7 @@ Future<T?> showGenericDialog<T>({
             },
             style: TextButton.styleFrom(
               foregroundColor: ThemeColors.primaryColor,
-              textStyle: GoogleFonts.poppins(
+              textStyle: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),

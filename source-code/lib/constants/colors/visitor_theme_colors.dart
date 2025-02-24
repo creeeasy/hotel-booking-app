@@ -12,4 +12,17 @@ class VisitorThemeColors {
   static const Color successColor = Color(0xFF81C784);
   static const Color deepPurpleAccent = Color(0xFF7E57C2);
   static const Color pinkAccent = Color(0xFFF06292);
+  static const Color cancelBorderColor = Color(0xFFFF9800); // Orange
+  static const Color cancelTextColor = Color(0xFFFF9800);
+  static const Color cancelBackground = Color(0xFFFFFFFF);
+
+  static const Color viewBookingBackground = Color(0xFF00897B); // Teal
+  static const Color viewBookingTextColor = Color(0xFFFFFFFF);
+
+  static const Color bookingCompletedBackground =
+      Color(0xFF80CBC4); // Soft Teal
+  static const Color bookingCompletedTextColor = Color(0xFF00796B);
+
+  static const Color cancelledTextColor =
+      Color(0xFFE53935); // Strong Red for cancellations
 }

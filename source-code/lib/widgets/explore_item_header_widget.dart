@@ -1,5 +1,4 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/constants/routes/routes.dart';
 import 'package:flutter/material.dart';
 
 class ExploreItemHeaderWidget extends StatelessWidget {

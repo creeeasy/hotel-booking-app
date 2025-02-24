@@ -152,6 +152,22 @@ class Hotel extends AuthUser {
     }
   }
 
+  static Future<List<Hotel>> searchForHotel(String query) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('hotels')
+          .where('searchKeywords', arrayContains: query.toLowerCase())
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Hotel.fromFirestore(doc, doc.id))
+          .toList();
+    } catch (e) {
+      log('Error searching for hotel: $e');
+      return [];
+    }
+  }
+
   static Future<bool> addHotelToFav({
     required String hotelId,
     required String visitorId,

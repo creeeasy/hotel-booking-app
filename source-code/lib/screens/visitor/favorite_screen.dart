@@ -90,14 +90,9 @@ class _FavoritePageState extends State<FavoritePage>
                     animationController.forward();
 
                     return HotelRowOneWidget(
-                      isFavorite: favorites.contains(favorites[index]),
-                      visitorId: currentUser.id,
                       hotelId: favorites[index],
                       animation: animation,
                       animationController: animationController,
-                      onRemoveFromFavorites: () {
-                        setState(() {});
-                      },
                     );
                   },
                 ),

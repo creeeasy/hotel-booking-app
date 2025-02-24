@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -6,7 +8,6 @@ import 'package:fatiel/utilities/dialogs/error_dialog.dart';
 import 'package:fatiel/utilities/dialogs/password_reset_email_sent_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 
 class ForgotPasswordView extends StatefulWidget {
@@ -106,7 +107,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 // Instruction text
                 Text(
                   'Enter the email associated with your account, and we\'ll send you a link to reset your password.',
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                     color: ThemeColors.blackColor,
@@ -162,7 +163,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       ),
                       child: Text(
                         'Send reset link',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: ThemeColors.whiteColor,

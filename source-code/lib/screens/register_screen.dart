@@ -6,7 +6,6 @@ import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RegisterView extends StatefulWidget {
   @override
@@ -137,7 +136,7 @@ class _RegisterViewState extends State<RegisterView> {
                     // RichText for "Already have an account? Login"
                     RichText(
                       text: TextSpan(
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           color: ThemeColors
                               .primaryColor, // Color for the normal text
                           fontWeight: FontWeight.w500,

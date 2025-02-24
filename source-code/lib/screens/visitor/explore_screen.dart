@@ -1,17 +1,11 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'dart:developer';
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
-import 'package:fatiel/enum/TopBarType.dart';
 import 'package:fatiel/models/Hotel.dart';
 import 'package:fatiel/models/Visitor.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_section_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
-import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/hotel/explore_city_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +23,6 @@ class ExploreView extends StatefulWidget {
 class _ExploreViewState extends State<ExploreView>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  TopBarType selectedTab = TopBarType.Popular;
 
   @override
   void initState() {
@@ -80,20 +73,12 @@ class _ExploreViewState extends State<ExploreView>
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.red),
-                      onPressed: () async {
-                        final shouldLogout = await showGenericDialog<bool>(
-                          context: context,
-                          title: 'Log out',
-                          content: 'Are you sure you want to log out?',
-                          optionBuilder: () =>
-                              {'Cancel': false, 'Log Out': true},
-                        ).then((value) => value ?? false);
-
-                        if (shouldLogout) {
-                          context.read<AuthBloc>().add(const AuthEventLogOut());
-                        }
+                      icon: Icon(Icons.search,
+                          color: VisitorThemeColors.primaryColor, size: 28),
+                      onPressed: () {
+                        Navigator.pushNamed(context, searchHotelViewRoute);
                       },
+                      tooltip: 'Search',
                     ),
                   ],
                 ),
@@ -162,3 +147,16 @@ class _ExploreViewState extends State<ExploreView>
     );
   }
 }
+/*
+ final shouldLogout = await showGenericDialog<bool>(
+                          context: context,
+                          title: 'Log out',
+                          content: 'Are you sure you want to log out?',
+                          optionBuilder: () =>
+                              {'Cancel': false, 'Log Out': true},
+                        ).then((value) => value ?? false);
+
+                        if (shouldLogout) {
+                          context.read<AuthBloc>().add(const AuthEventLogOut());
+                        }
+ */

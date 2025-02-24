@@ -13,37 +13,23 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HotelRowOneWidget extends StatefulWidget {
-  const HotelRowOneWidget(
-      {super.key,
-      required this.visitorId,
-      this.isShowDate = false,
-      required this.hotelId,
-      this.animationController,
-      required this.isFavorite,
-      this.animation,
-      this.onRemoveFromFavorites});
-  final String visitorId;
-  final bool isFavorite;
+  const HotelRowOneWidget({
+    super.key,
+    this.isShowDate = false,
+    required this.hotelId,
+    this.animationController,
+    this.animation,
+  });
   final bool isShowDate;
   final String hotelId;
   final AnimationController? animationController;
   final Animation? animation;
-  final VoidCallback? onRemoveFromFavorites;
   @override
   State<HotelRowOneWidget> createState() => _HotelRowOneWidgetState();
 }
 
 class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
   bool isRemoved = false;
-  Future<void> handleFavoriteTap() async {
-    await Hotel.removeHotelFromFav(
-      hotelId: widget.hotelId,
-      visitorId: widget.visitorId,
-    );
-    if (widget.onRemoveFromFavorites != null) {
-      widget.onRemoveFromFavorites!();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,11 +254,7 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                                 );
                                               },
                                               child: FavoriteButton(
-                                                isFavorite: widget.isFavorite,
-                                                onTap: () async {
-                                                  await handleFavoriteTap();
-                                                },
-                                              )),
+                                                  hotelId: widget.hotelId)),
                                         ),
                                       ),
                                     ),

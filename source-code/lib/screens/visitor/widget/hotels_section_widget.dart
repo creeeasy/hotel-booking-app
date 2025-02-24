@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
@@ -12,7 +11,6 @@ import 'package:fatiel/utils/rating_utils.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/hotel/network_image_widget.dart';
 import 'package:fatiel/widgets/image_error_widget.dart';
-import 'package:fatiel/widgets/search_input_widget.dart';
 import 'package:fatiel/widgets/tab_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/widgets/explore_item_header_widget.dart';
@@ -56,9 +54,6 @@ class _ExploreSectionWidgetState extends State<ExploreSectionWidget>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SearchInput(
-          hintText: "Search for hotels",
-        ),
         const SizedBox(height: 20),
         TripsTabView(
           selectedTab: selectedTab,
@@ -119,7 +114,6 @@ class _ExploreSectionWidgetState extends State<ExploreSectionWidget>
                               ),
                               child: InkWell(
                                 onTap: () {
-                                  log( hotel.toString());
                                   Navigator.of(context).pushNamed(
                                     hotelDetailsRoute,
                                     arguments: hotel.id,
