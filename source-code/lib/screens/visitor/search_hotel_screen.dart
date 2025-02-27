@@ -3,7 +3,7 @@
 import 'dart:developer';
 
 import 'package:fatiel/enum/wilaya.dart';
-import 'package:fatiel/models/Hotel.dart';
+import 'package:fatiel/models/hotel.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 
@@ -23,7 +23,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
       setState(() => searchResults = []);
       return;
     }
-    final hotels = await Hotel.searchForHotel(query);
+    final hotels = await Hotel.findHotelsByKeyword(query);
     log(hotels.length.toString());
     setState(() => searchResults = hotels);
   }

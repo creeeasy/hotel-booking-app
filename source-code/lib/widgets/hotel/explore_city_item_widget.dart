@@ -36,14 +36,19 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final height = constraints.maxHeight;
+        final width = constraints.maxWidth;
 
-        // Scale dimensions based on maxHeight = 130
-        final titleFontSize = height * 0.15;
-        final hotelCountFontSize = height * 0.10;
+        // Scale elements based on height (Adaptive UI)
+        final titleFontSize = height * 0.16;
+        final hotelCountFontSize = height * 0.12;
         final padding = height * 0.08;
-        final borderRadius = height * 0.12;
-        final shadowBlur = height * 0.05;
-        final imageHeight = height * 0.75;
+        final borderRadius = height * 0.15;
+        final shadowBlur = height * 0.06;
+        final imageHeight = height * 0.78;
+        final hotelBadgePadding = EdgeInsets.symmetric(
+          vertical: height * 0.03,
+          horizontal: width * 0.04,
+        );
 
         return GestureDetector(
           onTap: widget.onTap,
@@ -53,13 +58,6 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
             decoration: BoxDecoration(
               color: VisitorThemeColors.whiteColor,
               borderRadius: BorderRadius.circular(borderRadius),
-              boxShadow: [
-                BoxShadow(
-                  color: VisitorThemeColors.greyColor.withOpacity(0.3),
-                  blurRadius: shadowBlur,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
             margin:
                 EdgeInsets.symmetric(vertical: padding, horizontal: padding),
@@ -76,23 +74,25 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  // Gradient Overlay for text visibility
+
+                  // Gradient Overlay for better text readability
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          VisitorThemeColors.blackColor.withOpacity(0.6),
-                          VisitorThemeColors.blackColor.withOpacity(0.0),
+                          Colors.black.withOpacity(0.6),
+                          Colors.transparent,
                         ],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                       ),
                     ),
                   ),
-                  // City Name with adjusted font size
+
+                  // City Name with shadow and enhanced readability
                   Positioned(
                     left: padding,
-                    bottom: padding,
+                    bottom: padding * 1.2,
                     child: Text(
                       hotel.name,
                       style: TextStyle(
@@ -102,38 +102,30 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
                         shadows: [
                           Shadow(
                             blurRadius: shadowBlur,
-                            color: Colors.black38,
-                            offset: const Offset(1, 1),
+                            color: Colors.black54,
+                            offset: const Offset(1.5, 1.5),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  // Hotel Count with smaller dimensions
+
+                  // Hotel Count Badge (Enhanced UI)
                   Positioned(
                     top: padding,
                     right: padding,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: padding * 0.4,
-                        horizontal: padding,
-                      ),
+                      padding: hotelBadgePadding,
                       decoration: BoxDecoration(
-                        color: VisitorThemeColors.primaryColor.withOpacity(0.9),
+                        color:
+                            VisitorThemeColors.primaryColor.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(borderRadius * 0.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: shadowBlur,
-                            offset: const Offset(1, 1),
-                          ),
-                        ],
                       ),
                       child: Text(
                         '${widget.count} Hotels',
                         style: TextStyle(
                           color: VisitorThemeColors.whiteColor,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           fontSize: hotelCountFontSize,
                         ),
                       ),

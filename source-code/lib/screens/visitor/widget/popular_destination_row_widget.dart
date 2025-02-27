@@ -36,13 +36,6 @@ class PopularDestinationRowWidget extends StatelessWidget {
                 child: Container(
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: VisitorThemeColors.primaryColor,
-                        offset: Offset(4, 4),
-                        blurRadius: 16,
-                      ),
-                    ],
                   ),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(16.0)),

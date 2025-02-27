@@ -1,16 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/wilaya.dart';
-import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/models/facility_icons.dart';
+import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
+import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utils/rating_utils.dart';
+import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:fatiel/widgets/image_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 
 class HotelDetailsView extends StatefulWidget {
   const HotelDetailsView({super.key});
@@ -28,7 +29,7 @@ class _HotelDetailsViewState extends State<HotelDetailsView> {
   Future<Hotel> initializeHotelData(BuildContext context) async {
     final hotelId = ModalRoute.of(context)?.settings.arguments as String;
     final hotel = await Hotel.getHotelById(hotelId);
-    return hotel;
+    return hotel!;
   }
 
   @override
@@ -39,24 +40,18 @@ class _HotelDetailsViewState extends State<HotelDetailsView> {
               future: initializeHotelData(context),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                      child: SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        VisitorThemeColors.primaryColor,
-                      ),
-                    ),
-                  ));
+                  return CircularProgressIndicatorWidget(
+                    indicatorColor:
+                        VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+                    containerColor: VisitorThemeColors.whiteColor,
+                  );
                 } else if (snapshot.hasError) {
-                  return Scaffold(
-                    body: Center(child: Text('Error: ${snapshot.error}')),
+                  return ErrorWidgetWithRetry(
+                    errorMessage: 'Error: ${snapshot.error}',
                   );
                 } else if (!snapshot.hasData) {
-                  return const Scaffold(
-                    body: Center(child: Text('Hotel not found')),
+                  return NoDataWidget(
+                    message: "No hotel listings found.",
                   );
                 } else {
                   Hotel hotel = snapshot.data!;
@@ -96,7 +91,7 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DetailsImageWithHero(
-                  images: hotel.images ?? [],
+                  images: hotel.images,
                   hotelId: hotel.id,
                 ),
                 SizedBox(height: 8),
@@ -153,103 +148,103 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                   ),
                 ),
                 SizedBox(height: 8),
-                hotel.facilities != null && hotel.facilities!.isNotEmpty
-                    ? Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: VisitorThemeColors.whiteColor,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: VisitorThemeColors.blackColor
-                                  .withOpacity(0.1),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Container(
-                          width: double.infinity, // Full width
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: VisitorThemeColors.whiteColor,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: VisitorThemeColors.blackColor
-                                    .withOpacity(0.1),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: SingleChildScrollView(
-                            physics: BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: hotel.facilities!.map((item) {
-                                var facility = FacilityIcons.getFacility(item);
-                                return Container(
-                                  width: 80,
-                                  margin: EdgeInsets.symmetric(horizontal: 8),
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: VisitorThemeColors.accentColor
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: VisitorThemeColors
-                                              .deepPurpleAccent
-                                              .withOpacity(0.2),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          facility.svgPath,
-                                          width: 30,
-                                          height: 30,
-                                          color: VisitorThemeColors
-                                              .deepPurpleAccent,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        facility.name,
-                                        textAlign: TextAlign.center,
-                                        maxLines:
-                                            2, // Ensures it wraps if needed
-                                        overflow: TextOverflow
-                                            .ellipsis, // Handles long text
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: VisitorThemeColors
-                                              .deepPurpleAccent,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Text(
-                        "No facilities available",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: VisitorThemeColors.blackColor,
-                        ),
-                      ),
+                // hotel.facilities != null && hotel.facilities!.isNotEmpty
+                //     ? Container(
+                //         padding: EdgeInsets.symmetric(vertical: 10),
+                //         decoration: BoxDecoration(
+                //           color: VisitorThemeColors.whiteColor,
+                //           borderRadius: BorderRadius.circular(10),
+                //           boxShadow: [
+                //             BoxShadow(
+                //               color: VisitorThemeColors.blackColor
+                //                   .withOpacity(0.1),
+                //               spreadRadius: 2,
+                //               blurRadius: 5,
+                //               offset: Offset(0, 3),
+                //             ),
+                //           ],
+                //         ),
+                //         child: Container(
+                //           width: double.infinity, // Full width
+                //           padding: EdgeInsets.symmetric(vertical: 10),
+                //           decoration: BoxDecoration(
+                //             color: VisitorThemeColors.whiteColor,
+                //             borderRadius: BorderRadius.circular(10),
+                //             boxShadow: [
+                //               BoxShadow(
+                //                 color: VisitorThemeColors.blackColor
+                //                     .withOpacity(0.1),
+                //                 spreadRadius: 2,
+                //                 blurRadius: 5,
+                //                 offset: Offset(0, 3),
+                //               ),
+                //             ],
+                //           ),
+                //           child: SingleChildScrollView(
+                //             physics: BouncingScrollPhysics(),
+                //             scrollDirection: Axis.horizontal,
+                //             child: Row(
+                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //               children: hotel.facilities!.map((item) {
+                //                 var facility = FacilityIcons.getFacility(item);
+                //                 return Container(
+                //                   width: 80,
+                //                   margin: EdgeInsets.symmetric(horizontal: 8),
+                //                   padding: EdgeInsets.all(10),
+                //                   decoration: BoxDecoration(
+                //                     color: VisitorThemeColors.accentColor
+                //                         .withOpacity(0.1),
+                //                     borderRadius: BorderRadius.circular(10),
+                //                   ),
+                //                   child: Column(
+                //                     mainAxisAlignment: MainAxisAlignment.center,
+                //                     children: [
+                //                       Container(
+                //                         padding: EdgeInsets.all(12),
+                //                         decoration: BoxDecoration(
+                //                           color: VisitorThemeColors
+                //                               .deepPurpleAccent
+                //                               .withOpacity(0.2),
+                //                           shape: BoxShape.circle,
+                //                         ),
+                //                         child: SvgPicture.asset(
+                //                           facility.svgPath,
+                //                           width: 30,
+                //                           height: 30,
+                //                           color: VisitorThemeColors
+                //                               .deepPurpleAccent,
+                //                         ),
+                //                       ),
+                //                       SizedBox(height: 8),
+                //                       Text(
+                //                         facility.name,
+                //                         textAlign: TextAlign.center,
+                //                         maxLines:
+                //                             2, // Ensures it wraps if needed
+                //                         overflow: TextOverflow
+                //                             .ellipsis, // Handles long text
+                //                         style: TextStyle(
+                //                           fontSize: 12,
+                //                           fontWeight: FontWeight.w600,
+                //                           color: VisitorThemeColors
+                //                               .deepPurpleAccent,
+                //                         ),
+                //                       ),
+                //                     ],
+                //                   ),
+                //                 );
+                //               }).toList(),
+                //             ),
+                //           ),
+                //         ),
+                //       )
+                //     : Text(
+                //         "No facilities available",
+                //         style: TextStyle(
+                //           fontSize: 16,
+                //           color: VisitorThemeColors.blackColor,
+                //         ),
+                //       ),
                 SizedBox(height: 20),
                 Text(
                   "Contact Info",
@@ -275,35 +270,6 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                     fontWeight: FontWeight.bold,
                     color: VisitorThemeColors.deepPurpleAccent,
                   ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.access_time,
-                        color: VisitorThemeColors.pinkAccent, size: 20),
-                    SizedBox(width: 6),
-                    Text(
-                      "Check-In: ${hotel.checkInTime ?? 'N/A'}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: VisitorThemeColors.blackColor,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.access_time,
-                        color: VisitorThemeColors.pinkAccent, size: 20),
-                    SizedBox(width: 6),
-                    Text(
-                      "Check-Out: ${hotel.checkOutTime ?? 'N/A'}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: VisitorThemeColors.blackColor,
-                      ),
-                    ),
-                  ],
                 ),
                 SizedBox(height: 20),
                 Text(
@@ -338,14 +304,6 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                                   width: 1.5),
                               borderRadius: BorderRadius.circular(
                                   12), // Slightly rounded edges
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black
-                                      .withOpacity(0.1), // Subtle shadow
-                                  blurRadius: 6,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,9 +401,10 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
   late PageController _pageController;
   int currentIndex = 0;
   Future<void> handleFavoriteTap(String visitorId) async {
-    await Hotel.addHotelToFav(
+    await Hotel.toggleFavorite(
       hotelId: widget.hotelId,
       visitorId: visitorId,
+      isAdding: true,
     );
   }
 
@@ -585,15 +544,6 @@ class ThumbnailList extends StatelessWidget {
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  if (images.isNotEmpty && currentIndex == index)
-                    BoxShadow(
-                      color:
-                          VisitorThemeColors.deepPurpleAccent.withOpacity(0.3),
-                      blurRadius: 6,
-                      spreadRadius: 2,
-                    ),
-                ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),

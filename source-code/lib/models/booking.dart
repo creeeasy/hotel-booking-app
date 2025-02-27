@@ -56,38 +56,6 @@ class Booking {
     };
   }
 
-  static Future<Booking?> getBookingById(String bookingId) async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('bookings')
-          .doc(bookingId)
-          .get();
-
-      if (!doc.exists) return null;
-
-      return Booking.fromFirestore(doc);
-    } catch (e) {
-      log('Error fetching booking: $e');
-      return null;
-    }
-  }
-
-  static Future<bool> cancelBooking(String bookingId) async {
-    log(bookingId);
-    try {
-      await FirebaseFirestore.instance
-          .collection('bookings')
-          .doc(bookingId)
-          .update({
-        'status': BookingStatus.cancelled.name,
-      });
-      return true;
-    } catch (e) {
-      log('Error canceling booking: $e');
-      return false;
-    }
-  }
-
   static Future<List<Booking>> getBookingsByUser(String visitorId) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
@@ -102,7 +70,39 @@ class Booking {
       return [];
     }
   }
+
+  static Future<Booking> getBookingById(String bookingId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .get();
+
+      return Booking.fromFirestore(doc);
+    } catch (e) {
+      log('Error fetching booking: $e');
+      rethrow;
+    }
+  }
 }
+
+
+  // static Future<bool> cancelBooking(String bookingId) async {
+  //   log(bookingId);
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection('bookings')
+  //         .doc(bookingId)
+  //         .update({
+  //       'status': BookingStatus.cancelled.name,
+  //     });
+  //     return true;
+  //   } catch (e) {
+  //     log('Error canceling booking: $e');
+  //     return false;
+  //   }
+  // }
+
 
   // static Future<List<Booking>> getBookingsByHotel(String hotelId) async {
   //   try {

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -28,60 +30,53 @@ class ExploreItemHeaderWidget extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return FadeTransition(
           opacity: animation!,
-          child: Transform(
-            transform: Matrix4.translationValues(
-              0.0,
-              30 * (1.0 - animation!.value),
-              0.0,
-            ),
+          child: Transform.translate(
+            offset: Offset(0, 30 * (1.0 - animation!.value)),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Row(
-                children: <Widget>[
+                children: [
                   Expanded(
                     child: Text(
                       "$titleTxt ($hotelsCount)",
-                      textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
                         color: VisitorThemeColors.primaryColor,
                       ),
                     ),
                   ),
-                  isLeftButton && (hotelsCount ?? 0) > 0
-                      ? InkWell(
+                  if (isLeftButton && (hotelsCount ?? 0) > 0)
+                    InkWell(
+                      borderRadius: BorderRadius.circular(8.0),
+                      onTap: click,
+                      splashColor: VisitorThemeColors.accentColor,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 8),
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
-                          onTap: click,
-                          splashColor: VisitorThemeColors.accentColor,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  subTxt,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: VisitorThemeColors.secondaryColor,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 38,
-                                  width: 26,
-                                  child: Icon(
-                                    Icons.arrow_forward,
-                                    size: 18,
-                                    color: VisitorThemeColors.secondaryColor,
-                                  ),
-                                ),
-                              ],
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              subTxt,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: VisitorThemeColors.secondaryColor,
+                              ),
                             ),
-                          ),
-                        )
-                      : const SizedBox()
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 18,
+                              color: VisitorThemeColors.secondaryColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

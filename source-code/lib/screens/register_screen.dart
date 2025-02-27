@@ -48,13 +48,6 @@ class _RegisterViewState extends State<RegisterView> {
                   ],
                 ),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 3,
-                    blurRadius: 15,
-                  ),
-                ],
               ),
               child: Padding(
                 padding:

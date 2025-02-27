@@ -1,6 +1,5 @@
-import 'package:fatiel/enum/user_role.dart';
-import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/models/Visitor.dart';
+import 'package:fatiel/models/hotel.dart';
+
 import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -130,18 +129,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(const AuthStateNeedsVerification(isLoading: false));
         } else {
           final authenticatedUser = await provider.getUser();
-          if (authenticatedUser!.role == UserRole.hotel) {
-            emit(AuthStateHotelLoggedIn(
+          if (authenticatedUser is Hotel) {
+            return emit(AuthStateHotelLoggedIn(
               isLoading: false,
-              user: authenticatedUser as Hotel,
+              user: authenticatedUser,
             ));
           } else {
             VisitorBookingsStream.listenToBookings(null);
             VisitorFavoritesStream.listenToFavorites();
 
-            emit(AuthStateVisitorLoggedIn(
+            return emit(AuthStateVisitorLoggedIn(
               isLoading: false,
-              user: authenticatedUser as Visitor,
+              user: authenticatedUser,
             ));
           }
         }
@@ -171,18 +170,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLoading: false,
           ));
           final authenticatedUser = await provider.getUser();
-          if (authenticatedUser.role == UserRole.hotel) {
-            emit(AuthStateHotelLoggedIn(
+          if (authenticatedUser is Hotel) {
+            return emit(AuthStateHotelLoggedIn(
               isLoading: false,
-              user: authenticatedUser as Hotel,
+              user: authenticatedUser,
             ));
           } else {
             VisitorBookingsStream.listenToBookings(null);
             VisitorFavoritesStream.listenToFavorites();
 
-            emit(AuthStateVisitorLoggedIn(
+            return emit(AuthStateVisitorLoggedIn(
               isLoading: false,
-              user: authenticatedUser as Visitor,
+              user: authenticatedUser,
             ));
           }
         }

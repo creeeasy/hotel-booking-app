@@ -9,6 +9,7 @@ import 'package:fatiel/screens/visitor/favorite_screen.dart';
 import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
+import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +23,6 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/services/auth/firebase_auth_provider.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import "package:fatiel/constants/routes/routes.dart";
 
 void main() {
@@ -68,7 +68,6 @@ class MyApp extends StatelessWidget {
           bookingsViewRoute: (context) => const BookingView(),
           wilayaDetailsViewRoute: (context) => const WilayaDetailsPageView(),
           searchHotelViewRoute: (context) => const SearchHotelView(),
-          bookingDetailsViewRoute: (context) => const BookingDetailsView(),
         },
         home: const SafeArea(child: Traffic()));
   }
@@ -114,7 +113,7 @@ class _TrafficState extends State<Traffic> {
         return const VisitorRegistrationView();
       } else {
         return Scaffold(
-          body: circularProgressIndicatorWidget(),
+          body: CircularProgressIndicatorWidget(),
         );
       }
     }));

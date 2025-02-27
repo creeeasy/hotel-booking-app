@@ -1,6 +1,6 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/models/Visitor.dart';
+import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/screens/visitor/widget/booking_hotel_details_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';

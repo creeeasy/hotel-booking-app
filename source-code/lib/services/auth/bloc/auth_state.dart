@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/models/Visitor.dart';
+import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/visitor.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
 @immutable

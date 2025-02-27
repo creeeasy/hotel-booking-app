@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 
-import '../../../enum/BottomBarType.dart';
+import '../../../enum/bottom_bar_type.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final BottomBarType bottomBarType;

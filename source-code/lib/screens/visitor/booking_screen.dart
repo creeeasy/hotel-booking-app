@@ -2,6 +2,7 @@ import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/screens/visitor/widget/booking_widget.dart';
 import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
+import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:flutter/material.dart';
 
 class BookingView extends StatefulWidget {
@@ -14,7 +15,7 @@ class BookingView extends StatefulWidget {
 class _BookingViewState extends State<BookingView>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  BookingStatus _selectedTab = BookingStatus.pending;
+  late BookingStatus _selectedTab;
 
   @override
   void initState() {
@@ -23,7 +24,7 @@ class _BookingViewState extends State<BookingView>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     )..forward();
-
+    _selectedTab = BookingStatus.pending;
     VisitorBookingsStream.listenToBookings(_selectedTab);
   }
 
@@ -55,7 +56,11 @@ class _BookingViewState extends State<BookingView>
             stream: VisitorBookingsStream.bookingsStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoadingIndicator();
+                return CircularProgressIndicatorWidget(
+                  indicatorColor:
+                      VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+                  containerColor: VisitorThemeColors.whiteColor,
+                );
               }
 
               if (snapshot.hasError) {
@@ -134,14 +139,6 @@ class _BookingViewState extends State<BookingView>
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
-      ),
-    );
-  }
-
   Widget _buildError(String error) {
     return Center(child: Text("Error: $error"));
   }
@@ -171,10 +168,6 @@ Widget _tabView({
           onTap: () => onTabChange(BookingStatus.cancelled),
         ),
       ];
-
-      for (var item in tabItems) {
-        totalWidth += 100; // Approximate width of each tab, adjust if needed
-      }
 
       bool isScrollable = totalWidth > constraints.maxWidth;
 

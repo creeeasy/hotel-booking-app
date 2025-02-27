@@ -1,4 +1,6 @@
 import 'package:fatiel/enum/hotel_entity.dart';
+import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
+import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/screens/visitor/widget/popular_destination_row_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +25,7 @@ class _PopularDestinationListWidgetState
   @override
   void initState() {
     animationController = AnimationController(
-        duration: Duration(milliseconds: 1000), vsync: this);
+        duration: const Duration(milliseconds: 1000), vsync: this);
     super.initState();
   }
 
@@ -39,17 +41,25 @@ class _PopularDestinationListWidgetState
       builder: (BuildContext context, Widget? child) {
         return FadeTransition(
           opacity: widget.animationController!,
-          child: new Transform(
-            transform: new Matrix4.translationValues(
+          child: Transform(
+            transform: Matrix4.translationValues(
                 0.0, 40 * (1.0 - widget.animationController!.value), 0.0),
-            child: Container(
+            child: SizedBox(
               height: 180,
               width: double.infinity,
               child: FutureBuilder(
                 future: getData(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return SizedBox();
+                    return const NoDataWidget(
+                      message:
+                          "No popular destinations available at the moment.",
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return ErrorWidgetWithRetry(
+                      errorMessage: 'Error: ${snapshot.error}',
+                    );
                   } else {
                     return ListView.builder(
                       padding: const EdgeInsets.only(

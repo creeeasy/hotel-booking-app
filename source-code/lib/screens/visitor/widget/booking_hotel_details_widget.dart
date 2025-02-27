@@ -1,11 +1,10 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/wilaya.dart';
-import 'package:fatiel/models/Hotel.dart';
+import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
+import 'package:fatiel/screens/visitor/widget/hotel_price_widget.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:fatiel/utils/rating_utils.dart';
-import 'package:fatiel/widgets/hotel/network_image_widget.dart';
-import 'package:fatiel/widgets/image_error_widget.dart';
 import 'package:flutter/material.dart';
 
 class BookingHotelCard extends StatelessWidget {
@@ -30,9 +29,9 @@ class BookingHotelCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         child: Stack(
           children: [
-            (hotel.images?.isEmpty ?? true)
-                ? const ImageErrorWidget(title: "No image available")
-                : NetworkImageWithLoader(imageUrl: hotel.images?.first ?? ''),
+            HotelImageWidget(
+              images: hotel.images,
+            ),
             Positioned(
               bottom: 0,
               left: 0,
@@ -80,17 +79,10 @@ class BookingHotelCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Text(
-                          hotel.pricePerNight != null
-                              ? '\$${(hotel.pricePerNight as num).toDouble().toStringAsFixed(2)} / night'
-                              : 'Price not available',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: VisitorThemeColors.whiteColor,
-                          ),
-                        ),
+                        if (hotel.startingPricePerNight != null)
+                          HotelPriceWidget(
+                              startingPricePerNight:
+                                  hotel.startingPricePerNight!),
                       ],
                     ),
                   ],

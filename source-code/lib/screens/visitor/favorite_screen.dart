@@ -1,5 +1,6 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
+import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:fatiel/widgets/hotel_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -36,10 +37,11 @@ class _FavoritePageState extends State<FavoritePage>
       stream: VisitorFavoritesStream.favoritesStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-              child: CircularProgressIndicator(
-            color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
-          ));
+          return CircularProgressIndicatorWidget(
+            indicatorColor:
+                VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+            containerColor: VisitorThemeColors.whiteColor,
+          );
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

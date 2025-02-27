@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
-import 'package:fatiel/models/Hotel.dart';
-import 'package:fatiel/models/Visitor.dart';
+import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_section_widget.dart';
+import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
@@ -109,7 +111,9 @@ class _ExploreViewState extends State<ExploreView>
                         backgroundColor: VisitorThemeColors.whiteColor,
                       );
                     } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
+                      return ErrorWidgetWithRetry(
+                        errorMessage: 'Error: ${snapshot.error}',
+                      );
                     } else if (snapshot.hasData) {
                       final hotelStats = snapshot.data!;
                       return CarouselSlider(
@@ -135,7 +139,10 @@ class _ExploreViewState extends State<ExploreView>
                         }).toList(),
                       );
                     } else {
-                      return const Text('No data available');
+                      return NoDataWidget(
+                        message:
+                            "No hotels are currently listed in these cities.",
+                      );
                     }
                   },
                 )

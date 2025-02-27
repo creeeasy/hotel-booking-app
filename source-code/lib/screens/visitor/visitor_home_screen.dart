@@ -5,7 +5,7 @@ import 'package:fatiel/screens/visitor/widget/bottom_navigation_bar_widget.dart'
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 
-import '../../enum/BottomBarType.dart';
+import '../../enum/bottom_bar_type.dart';
 
 class VisitorHomeScreen extends StatefulWidget {
   const VisitorHomeScreen({super.key});

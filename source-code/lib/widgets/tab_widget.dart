@@ -1,5 +1,5 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/enum/TopBarType.dart';
+import 'package:fatiel/enum/top_bar_type.dart';
 import 'package:flutter/material.dart';
 
 class TripsTabView extends StatelessWidget {
