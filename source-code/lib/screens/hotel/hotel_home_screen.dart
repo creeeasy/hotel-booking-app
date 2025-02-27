@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fatiel/models/Hotel.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';

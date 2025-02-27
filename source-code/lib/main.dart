@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
+import 'package:fatiel/screens/visitor/booking_details_screen.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
 import 'package:fatiel/screens/visitor/explore_screen.dart';
 import 'package:fatiel/screens/visitor/favorite_screen.dart';
@@ -10,6 +10,7 @@ import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/loading/loading_screen.dart';
 import 'package:fatiel/screens/forgot_password_screen.dart';
@@ -25,14 +26,21 @@ import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import "package:fatiel/constants/routes/routes.dart";
 
 void main() {
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details); // Logs error
-    log("Flutter Error: ${details.exceptionAsString()}");
-  };
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MultiBlocProvider(providers: [
-    BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
-  ], child: const MyApp()));
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -60,6 +68,7 @@ class MyApp extends StatelessWidget {
           bookingsViewRoute: (context) => const BookingView(),
           wilayaDetailsViewRoute: (context) => const WilayaDetailsPageView(),
           searchHotelViewRoute: (context) => const SearchHotelView(),
+          bookingDetailsViewRoute: (context) => const BookingDetailsView(),
         },
         home: const SafeArea(child: Traffic()));
   }

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/Hotel.dart';
 import 'package:fatiel/models/Visitor.dart';
@@ -30,71 +31,76 @@ class BookingWidget extends StatelessWidget {
         final Booking booking = snapshot.data!["booking"];
         final Hotel hotel = snapshot.data!["hotel"];
 
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 4,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: NetworkImageWithLoader(
-                      imageUrl: (hotel.images?.isNotEmpty == true)
-                          ? hotel.images!.first
-                          : 'https://via.placeholder.com/400',
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  hotel.hotelName,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 18, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        hotel.location != null
-                            ? Wilaya.fromIndex(hotel.location!)?.name ??
-                                'Location not available'
-                            : 'Location not available',
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.grey),
-                        overflow: TextOverflow.ellipsis,
+        return InkWell(
+          onTap: () => Navigator.of(context)
+              .pushNamed(hotelDetailsRoute, arguments: hotel.id),
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: NetworkImageWithLoader(
+                        imageUrl: (hotel.images?.isNotEmpty == true)
+                            ? hotel.images!.first
+                            : 'https://via.placeholder.com/400',
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Price per night: \$${hotel.pricePerNight?.toStringAsFixed(2) ?? 'N/A'}",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
                   ),
-                ),
-                const SizedBox(height: 14),
-                Center(
-                  child: ActionButton(
-                    bookingStatus: booking.status,
-                    bookingId: booking.id,
+                  const SizedBox(height: 16),
+                  Text(
+                    hotel.hotelName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          size: 18, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          hotel.location != null
+                              ? Wilaya.fromIndex(hotel.location!)?.name ??
+                                  'Location not available'
+                              : 'Location not available',
+                          style:
+                              const TextStyle(fontSize: 16, color: Colors.grey),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    "Price per night: \$${hotel.pricePerNight?.toStringAsFixed(2) ?? 'N/A'}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Center(
+                    child: ActionButton(
+                      bookingStatus: booking.status,
+                      bookingId: booking.id,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

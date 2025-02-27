@@ -5,6 +5,7 @@ class VisitorThemeColors {
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color blackColor = Color(0xFF1A1A1A);
   static const Color greyColor = Color(0xFFD1C4E9);
+  static const Color textGreyColor = Color(0xFF666666);
   static const Color lightGrayColor = Color(0xFFEDE7F6);
   static const Color secondaryColor = Color(0xFF9575CD);
   static const Color accentColor = Color(0xFFB39DDB);

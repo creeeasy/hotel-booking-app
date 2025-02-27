@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
@@ -48,7 +49,7 @@ class ActionButton extends StatelessWidget {
               MainAxisAlignment.spaceBetween, // Space between buttons
           children: [
             _cancelButton(context, bookingId!),
-            _viewBookingButton(),
+            _viewBookingButton(context),
           ],
         );
     }
@@ -120,9 +121,12 @@ class ActionButton extends StatelessWidget {
   }
 
 // View Booking Button
-  Widget _viewBookingButton() {
+  Widget _viewBookingButton(BuildContext context) {
     return TextButton(
-      onPressed: () => {},
+      onPressed: () => {
+        Navigator.pushNamed(context, bookingDetailsViewRoute,
+            arguments: bookingId)
+      },
       style: TextButton.styleFrom(
         backgroundColor: VisitorThemeColors.viewBookingBackground,
         foregroundColor: VisitorThemeColors.viewBookingTextColor,

@@ -1,25 +1,19 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteButton extends StatefulWidget {
   final String hotelId;
-  const FavoriteButton({
-    Key? key,
-    required this.hotelId,
-  }) : super(key: key);
+
+  const FavoriteButton({Key? key, required this.hotelId}) : super(key: key);
 
   @override
   _FavoriteButtonState createState() => _FavoriteButtonState();
 }
 
 class _FavoriteButtonState extends State<FavoriteButton> {
-  final visitorStream = VisitorFavoritesStream();
-
   bool isLoading = false;
-  bool? isFavorite; // Nullable to prevent uninitialized state errors
+  bool isFavorite = false;
 
   @override
   void initState() {
@@ -37,12 +31,11 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   }
 
   Future<void> handleFavoriteTap() async {
-    if (isFavorite == null)
-      return; // Prevent actions if state isn't initialized
+    if (isLoading) return;
 
     setState(() => isLoading = true);
 
-    if (isFavorite!) {
+    if (isFavorite) {
       await VisitorFavoritesStream.removeFavorite(widget.hotelId);
     } else {
       await VisitorFavoritesStream.addFavorite(widget.hotelId);
@@ -50,7 +43,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
     if (mounted) {
       setState(() {
-        isFavorite = !isFavorite!;
+        isFavorite = !isFavorite;
         isLoading = false;
       });
     }
@@ -59,19 +52,19 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(32.0),
-      onTap: (isLoading || isFavorite == null) ? null : handleFavoriteTap,
+      borderRadius: BorderRadius.circular(32),
+      onTap: isLoading ? null : handleFavoriteTap,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          transitionBuilder: (widget, animation) => ScaleTransition(
+          transitionBuilder: (child, animation) => ScaleTransition(
             scale: animation,
-            child: widget,
+            child: child,
           ),
-          child: isFavorite == null
+          child: isLoading
               ? SizedBox(
-                  key: ValueKey<bool?>(isFavorite),
+                  key: const ValueKey("loading"),
                   height: 24,
                   width: 24,
                   child: CircularProgressIndicator(
@@ -82,14 +75,13 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                   ),
                 )
               : Icon(
-                  isFavorite! ? Icons.favorite : Icons.favorite_border,
-                  key: ValueKey<bool?>(isFavorite),
-                  color: isFavorite!
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  key: ValueKey(isFavorite),
+                  color: isFavorite
                       ? VisitorThemeColors.deepPurpleAccent
                       : Colors.grey,
-                  semanticLabel: isFavorite!
-                      ? "Remove from favorites"
-                      : "Add to favorites",
+                  semanticLabel:
+                      isFavorite ? "Remove from favorites" : "Add to favorites",
                 ),
         ),
       ),

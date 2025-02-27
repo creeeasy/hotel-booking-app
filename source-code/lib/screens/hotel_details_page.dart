@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/Hotel.dart';
 import 'package:fatiel/models/facility_icons.dart';
-import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
+import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utils/rating_utils.dart';
@@ -507,34 +506,8 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
                                   const Icon(Icons.error,
                                       color: Colors.red, size: 48),
                             ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: VisitorThemeColors.whiteColor,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              transitionBuilder:
-                                  (Widget child, Animation<double> animation) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: ScaleTransition(
-                                    scale: animation,
-                                    child: child,
-                                  ),
-                                );
-                              },
-                              child: FavoriteButton(
-                                hotelId: widget.hotelId,
-                              ),
-                            ),
-                          ),
-                        ),
+                      PositionedFavoriteButton(
+                        hotelId: widget.hotelId,
                       ),
                       Positioned(
                         top: 8,
@@ -593,7 +566,8 @@ class ThumbnailList extends StatelessWidget {
       height: 80,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: images.isNotEmpty ? images.length : 1, // Prevents index error
+        itemCount:
+            images.isNotEmpty ? images.length : 1, // Prevents index error
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
@@ -614,7 +588,8 @@ class ThumbnailList extends StatelessWidget {
                 boxShadow: [
                   if (images.isNotEmpty && currentIndex == index)
                     BoxShadow(
-                      color: VisitorThemeColors.deepPurpleAccent.withOpacity(0.3),
+                      color:
+                          VisitorThemeColors.deepPurpleAccent.withOpacity(0.3),
                       blurRadius: 6,
                       spreadRadius: 2,
                     ),
@@ -634,7 +609,8 @@ class ThumbnailList extends StatelessWidget {
                             height: 64,
                             width: 64,
                             alignment: Alignment.center,
-                            child: const CircularProgressIndicator(strokeWidth: 2),
+                            child:
+                                const CircularProgressIndicator(strokeWidth: 2),
                           );
                         },
                         errorBuilder: (context, error, stackTrace) => Container(
@@ -642,7 +618,8 @@ class ThumbnailList extends StatelessWidget {
                           width: 64,
                           color: Colors.grey.shade300,
                           alignment: Alignment.center,
-                          child: const Icon(Icons.error, color: Colors.red, size: 32),
+                          child: const Icon(Icons.error,
+                              color: Colors.red, size: 32),
                         ),
                       )
                     : Container(
