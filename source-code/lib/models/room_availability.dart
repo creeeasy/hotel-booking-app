@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RoomAvailability {
   final bool isAvailable;
   final DateTime? nextAvailableDate;
@@ -9,9 +11,11 @@ class RoomAvailability {
 
   factory RoomAvailability.fromJson(Map<String, dynamic> json) {
     return RoomAvailability(
-      isAvailable: json['isAvailable'],
+      isAvailable: json['isAvailable'] as bool? ?? false,
       nextAvailableDate: json['nextAvailableDate'] != null
-          ? DateTime.parse(json['nextAvailableDate'])
+          ? (json['nextAvailableDate'] is Timestamp)
+              ? (json['nextAvailableDate'] as Timestamp).toDate()
+              : DateTime.tryParse(json['nextAvailableDate'].toString())
           : null,
     );
   }
@@ -19,7 +23,9 @@ class RoomAvailability {
   Map<String, dynamic> toJson() {
     return {
       'isAvailable': isAvailable,
-      'nextAvailableDate': nextAvailableDate?.toIso8601String(),
+      'nextAvailableDate': nextAvailableDate != null
+          ? Timestamp.fromDate(nextAvailableDate!)
+          : null,
     };
   }
 }

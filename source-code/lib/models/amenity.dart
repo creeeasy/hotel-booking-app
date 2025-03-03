@@ -1,24 +1,26 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/widgets.dart';
+
 class Amenity {
   final String label;
-  final String iconPath;
+  final IconData icon;
 
-  const Amenity({required this.label, required this.iconPath});
+  const Amenity({required this.label, required this.icon});
 }
 
 class AmenityIcons {
   static final Map<String, Amenity> amenities = {
-    'wifi': const Amenity(label: 'WiFi', iconPath: 'assets/icons/wifi.svg'),
-    'pool': const Amenity(label: 'Pool', iconPath: 'assets/icons/pool.svg'),
-    'gym': const Amenity(label: 'Gym', iconPath: 'assets/icons/gym.svg'),
-    'spa': const Amenity(label: 'Spa', iconPath: 'assets/icons/spa.svg'),
-    'restaurant': const Amenity(
-        label: 'Restaurant', iconPath: 'assets/icons/restaurant.svg'),
-    'parking':
-        const Amenity(label: 'Parking', iconPath: 'assets/icons/parking.svg'),
+    'wifi': const Amenity(label: 'WiFi', icon: FontAwesomeIcons.wifi),
+    'pool': const Amenity(label: 'Pool', icon: FontAwesomeIcons.swimmingPool),
+    'gym': const Amenity(label: 'Gym', icon: FontAwesomeIcons.dumbbell),
+    'spa': const Amenity(label: 'Spa', icon: FontAwesomeIcons.spa),
+    'restaurant':
+        const Amenity(label: 'Restaurant', icon: FontAwesomeIcons.utensils),
+    'parking': const Amenity(label: 'Parking', icon: FontAwesomeIcons.parking),
     'room_service': const Amenity(
-        label: 'Room Service', iconPath: 'assets/icons/room_service.svg'),
-    'playground': const Amenity(
-        label: 'Kids’ Playground', iconPath: 'assets/icons/playground.svg'),
+        label: 'Room Service', icon: FontAwesomeIcons.conciergeBell),
+    'playground':
+        const Amenity(label: 'Kids’ Playground', icon: FontAwesomeIcons.child),
   };
 
   static Amenity? getAmenity(String amenity) {

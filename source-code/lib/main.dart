@@ -2,10 +2,10 @@ import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
-import 'package:fatiel/screens/visitor/booking_details_screen.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
 import 'package:fatiel/screens/visitor/explore_screen.dart';
 import 'package:fatiel/screens/visitor/favorite_screen.dart';
+import 'package:fatiel/screens/visitor/room_booking_offers_screen.dart';
 import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
@@ -68,6 +68,8 @@ class MyApp extends StatelessWidget {
           bookingsViewRoute: (context) => const BookingView(),
           wilayaDetailsViewRoute: (context) => const WilayaDetailsPageView(),
           searchHotelViewRoute: (context) => const SearchHotelView(),
+          roomBookingOffersViewRoute: (context) =>
+              const RoomBookingOffersPage(),
         },
         home: const SafeArea(child: Traffic()));
   }
@@ -112,7 +114,7 @@ class _TrafficState extends State<Traffic> {
       } else if (state is AuthStateVisitorRegistering) {
         return const VisitorRegistrationView();
       } else {
-        return Scaffold(
+        return const Scaffold(
           body: CircularProgressIndicatorWidget(),
         );
       }

@@ -1,4 +1,6 @@
-import 'package:fatiel/models/room_availability.dart';
+import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fatiel/models/room_availability.dart'; // Assuming you have this model
 
 class Room {
   final String id;
@@ -23,24 +25,30 @@ class Room {
     required this.availability,
   });
 
-  factory Room.fromJson(Map<String, dynamic> json) {
+  factory Room.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+
     return Room(
-      id: json['id'],
-      hotelId: json['hotelId'],
-      name: json['name'],
-      description: json['description'],
-      capacity: json['capacity'],
-      pricePerNight: (json['pricePerNight'] as num).toDouble(),
-      images: List<String>.from(json['images']),
-      amenities: (json['amenities'] as List<dynamic>?)
-              ?.map((facility) => facility as String)
+      id: doc.id,
+      hotelId: data['hotelId'] as String? ?? '',
+      name: data['name'] as String? ?? '',
+      description: data['description'] as String? ?? '',
+      capacity: data['capacity'] as int? ?? 0,
+      pricePerNight: (data['pricePerNight'] as num?)?.toDouble() ?? 0.0,
+      images: (data['images'] as List<dynamic>?)
+              ?.map((e) => e as String)
               .toList() ??
           [],
-      availability: RoomAvailability.fromJson(json['availability']),
+      amenities: (data['amenities'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      availability: RoomAvailability.fromJson(
+          data['availability'] as Map<String, dynamic>? ?? {}),
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirestore() {
     return {
       'id': id,
       'hotelId': hotelId,
@@ -52,5 +60,34 @@ class Room {
       'amenities': amenities,
       'availability': availability.toJson(),
     };
+  }
+
+  static Future<List<Room>> getHotelRoomsById(String hotelId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('rooms')
+          .where('hotelId', isEqualTo: hotelId)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Room.fromFirestore(doc))
+          .toList();
+    } catch (e) {
+      log('Error fetching hotel rooms: $e');
+      return [];
+    }
+  }
+
+  static Future<Room?> getRoomById(String roomId) async{
+    try{
+      final doc = await FirebaseFirestore.instance.collection('rooms').doc(roomId).get();
+      if(doc.exists){
+        return Room.fromFirestore(doc);
+      }
+      return null;
+    }catch(e){
+      log("error fetching room by ID: $e");
+      return null;
+    }
   }
 }

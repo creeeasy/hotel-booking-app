@@ -13,31 +13,32 @@ class NoDataWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.inbox,
-              color: VisitorThemeColors.greyColor,
-              size: 50,
+              color: VisitorThemeColors.greyColor.withOpacity(0.7),
+              size: 60,
             ),
-            const SizedBox(height: 12),
-            const Text(
+            const SizedBox(height: 16),
+            Text(
               "No Data Found",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color: VisitorThemeColors.blackColor,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: VisitorThemeColors.textGreyColor,
+              style: TextStyle(
+                fontSize: 16,
+                color: VisitorThemeColors.textGreyColor.withOpacity(0.8),
+                height: 1.4,
               ),
             ),
           ],

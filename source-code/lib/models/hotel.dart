@@ -15,6 +15,8 @@ class Hotel {
   final String? mapLink;
   final String? contactInfo;
   final double? startingPricePerNight;
+  final String? longitude;
+  final String? latitude;
 
   Hotel({
     required this.id,
@@ -29,6 +31,8 @@ class Hotel {
     this.contactInfo,
     this.rooms = const [],
     this.startingPricePerNight,
+    this.latitude,
+    this.longitude,
   });
 
   factory Hotel.fromFirestore(DocumentSnapshot doc) {
@@ -57,6 +61,8 @@ class Hotel {
               [],
       startingPricePerNight:
           (data['startingPricePerNight'] as num?)?.toDouble(),
+      longitude: data['longitude'] as String?,
+      latitude: data['latitude'] as String?,
     );
   }
 
@@ -74,6 +80,8 @@ class Hotel {
       'contactInfo': contactInfo,
       'rooms': rooms,
       'startingPricePerNight': startingPricePerNight,
+      'longitude': longitude,
+      'latitude': latitude,
     };
   }
 
