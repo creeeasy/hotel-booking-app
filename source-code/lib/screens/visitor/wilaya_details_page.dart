@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/hotel.dart';
@@ -35,9 +33,8 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
     super.dispose();
   }
 
-  Future<List<Hotel>> fetchHotels(BuildContext context) async {
-    final wilayaId = ModalRoute.of(context)?.settings.arguments as int;
-    return await Hotel.getHotelsByWilaya(wilayaId);
+  Future<List<Hotel>> fetchHotels(BuildContext context, int wilayaId) async {
+    return Hotel.getHotelsByWilaya(wilayaId);
   }
 
   @override
@@ -48,26 +45,31 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
       child: Scaffold(
         backgroundColor: VisitorThemeColors.whiteColor,
         appBar: AppBar(
-          leading: IconButton(
-            color: VisitorThemeColors.blackColor,
-            icon: const Icon(Icons.chevron_left, size: 32),
-            onPressed: () => Navigator.pop(context),
-          ),
           backgroundColor: VisitorThemeColors.whiteColor,
           elevation: 0,
+          leading: IconButton(
+            color: VisitorThemeColors.blackColor,
+            icon: const Icon(
+              Icons.chevron_left,
+              size: 32, // Matching Visitor screen
+            ),
+            onPressed: () {
+              Navigator.pop(context); // Go back to the previous screen
+            },
+          ),
           centerTitle: true,
           title: Text(
             Wilaya.fromIndex(wilayaId)!.name,
-            style: const TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w600,
+            style: TextStyle(
               color: VisitorThemeColors.blackColor,
-              letterSpacing: 0.3,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
             ),
           ),
         ),
         body: FutureBuilder<List<Hotel>>(
-          future: fetchHotels(context),
+          future: fetchHotels(context, wilayaId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicatorWidget(
@@ -83,54 +85,53 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
               return NoDataWidget(
                 message: "No hotels are currently listed in this wilaya.",
               );
-            } else {
-              final hotels = snapshot.data!;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 10),
-                    child: Text(
-                      "Find your perfect hotel in",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        letterSpacing: 0.5,
-                        color: VisitorThemeColors.blackColor,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16.0),
-                      itemCount: hotels.length,
-                      itemBuilder: (context, index) {
-                        final hotel = hotels[index];
-                        final int count =
-                            hotels.length > 10 ? 10 : hotels.length;
-                        final Animation<double> animation = Tween<double>(
-                          begin: 0.0,
-                          end: 1.0,
-                        ).animate(
-                          CurvedAnimation(
-                            parent: animationController,
-                            curve: Interval((1 / count) * index, 1.0,
-                                curve: Curves.fastOutSlowIn),
-                          ),
-                        );
-                        animationController.forward();
-                        return HotelRowOneWidget(
-                          hotelId: hotel.id,
-                          animation: animation,
-                          animationController: animationController,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
             }
+
+            final hotels = snapshot.data!;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Text(
+                    "Find your perfect hotel in ${Wilaya.fromIndex(wilayaId)!.name}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      letterSpacing: 0.5,
+                      color: VisitorThemeColors.blackColor,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: hotels.length,
+                    itemBuilder: (context, index) {
+                      final hotel = hotels[index];
+                      final count = hotels.length > 10 ? 10 : hotels.length;
+                      final animation = Tween<double>(
+                        begin: 0.0,
+                        end: 1.0,
+                      ).animate(
+                        CurvedAnimation(
+                          parent: animationController,
+                          curve: Interval((1 / count) * index, 1.0,
+                              curve: Curves.fastOutSlowIn),
+                        ),
+                      );
+                      animationController.forward();
+                      return HotelRowOneWidget(
+                        hotelId: hotel.id,
+                        animation: animation,
+                        animationController: animationController,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
           },
         ),
       ),

@@ -315,12 +315,13 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                             ),
                           ),
                     SizedBox(height: 10),
-                    CustomOutlinedButton(
-                      text: "View all ${hotel.ratings.length} reviews",
-                      onPressed: () {
-                        // Navigate to reviews page
-                      },
-                    )
+                    if (hotel.ratings.isNotEmpty)
+                      CustomOutlinedButton(
+                        text: "View all ${hotel.ratings.length} reviews",
+                        onPressed: () {
+                          // Navigate to reviews page
+                        },
+                      )
                   ],
                 ),
                 if (hotel.mapLink != null)

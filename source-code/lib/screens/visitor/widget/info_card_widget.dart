@@ -190,7 +190,6 @@ class InfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow("Number of Guests", booking.numberOfGuests.toString()),
           _buildInfoRow(
               "Total Price", "\$${booking.totalPrice.toStringAsFixed(2)}"),
         ],

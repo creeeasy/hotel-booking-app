@@ -1,7 +1,6 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
-import 'package:fatiel/widgets/image_error_widget.dart';
 import 'package:flutter/material.dart';
 
 class DetailsImageWithHero extends StatefulWidget {
@@ -57,9 +56,12 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
                         child: hasImages
                             ? Image.network(
                                 widget.images[index],
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
+                                fit: BoxFit
+                                    .contain, // Ensures full width or height without cropping/stretching
+                                width: double
+                                    .infinity, // Allows the width to expand while maintaining aspect ratio
+                                height: double
+                                    .infinity, // Allows height to expand while maintaining aspect ratio
                                 loadingBuilder:
                                     (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
@@ -218,8 +220,12 @@ class ThumbnailList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     images[index],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
+                    fit: BoxFit
+                        .contain, // Ensures the image is fully visible without distortion
+                    width: double
+                        .infinity, // Allows width to expand, but fit keeps proportions
+                    height: double
+                        .infinity, // Allows height to expand, but fit keeps proportions
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return const Center(

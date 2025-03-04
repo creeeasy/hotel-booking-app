@@ -1,14 +1,15 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/enum/booking_status.dart';
+import 'package:fatiel/models/room.dart';
 
 class Booking {
   final String id;
   final String hotelId;
+  final String roomId;
   final String visitorId;
   final DateTime checkInDate;
   final DateTime checkOutDate;
-  final int numberOfGuests;
   final double totalPrice;
   final BookingStatus status;
   final DateTime createdAt;
@@ -16,10 +17,10 @@ class Booking {
   Booking({
     required this.id,
     required this.hotelId,
+    required this.roomId,
     required this.visitorId,
     required this.checkInDate,
     required this.checkOutDate,
-    required this.numberOfGuests,
     required this.totalPrice,
     required this.status,
     required this.createdAt,
@@ -34,9 +35,9 @@ class Booking {
       id: doc.id,
       hotelId: data['hotelId'] as String,
       visitorId: data['visitorId'] as String,
+      roomId: data['roomId'] as String,
       checkInDate: (data['checkInDate'] as Timestamp).toDate(),
       checkOutDate: (data['checkOutDate'] as Timestamp).toDate(),
-      numberOfGuests: data['numberOfGuests'] as int,
       totalPrice: (data['totalPrice'] as num).toDouble(),
       status: BookingStatus.values.byName(data['status'] as String),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
@@ -47,9 +48,9 @@ class Booking {
     return {
       'hotelId': hotelId,
       'visitorId': visitorId,
+      'roomId': roomId,
       'checkInDate': Timestamp.fromDate(checkInDate),
       'checkOutDate': Timestamp.fromDate(checkOutDate),
-      'numberOfGuests': numberOfGuests,
       'totalPrice': totalPrice,
       'status': status.name,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -84,48 +85,88 @@ class Booking {
       rethrow;
     }
   }
+
+  static Future<BookingResult> createBooking({
+    required String hotelId,
+    required String roomId,
+    required String visitorId,
+    required DateTime checkInDate,
+    required DateTime checkOutDate,
+    required double totalPrice,
+  }) async {
+    try {
+      final roomRef =
+          FirebaseFirestore.instance.collection("rooms").doc(roomId);
+      final roomDoc = await roomRef.get();
+
+      if (!roomDoc.exists) {
+        return const BookingFailure('Room not found.');
+      }
+
+      final roomData = Room.fromFirestore(roomDoc);
+
+      if (!roomData.availability.isAvailable ||
+          (roomData.availability.nextAvailableDate != null &&
+              roomData.availability.nextAvailableDate!.isAfter(checkInDate))) {
+        return const BookingFailure(
+            'Room is not available for the selected dates.');
+      }
+
+      final docRef =
+          await FirebaseFirestore.instance.collection('bookings').add({
+        'hotelId': hotelId,
+        'roomId': roomId,
+        'visitorId': visitorId,
+        'checkInDate': Timestamp.fromDate(checkInDate),
+        'checkOutDate': Timestamp.fromDate(checkOutDate),
+        'totalPrice': totalPrice,
+        'status': BookingStatus.pending.name,
+        'createdAt': Timestamp.fromDate(DateTime.now()),
+      });
+
+      await roomRef.update({
+        'availability.nextAvailableDate': Timestamp.fromDate(checkOutDate),
+      });
+
+      final doc = await docRef.get();
+      await Booking.updateVisitorBooking(
+          bookingId: docRef.id, visitorId: visitorId);
+      return BookingSuccess(Booking.fromFirestore(doc));
+    } catch (e) {
+      return BookingFailure('Error creating booking: $e');
+    }
+  }
+
+  static Future<void> updateVisitorBooking({
+    required String visitorId,
+    required String bookingId,
+  }) async {
+    try {
+      final visitorDoc =
+          FirebaseFirestore.instance.collection("visitors").doc(visitorId);
+      final docSnapshot = await visitorDoc.get();
+
+      if (docSnapshot.exists) {
+        await visitorDoc.update({
+          'bookings': FieldValue.arrayUnion([bookingId])
+        });
+      }
+    } catch (e) {
+      print("Error updating visitor booking: $e");
+    }
+  }
 }
 
+sealed class BookingResult {
+  const BookingResult();
+}
 
-  // static Future<bool> cancelBooking(String bookingId) async {
-  //   log(bookingId);
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection('bookings')
-  //         .doc(bookingId)
-  //         .update({
-  //       'status': BookingStatus.cancelled.name,
-  //     });
-  //     return true;
-  //   } catch (e) {
-  //     log('Error canceling booking: $e');
-  //     return false;
-  //   }
-  // }
+class BookingSuccess extends BookingResult {
+  final Booking booking;
+  const BookingSuccess(this.booking);
+}
 
-
-  // static Future<List<Booking>> getBookingsByHotel(String hotelId) async {
-  //   try {
-  //     final querySnapshot = await FirebaseFirestore.instance
-  //         .collection('bookings')
-  //         .where('hotelId', isEqualTo: hotelId)
-  //         .get();
-  //     return querySnapshot.docs.map((doc) => Booking.fromFirestore(doc)).toList();
-  //   } catch (e) {
-  //     log('Error fetching bookings by hotel: $e');
-  //     return [];
-  //   }
-  // }
-
-  // static Future<void> updateBookingStatus(String bookingId, BookingStatus newStatus) async {
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection('bookings')
-  //         .doc(bookingId)
-  //         .update({'status': newStatus.name});
-  //   } catch (e) {
-  //     log('Error updating booking status: $e');
-  //     rethrow;
-  //   }
-  // }
-
+class BookingFailure extends BookingResult {
+  final String message;
+  const BookingFailure(this.message);
+}

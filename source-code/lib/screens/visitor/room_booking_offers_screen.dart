@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/room_availability.dart';
+import 'package:fatiel/screens/visitor/widget/booking_navigation_button_widget.dart';
 import 'package:fatiel/screens/visitor/widget/details_image_with_hero_widget.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
@@ -25,10 +24,8 @@ class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
   String? hotelId;
 
   Future<List<Room>> initializeRoomsData(BuildContext context) async {
-    // final hotelId = ModalRoute.of(context)?.settings.arguments as String?;
-    // return await Room.getHotelRoomsById(hotelId!);
-
-    return await Room.getHotelRoomsById("dHNQ0AKCIrWeqpKR81Q0fbfORZM2");
+    final hotelId = ModalRoute.of(context)?.settings.arguments as String?;
+    return await Room.getHotelRoomsById(hotelId!);
   }
 
   @override
@@ -105,7 +102,19 @@ class _BuildRoomListState extends State<BuildRoomList> {
     });
   }
 
-  void _bookNow() {}
+  void _bookNow() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      // Handle the selected date
+      print("Selected Date: ${pickedDate.toLocal()}");
+    }
+  }
 
   @override
   void initState() {
@@ -117,67 +126,9 @@ class _BuildRoomListState extends State<BuildRoomList> {
   Widget build(BuildContext context) {
     final Room selectedRoom = rooms[currentIndex];
     return Scaffold(
-      bottomNavigationBar: _buildBottomNavigationBar(selectedRoom),
+      bottomNavigationBar: BookingNavigationButtonWidget(
+          key: ValueKey(currentIndex), room: selectedRoom),
       body: _buildRoomDetails(selectedRoom),
-    );
-  }
-
-  Widget _buildBottomNavigationBar(Room selectedRoom) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "\$${selectedRoom.pricePerNight.toStringAsFixed(2)} / night",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: selectedRoom.availability.isAvailable &&
-                    selectedRoom.availability.nextAvailableDate != null
-                ? _bookNow
-                : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: selectedRoom.availability.isAvailable &&
-                      selectedRoom.availability.nextAvailableDate != null
-                  ? VisitorThemeColors.pinkAccent
-                  : Colors.grey,
-              minimumSize: const Size(140, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              selectedRoom.availability.isAvailable &&
-                      selectedRoom.availability.nextAvailableDate != null
-                  ? "Book Now"
-                  : "Unavailable",
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -242,8 +193,6 @@ class _BuildRoomListState extends State<BuildRoomList> {
 
                     const SectionTitle(title: "Upcoming Availability"),
                     _buildAvailibility(selectedRoom.availability),
-
-                    const DividerWidget(),
                   ],
                 )),
           ],

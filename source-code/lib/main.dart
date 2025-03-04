@@ -2,6 +2,8 @@ import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
+import 'package:fatiel/screens/visitor/all_wilayas_screen.dart';
+import 'package:fatiel/screens/visitor/booking_details_screen.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
 import 'package:fatiel/screens/visitor/explore_screen.dart';
 import 'package:fatiel/screens/visitor/favorite_screen.dart';
@@ -70,6 +72,8 @@ class MyApp extends StatelessWidget {
           searchHotelViewRoute: (context) => const SearchHotelView(),
           roomBookingOffersViewRoute: (context) =>
               const RoomBookingOffersPage(),
+          bookingDetailsViewRoute: (context) => const BookingDetailsView(),
+          allWilayaViewRoute: (context) => const AllWilayaScreen(),
         },
         home: const SafeArea(child: Traffic()));
   }
@@ -99,12 +103,13 @@ class _TrafficState extends State<Traffic> {
       if (state is AuthStateHotelLoggedIn) {
         return const HotelHomeView();
       } else if (state is AuthStateVisitorLoggedIn) {
+        // return const RoomBookingOffersPage();
+
         return const VisitorHomeScreen();
       } else if (state is AuthStateNeedsVerification) {
         return const VerifyEmailView();
       } else if (state is AuthStateLoggedOut) {
         return const LoginView();
-        // return const VisitorRegistrationView();
       } else if (state is AuthStateForgotPassword) {
         return const ForgotPasswordView();
       } else if (state is AuthStateRegistering) {

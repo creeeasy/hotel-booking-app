@@ -15,8 +15,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final wilayasList = Wilaya.wilayasList;
-
 class ExploreView extends StatefulWidget {
   @override
   _ExploreViewState createState() => _ExploreViewState();
@@ -89,19 +87,50 @@ class _ExploreViewState extends State<ExploreView>
                   location: currentVisitor.location,
                 ),
                 SizedBox(height: 20),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text(
-                    "Find hotels in cities. ",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      letterSpacing: 0.5,
-                      color: VisitorThemeColors.primaryColor,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Find hotels in cities.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                          color: VisitorThemeColors.primaryColor,
+                        ),
+                      ),
                     ),
-                  ),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(8.0),
+                      onTap: () {
+                        Navigator.pushNamed(context, allWilayaViewRoute);
+                      },
+                      splashColor: VisitorThemeColors.accentColor,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        child: Row(
+                          children: [
+                            Text(
+                              "See all",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: VisitorThemeColors.secondaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 18,
+                              color: VisitorThemeColors.secondaryColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 FutureBuilder<Map<int, int>>(
                   future: Hotel.getHotelStatistics(),
@@ -127,7 +156,7 @@ class _ExploreViewState extends State<ExploreView>
                           autoPlayAnimationDuration:
                               const Duration(milliseconds: 800),
                         ),
-                        items: wilayasList.map((wilaya) {
+                        items: Wilaya.wilayasList.map((wilaya) {
                           final hotelsCount = hotelStats[wilaya.ind] ?? 0;
                           return ExploreCityWidget(
                             wilaya: wilaya,
@@ -154,16 +183,3 @@ class _ExploreViewState extends State<ExploreView>
     );
   }
 }
-/*
- final shouldLogout = await showGenericDialog<bool>(
-                          context: context,
-                          title: 'Log out',
-                          content: 'Are you sure you want to log out?',
-                          optionBuilder: () =>
-                              {'Cancel': false, 'Log Out': true},
-                        ).then((value) => value ?? false);
-
-                        if (shouldLogout) {
-                          context.read<AuthBloc>().add(const AuthEventLogOut());
-                        }
- */

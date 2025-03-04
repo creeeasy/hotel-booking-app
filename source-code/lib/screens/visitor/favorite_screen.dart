@@ -33,6 +33,29 @@ class _FavoritePageState extends State<FavoritePage>
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: VisitorThemeColors.whiteColor,
+      appBar: AppBar(
+        backgroundColor: VisitorThemeColors.whiteColor,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Favorites',
+          style: TextStyle(
+            color: VisitorThemeColors.blackColor,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: _buildFavoriteHotels(),
+      ),
+    );
+  }
+
+  Widget _buildFavoriteHotels() {
     return StreamBuilder<List<String>>(
       stream: VisitorFavoritesStream.favoritesStream,
       builder: (context, snapshot) {
@@ -49,55 +72,34 @@ class _FavoritePageState extends State<FavoritePage>
         }
 
         final List<String> favorites = snapshot.data!;
-
-        return SafeArea(
-          child: Scaffold(
-            backgroundColor: VisitorThemeColors.whiteColor,
-            appBar: AppBar(
-              backgroundColor: VisitorThemeColors.whiteColor,
-              elevation: 0,
-              centerTitle: true,
-              title: const Text(
-                'Favorites',
-                style: TextStyle(
-                  color: VisitorThemeColors.blackColor,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
+        return ListView.builder(
+          itemCount: favorites.length,
+          padding: const EdgeInsets.only(top: 8),
+          itemBuilder: (context, index) {
+            final int count = favorites.length > 10 ? 10 : favorites.length;
+            final Animation<double> animation = Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(
+              CurvedAnimation(
+                parent: animationController,
+                curve: Interval((1 / count) * index, 1.0,
+                    curve: Curves.fastOutSlowIn),
               ),
-            ),
-            body: ListView.builder(
-              itemCount: favorites.length,
-              padding: const EdgeInsets.only(top: 8),
-              itemBuilder: (context, index) {
-                final int count = favorites.length > 10 ? 10 : favorites.length;
-                final Animation<double> animation = Tween<double>(
-                  begin: 0.0,
-                  end: 1.0,
-                ).animate(
-                  CurvedAnimation(
-                    parent: animationController,
-                    curve: Interval((1 / count) * index, 1.0,
-                        curve: Curves.fastOutSlowIn),
-                  ),
-                );
-                animationController.forward();
+            );
+            animationController.forward();
 
-                return HotelRowOneWidget(
-                  hotelId: favorites[index],
-                  animation: animation,
-                  animationController: animationController,
-                );
-              },
-            ),
-          ),
+            return HotelRowOneWidget(
+              hotelId: favorites[index],
+              animation: animation,
+              animationController: animationController,
+            );
+          },
         );
       },
     );
   }
 
-  /// Widget for the "No Favorites" UI
   Widget _buildNoFavoritesUI() {
     return Center(
       child: Column(

@@ -7,7 +7,6 @@ import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
-import 'package:fatiel/screens/visitor/widget/hotel_price_widget.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/utils/rating_utils.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';

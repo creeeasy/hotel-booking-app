@@ -198,11 +198,40 @@ class FirebaseAuthProvider implements AuthProviderImplement {
   @override
   Future<dynamic> getUser() async {
     final user = currentUser!;
+
     final hotel = await Hotel.getHotelById(user.id);
     if (hotel != null) {
-      return hotel;
+      return Hotel(
+        id: user.id,
+        email: user.email,
+        hotelName: hotel.hotelName,
+        images: hotel.images,
+        location: hotel.location,
+        ratings: hotel.ratings,
+        thumbnail: hotel.thumbnail,
+        rooms: hotel.rooms,
+        description: hotel.description,
+        mapLink: hotel.mapLink,
+        contactInfo: hotel.contactInfo,
+        startingPricePerNight: hotel.startingPricePerNight,
+        longitude: hotel.longitude,
+        latitude: hotel.latitude,
+      );
     }
+
     final visitor = await Visitor.getVisitorById(user.id);
-    return visitor!;
+    if (visitor != null) {
+      return Visitor(
+        id: user.id,
+        email: user.email,
+        firstName: visitor.firstName,
+        lastName: visitor.lastName,
+        favorites: visitor.favorites,
+        bookings: visitor.bookings,
+        location: visitor.location,
+      );
+    }
+
+    return null;
   }
 }

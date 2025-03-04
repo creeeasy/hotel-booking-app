@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/booking.dart';
@@ -45,16 +43,11 @@ class _BookingDetailsViewState extends State<BookingDetailsView> {
             errorMessage: 'Error: ${snapshot.error}',
           );
         } else if (!snapshot.hasData) {
-          return NoDataWidget(
+          return const NoDataWidget(
             message: "No hotel listings found.",
           );
         }
-        if (snapshot.data is Hotel) {
-          log('HOtel');
-          log(snapshot.data.runtimeType.toString());
-        } else {
-          log(snapshot.data.runtimeType.toString());
-        }
+
         final hotelData = snapshot.data!["hotel"] as Hotel;
         final bookingData = snapshot.data!["booking"] as Booking;
 

@@ -70,7 +70,6 @@ class Visitor {
   }
 
   static Future<Visitor?> getVisitorById(String visitorId) async {
-    log(visitorId);
     try {
       final doc = await FirebaseFirestore.instance
           .collection('visitors')
@@ -101,78 +100,16 @@ class Visitor {
       return null;
     }
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'firstName': firstName,
+      'lastName': lastName,
+      'favorites': favorites ?? [],
+      'bookings': bookings ?? [],
+      'location': location,
+    };
+  }
 }
-
-
-
- // static Future<void> updateVisitor(Visitor visitor) async {
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection('visitors')
-  //         .doc(visitor.id)
-  //         .update(visitor.toFirestore());
-  //   } catch (e) {
-  //     print('Error updating visitor: $e');
-  //     rethrow;
-  //   }
-  // }
-
-  // static Future<List<String>> getUserFavorites(String userId) async {
-  //   try {
-  //     DocumentSnapshot userDoc = await FirebaseFirestore.instance
-  //         .collection('visitors')
-  //         .doc(userId)
-  //         .get();
-
-  //     if (userDoc.exists) {
-  //       Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
-  //       List<String> favorites = List<String>.from(data?['favorites'] ?? []);
-  //       return favorites;
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (e) {
-  //     log('Error fetching user favorites: $e');
-  //     return [];
-  //   }
-  // }
-
-  // static Future<List<String>> getUserBookings(
-  //     String userId, BookingStatus status) async {
-  //   try {
-  //     DocumentSnapshot userDoc = await FirebaseFirestore.instance
-  //         .collection('visitors')
-  //         .doc(userId)
-  //         .get();
-  //     if (!userDoc.exists) return [];
-
-  //     Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
-  //     if (data == null || !data.containsKey('bookings')) return [];
-
-  //     List<String> bookingIds = List<String>.from(data['bookings']);
-
-  //     List<String> filteredBookings = [];
-  //     for (String bookingId in bookingIds) {
-  //       DocumentSnapshot bookingDoc = await FirebaseFirestore.instance
-  //           .collection('bookings')
-  //           .doc(bookingId)
-  //           .get();
-
-  //       if (bookingDoc.exists) {
-  //         Map<String, dynamic>? bookingData =
-  //             bookingDoc.data() as Map<String, dynamic>?;
-
-  //         if (bookingData != null &&
-  //             bookingData.containsKey('status') &&
-  //             bookingData['status'].toString() == status.name) {
-  //           filteredBookings.add(bookingId);
-  //         }
-  //       }
-  //     }
-
-  //     return filteredBookings;
-  //   } catch (e, stackTrace) {
-  //     log('Error fetching user bookings: $e', stackTrace: stackTrace);
-  //     return [];
-  //   }
-  // }

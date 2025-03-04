@@ -51,7 +51,6 @@ class _BookingViewState extends State<BookingView>
         _buildHeader(),
         _buildTabView(),
         Expanded(
-          key: ValueKey(_selectedTab),
           child: StreamBuilder<List<String>>(
             stream: VisitorBookingsStream.bookingsStream,
             builder: (context, snapshot) {

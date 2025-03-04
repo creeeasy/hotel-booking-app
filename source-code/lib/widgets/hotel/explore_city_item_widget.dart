@@ -20,12 +20,12 @@ class ExploreCityWidget extends StatefulWidget {
 }
 
 class _ExploreCityWidgetState extends State<ExploreCityWidget> {
-  late final WilayaModel hotel;
+  late final WilayaModel wilaya;
 
   @override
   void initState() {
     super.initState();
-    hotel = WilayaModel(
+    wilaya = WilayaModel(
       number: widget.wilaya.ind,
       name: widget.wilaya.name,
     );
@@ -70,7 +70,7 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
                     height: imageHeight,
                     width: double.infinity,
                     child: Image.asset(
-                      hotel.getImage(),
+                      wilaya.getImage(),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -94,7 +94,7 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
                     left: padding,
                     bottom: padding * 1.2,
                     child: Text(
-                      hotel.name,
+                      wilaya.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: titleFontSize,
