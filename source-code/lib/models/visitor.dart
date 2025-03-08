@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/booking.dart';
@@ -111,5 +110,32 @@ class Visitor {
       'bookings': bookings ?? [],
       'location': location,
     };
+  }
+
+  static Future<Map<String, String>?> fetchVisitorDetails({
+    required String userId,
+  }) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('visitors')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        final data = userDoc.data() as Map<String, dynamic>?;
+
+        if (data == null) return null; // Handle null data safely
+
+        return {
+          "avatarUrl": data["avatarUrl"]?.toString() ?? "",
+          "firstName": data["firstName"]?.toString() ?? "",
+          "lastName": data["lastName"]?.toString() ?? "",
+        };
+      }
+      return null;
+    } catch (e) {
+      print("Error fetching visitor details: $e"); // Use debugPrint in Flutter
+      return null;
+    }
   }
 }

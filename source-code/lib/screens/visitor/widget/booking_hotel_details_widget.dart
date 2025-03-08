@@ -4,7 +4,6 @@ import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_price_widget.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
-import 'package:fatiel/utils/rating_utils.dart';
 import 'package:flutter/material.dart';
 
 class BookingHotelCard extends StatelessWidget {
@@ -71,7 +70,7 @@ class BookingHotelCard extends StatelessWidget {
                                 color: Colors.amber, size: 16),
                             const SizedBox(width: 4),
                             Text(
-                              getTotalRating(hotel.ratings).toString(),
+                              hotel.ratings.rating.toString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,

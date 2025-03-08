@@ -63,7 +63,7 @@ class _ExploreSectionWidgetState extends State<ExploreSectionWidget>
         const SizedBox(height: 20),
         FutureBuilder<List<Hotel>>(
             future: selectedTab == TopBarType.Popular
-                ? Hotel.getPopularHotels()
+                ? Hotel.getRecommendedHotels()
                 : Hotel.getNearbyHotels(widget.location),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

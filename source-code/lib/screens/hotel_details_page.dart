@@ -11,7 +11,6 @@ import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/screens/visitor/widget/section_title_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
-import 'package:fatiel/utils/rating_utils.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -194,7 +193,7 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                     SectionTitle(
                       title: "Ratings",
                     ),
-                    hotel.ratings.isEmpty
+                    hotel.ratings.totalRating == 0
                         ? Container(
                             padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
@@ -235,8 +234,7 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                                   child: Column(
                                     children: [
                                       Text(
-                                        getTotalRating(hotel.ratings)
-                                            .toStringAsFixed(1),
+                                        hotel.ratings.rating.toStringAsFixed(1),
                                         style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
@@ -292,7 +290,7 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                                   child: Column(
                                     children: [
                                       Text(
-                                        '${hotel.ratings.length}',
+                                        hotel.ratings.totalRating.toString(),
                                         style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
@@ -315,11 +313,12 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                             ),
                           ),
                     SizedBox(height: 10),
-                    if (hotel.ratings.isNotEmpty)
+                    if ((hotel.ratings.totalRating) > 0)
                       CustomOutlinedButton(
-                        text: "View all ${hotel.ratings.length} reviews",
+                        text: "View all ${hotel.ratings.totalRating} reviews",
                         onPressed: () {
-                          // Navigate to reviews page
+                          Navigator.pushNamed(context, reviewsScreenRoute,
+                              arguments: hotel.id);
                         },
                       )
                   ],

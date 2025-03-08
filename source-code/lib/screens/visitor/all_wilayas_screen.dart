@@ -103,8 +103,10 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             image: DecorationImage(
-                              image: NetworkImage(wilaya.getImage()),
-                              fit: BoxFit.cover,
+                              image: AssetImage(
+                                  wilaya.getImage()), // Correct usage
+                              fit: BoxFit
+                                  .cover, // Ensures the image covers the container
                             ),
                           ),
                           child: Stack(

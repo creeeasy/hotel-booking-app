@@ -1,8 +1,10 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:fatiel/constants/routes/routes.dart';
+import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/screens/visitor/widget/action_button.dart';
@@ -96,10 +98,145 @@ class BookingWidget extends StatelessWidget {
                       bookingId: booking.id,
                     ),
                   ),
+                  if (booking.status == BookingStatus.completed)
+                    FutureBuilder<bool>(
+                      future: Review.hasVisitorReviewed(
+                          bookingId: bookingId, visitorId: booking.visitorId),
+                      builder: (context, reviewSnapshot) {
+                        if (reviewSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (reviewSnapshot.data == false) {
+                          return ElevatedButton(
+                            onPressed: () => _showReviewDialog(context,
+                                booking.visitorId, bookingId, hotel.id),
+                            child: const Text("Write a Review"),
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
                 ],
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showReviewDialog(BuildContext context, String visitorId,
+      String bookingId, String hotelId) {
+    final TextEditingController commentController = TextEditingController();
+    double rating = 3.0;
+    bool isSubmitting = false; // Track submission state
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Write a Review"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<double>(
+                    value: rating,
+                    items: [1, 2, 3, 4, 5].map((e) {
+                      return DropdownMenuItem(
+                        value: e.toDouble(),
+                        child: Text("Rating: $e"),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          rating = value;
+                        });
+                      }
+                    },
+                  ),
+                  TextField(
+                    controller: commentController,
+                    decoration: const InputDecoration(
+                      hintText: "Write your comment",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          if (commentController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    "Please write a comment before submitting."),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                            return;
+                          }
+
+                          setState(() {
+                            isSubmitting = true;
+                          });
+
+                          final result = await Review.createReview(
+                            visitorId: visitorId,
+                            hotelId: hotelId,
+                            bookingId: bookingId,
+                            rating: rating,
+                            comment: commentController.text.trim(),
+                          );
+
+                          Navigator.pop(
+                              context); // Close dialog after submission
+
+                          if (result is ReviewingSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    "Review has been submitted successfully!"),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else if (result is ReviewingFailure) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    "Failed to submit review: ${result.message}"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+
+                          setState(() {
+                            isSubmitting = false;
+                          });
+                        },
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text("Submit"),
+                ),
+              ],
+            );
+          },
         );
       },
     );

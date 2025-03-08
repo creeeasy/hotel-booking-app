@@ -1,13 +1,15 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fatiel/enum/review_update_type.dart';
 import 'package:fatiel/enum/wilaya.dart';
+import 'package:fatiel/models/rating.dart';
 
 class Hotel {
   final String id;
   final String email;
   final String hotelName;
   final int? location;
-  final List<Map<String, double>> ratings;
+  final Rating ratings;
   final List<String> images;
   final List<String> rooms;
   final String? description;
@@ -26,14 +28,14 @@ class Hotel {
     this.description,
     this.thumbnail,
     this.location,
-    this.ratings = const [],
+    Rating? ratings,
     this.mapLink,
     this.contactInfo,
     this.rooms = const [],
     this.startingPricePerNight,
     this.latitude,
     this.longitude,
-  });
+  }) : ratings = ratings ?? Rating(rating: 0, totalRating: 0);
 
   factory Hotel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
@@ -43,11 +45,12 @@ class Hotel {
       email: data['email'] as String? ?? '',
       hotelName: data['hotelName'] as String? ?? '',
       location: data['location'] as int?,
-      ratings: (data['ratings'] as List<dynamic>?)?.map((rating) {
-            return Map<String, double>.from(rating
-                .map((key, value) => MapEntry(key, (value as num).toDouble())));
-          }).toList() ??
-          [],
+      ratings: data['ratings'] != null
+          ? Rating(
+              rating: (data['ratings']['rating'] as num).toDouble(),
+              totalRating: data['ratings']['total_rating'] as int,
+            )
+          : Rating(rating: 0, totalRating: 0),
       images: (data['images'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -98,6 +101,61 @@ class Hotel {
     } catch (e) {
       log('Error fetching hotel by ID: $e');
       return null;
+    }
+  }
+
+  static Future<bool> updateHotelReview({
+    required String hotelId,
+    required ReviewUpdateType action,
+    double? rating,
+  }) async {
+    try {
+      final hotelRef =
+          FirebaseFirestore.instance.collection('hotels').doc(hotelId);
+      final hotelSnapshot = await hotelRef.get();
+
+      final hotelData = hotelSnapshot.data();
+      if (hotelData == null) return false;
+
+      final ratings = hotelData['ratings'] as Map<String, dynamic>? ??
+          {'rating': 0, 'total_rating': 0};
+      double currentRating = (ratings['rating'] as num?)?.toDouble() ?? 0;
+      int totalRatings = (ratings['total_rating'] as num?)?.toInt() ?? 0;
+
+      if (action == ReviewUpdateType.add && rating != null) {
+        double newTotal =
+            (currentRating * totalRatings + rating) / (totalRatings + 1);
+        await hotelRef.update({
+          'ratings.rating': newTotal,
+          'ratings.total_rating': totalRatings + 1,
+        });
+      } else if (action == ReviewUpdateType.update && rating != null) {
+        double newTotal =
+            ((currentRating * totalRatings) - currentRating + rating) /
+                totalRatings;
+        await hotelRef.update({
+          'ratings.rating': newTotal,
+        });
+      } else if (action == ReviewUpdateType.delete) {
+        if (totalRatings > 1) {
+          double newTotal = ((currentRating * totalRatings) - currentRating) /
+              (totalRatings - 1);
+          await hotelRef.update({
+            'ratings.rating': newTotal,
+            'ratings.total_rating': totalRatings - 1,
+          });
+        } else {
+          await hotelRef.update({
+            'ratings.rating': 0,
+            'ratings.total_rating': 0,
+          });
+        }
+      }
+
+      return true;
+    } catch (e) {
+      log('Error updating hotel review: $e');
+      return false;
     }
   }
 
@@ -152,23 +210,12 @@ class Hotel {
     }
   }
 
-  static Future<List<Hotel>> getPopularHotels() async {
+  static Future<List<Hotel>> getRecommendedHotels() async {
     try {
       final querySnapshot =
           await FirebaseFirestore.instance.collection('hotels').get();
       final hotels =
           querySnapshot.docs.map((doc) => Hotel.fromFirestore(doc)).toList();
-      hotels.sort((a, b) {
-        double avgA = a.ratings.isNotEmpty
-            ? a.ratings.map((r) => r.values.first).reduce((a, b) => a + b) /
-                a.ratings.length
-            : 0.0;
-        double avgB = b.ratings.isNotEmpty
-            ? b.ratings.map((r) => r.values.first).reduce((a, b) => a + b) /
-                b.ratings.length
-            : 0.0;
-        return avgB.compareTo(avgA);
-      });
       return hotels;
     } catch (e) {
       log('Error fetching popular hotels: $e');

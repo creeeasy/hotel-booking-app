@@ -8,7 +8,6 @@ import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
-import 'package:fatiel/utils/rating_utils.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/rating_bar_widget.dart';
 import 'package:flutter/material.dart';
@@ -155,15 +154,14 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                         Row(
                                           children: <Widget>[
                                             RatingBarWidget(
-                                              rating:
-                                                  getTotalRating(hotel.ratings),
+                                              rating: hotel.ratings.rating,
                                               size: 20,
                                               activeColor: VisitorThemeColors
                                                   .primaryColor,
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
-                                              " ${hotel.ratings.length} Reviews",
+                                              "${hotel.ratings.totalRating} Reviews",
                                               style: TextStyle(
                                                   fontSize: 14,
                                                   color: VisitorThemeColors
