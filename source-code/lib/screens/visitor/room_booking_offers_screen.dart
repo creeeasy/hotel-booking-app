@@ -3,6 +3,7 @@ import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/room_availability.dart';
 import 'package:fatiel/screens/visitor/widget/booking_navigation_button_widget.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/details_image_with_hero_widget.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
@@ -31,12 +32,16 @@ class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomBackAppBar(
+        title: 'Explore room offers',
+        onBack: () => Navigator.pop(context),
+      ),
       body: FutureBuilder<List<Room>>(
         future: initializeRoomsData(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicatorWidget(
-              indicatorColor: VisitorThemeColors.deepPurpleAccent,
+              indicatorColor: VisitorThemeColors.deepBlueAccent,
               containerColor: VisitorThemeColors.whiteColor,
             );
           }
@@ -53,31 +58,7 @@ class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
 
           final rooms = snapshot.data!;
 
-          return Scaffold(
-              backgroundColor: VisitorThemeColors.whiteColor,
-              appBar: AppBar(
-                leading: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(
-                    Icons.chevron_left,
-                    color: Colors.black,
-                    size: 32, // Slightly increased for better visibility
-                  ),
-                ),
-                backgroundColor: VisitorThemeColors.whiteColor,
-                elevation: 0,
-                centerTitle: true,
-                title: const Text(
-                  'Explore room offers',
-                  style: TextStyle(
-                    color: VisitorThemeColors.blackColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              body: BuildRoomList(rooms: rooms));
+          return BuildRoomList(rooms: rooms);
         },
       ),
     );

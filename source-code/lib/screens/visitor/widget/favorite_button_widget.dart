@@ -1,5 +1,6 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
+import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteButton extends StatefulWidget {
@@ -23,15 +24,24 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   Future<void> _initializeFavoriteState() async {
     final favoritesList = await VisitorFavoritesStream.favoritesStream.first;
-    if (mounted) {
-      setState(() {
-        isFavorite = favoritesList.contains(widget.hotelId);
-      });
-    }
+    if (!mounted) return;
+    setState(() => isFavorite = favoritesList.contains(widget.hotelId));
   }
 
   Future<void> handleFavoriteTap() async {
-    if (isLoading) return;
+    if (isLoading || !mounted) return;
+
+    if (isFavorite) {
+      final shouldRemove = await showGenericDialog<bool>(
+        context: context,
+        title: 'Remove from Favorites',
+        content:
+            'Are you sure you want to remove this booking from your favorites?',
+        optionBuilder: () => {'No': false, 'Yes, Remove': true},
+      );
+
+      if (shouldRemove != true) return;
+    }
 
     setState(() => isLoading = true);
 
@@ -63,8 +73,8 @@ class _FavoriteButtonState extends State<FavoriteButton> {
             child: child,
           ),
           child: isLoading
-              ? SizedBox(
-                  key: const ValueKey("loading"),
+              ? const SizedBox(
+                  key: ValueKey("loading"),
                   height: 24,
                   width: 24,
                   child: CircularProgressIndicator(
@@ -78,7 +88,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                   isFavorite ? Icons.favorite : Icons.favorite_border,
                   key: ValueKey(isFavorite),
                   color: isFavorite
-                      ? VisitorThemeColors.deepPurpleAccent
+                      ? VisitorThemeColors.deepBlueAccent
                       : Colors.grey,
                   semanticLabel:
                       isFavorite ? "Remove from favorites" : "Add to favorites",

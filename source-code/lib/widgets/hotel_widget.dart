@@ -45,22 +45,18 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
               errorMessage: 'Error: ${snapshot.error}',
             );
           } else if (snapshot.hasData) {
-            // if (snapshot.data is Hotel) {
-            //   log('HOtel');
-            //   log(snapshot.data.runtimeType.toString());
-            // } else {
-            //   log(snapshot.data.runtimeType.toString());
-            // }
-
             final hotel = snapshot.data as Hotel;
             return InkWell(
               onTap: () {
                 Navigator.of(context)
                     .pushNamed(hotelDetailsRoute, arguments: hotel.id);
               },
-              child: Padding(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: AnimatedBuilder(
                   animation: widget.animationController!,
                   builder: (BuildContext context, Widget? child) {
@@ -91,14 +87,14 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                     child:
                                         HotelImageWidget(images: hotel.images),
                                   ),
-                                  // Optional: Add a gradient overlay for better text visibility
+                                  // Gradient overlay for better readability
                                   Positioned.fill(
                                     child: Container(
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
-                                            Colors.black.withOpacity(0.6),
-                                            Colors.transparent
+                                            Colors.black.withOpacity(0.5),
+                                            Colors.transparent,
                                           ],
                                           begin: Alignment.bottomCenter,
                                           end: Alignment.topCenter,
@@ -117,6 +113,7 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                         Text(
                                           hotel.hotelName,
                                           style: const TextStyle(
+                                            fontFamily: "Poppins",
                                             fontWeight: FontWeight.w600,
                                             fontSize: 22,
                                             color: Colors.white,
@@ -130,7 +127,7 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                               FontAwesomeIcons.mapMarkerAlt,
                                               size: 12,
                                               color: VisitorThemeColors
-                                                  .primaryColor,
+                                                  .vibrantOrange, // Bright & cheerful
                                             ),
                                             const SizedBox(width: 4),
                                             Expanded(
@@ -157,7 +154,7 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                               rating: hotel.ratings.rating,
                                               size: 20,
                                               activeColor: VisitorThemeColors
-                                                  .primaryColor,
+                                                  .secondaryColor,
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
@@ -176,27 +173,34 @@ class _HotelRowOneWidgetState extends State<HotelRowOneWidget> {
                                     top: 8,
                                     right: 8,
                                     child: Container(
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: VisitorThemeColors.whiteColor,
                                         shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: VisitorThemeColors.blackColor
+                                                .withOpacity(0.1),
+                                            blurRadius: 4,
+                                            spreadRadius: 2,
+                                          ),
+                                        ],
                                       ),
                                       child: Material(
                                         color: Colors.transparent,
                                         child: AnimatedSwitcher(
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          transitionBuilder: (Widget child,
-                                              Animation<double> animation) {
-                                            return FadeTransition(
-                                              opacity: animation,
-                                              child: ScaleTransition(
-                                                  scale: animation,
-                                                  child: child),
-                                            );
-                                          },
-                                          child: FavoriteButton(
-                                              hotelId: widget.hotelId),
-                                        ),
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            transitionBuilder: (Widget child,
+                                                Animation<double> animation) {
+                                              return FadeTransition(
+                                                opacity: animation,
+                                                child: ScaleTransition(
+                                                    scale: animation,
+                                                    child: child),
+                                              );
+                                            },
+                                            child: FavoriteButton(
+                                                hotelId: widget.hotelId)),
                                       ),
                                     ),
                                   ),

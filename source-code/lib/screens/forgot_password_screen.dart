@@ -90,6 +90,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             title: const Text(
               'Forgot Password',
               style: TextStyle(
+                fontFamily: 'Poppins',
                 color: ThemeColors.blackColor,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,

@@ -180,7 +180,7 @@ Do you want to proceed with the payment?''',
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      isAvailable ? VisitorThemeColors.pinkAccent : Colors.grey,
+                      isAvailable ? VisitorThemeColors.softPinkAccent : Colors.grey,
                   minimumSize: const Size(140, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

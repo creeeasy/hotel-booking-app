@@ -63,6 +63,7 @@ class _LoginPage extends State<LoginView> {
             title: const Text(
               'Login',
               style: TextStyle(
+                fontFamily: 'Poppins',
                 color: ThemeColors.blackColor,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,

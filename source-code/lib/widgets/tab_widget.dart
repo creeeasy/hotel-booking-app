@@ -63,6 +63,8 @@ class TripsTabView extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
+            fontFamily: "Poppins",
+
             fontSize: 14.0, // Balanced size for tabs
             color: isSelected
                 ? VisitorThemeColors.whiteColor

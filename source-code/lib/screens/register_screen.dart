@@ -82,6 +82,8 @@ class _RegisterViewState extends State<RegisterView> {
                         child: Text(
                           'Visitor',
                           style: TextStyle(
+                            fontFamily: 'Poppins',
+
                             color: Colors.white,
                             fontWeight: FontWeight
                                 .w600, // Bold font weight for emphasis
@@ -117,6 +119,8 @@ class _RegisterViewState extends State<RegisterView> {
                         child: Text(
                           'Hotel',
                           style: TextStyle(
+                            fontFamily: 'Poppins',
+
                             fontWeight: FontWeight
                                 .w600, // Bold font weight for emphasis
                             fontSize: 18, // Larger font size for readability
@@ -131,8 +135,8 @@ class _RegisterViewState extends State<RegisterView> {
                       text: TextSpan(
                         style: TextStyle(
                           color: ThemeColors
-                              .primaryColor, // Color for the normal text
-                          fontWeight: FontWeight.w500,
+                              .blackColor.withOpacity(0.77), // Color for the normal text
+                          fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
                         children: [
@@ -145,7 +149,7 @@ class _RegisterViewState extends State<RegisterView> {
                             style: TextStyle(
                               color: ThemeColors
                                   .blackColor, // Primary color for the clickable text
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
                             recognizer: TapGestureRecognizer()

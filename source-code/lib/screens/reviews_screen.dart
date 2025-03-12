@@ -1,7 +1,5 @@
 // ignore_for_file: sort_child_properties_last, prefer_const_constructors
 
-import 'dart:developer';
-
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/visitor.dart';
@@ -24,6 +22,7 @@ class ReviewsScreen extends StatefulWidget {
 class _ReviewsScreenState extends State<ReviewsScreen> {
   Future<List<Review>> getHotelReviews(BuildContext context) async {
     final hotelId = ModalRoute.of(context)!.settings.arguments as String;
+    print(hotelId);
     return await Review.getAllHotelReviews(hotelId: hotelId);
   }
 
@@ -37,7 +36,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             return Center(
               child: CircularProgressIndicatorWidget(
                 indicatorColor:
-                    VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+                    VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
                 containerColor: VisitorThemeColors.whiteColor,
               ),
             );
@@ -60,7 +59,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     DividerWidget(
-                      verticalPadding: 5,
+                      verticalPadding: 0,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -75,7 +74,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       ),
                     ),
                     DividerWidget(
-                      verticalPadding: 5,
+                      verticalPadding: 0,
                     ),
                   ],
                 );
@@ -145,7 +144,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               const Text(
                 'Guest Favorite',
                 style: TextStyle(
-                  fontSize: 26,
+                  fontSize: 23,
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
@@ -155,7 +155,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 'This home is a guest favorite based\non ratings, reviews, and reliability.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                   color: VisitorThemeColors.textGreyColor,
                   height: 1.4,

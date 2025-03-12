@@ -3,6 +3,7 @@ import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/screens/visitor/widget/section_header_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_section_widget.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
@@ -87,50 +88,10 @@ class _ExploreViewState extends State<ExploreView>
                   location: currentVisitor.location,
                 ),
                 SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "Find hotels in cities.",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          color: VisitorThemeColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(8.0),
-                      onTap: () {
-                        Navigator.pushNamed(context, allWilayaViewRoute);
-                      },
-                      splashColor: VisitorThemeColors.accentColor,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        child: Row(
-                          children: [
-                            Text(
-                              "See all",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: VisitorThemeColors.secondaryColor,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Icon(
-                              Icons.arrow_forward,
-                              size: 18,
-                              color: VisitorThemeColors.secondaryColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                SectionHeader(
+                  title: "Find hotels in cities",
+                  onSeeAllTap: () =>
+                      Navigator.pushNamed(context, allWilayaViewRoute),
                 ),
                 FutureBuilder<Map<int, int>>(
                   future: Hotel.getHotelStatistics(),

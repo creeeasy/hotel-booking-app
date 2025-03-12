@@ -108,6 +108,7 @@ class Hotel {
     required String hotelId,
     required ReviewUpdateType action,
     double? rating,
+    double? oldRating, // Needed for updating
   }) async {
     try {
       final hotelRef =
@@ -124,22 +125,24 @@ class Hotel {
 
       if (action == ReviewUpdateType.add && rating != null) {
         double newTotal =
-            (currentRating * totalRatings + rating) / (totalRatings + 1);
+            ((currentRating * totalRatings) + rating) / (totalRatings + 1);
         await hotelRef.update({
           'ratings.rating': newTotal,
           'ratings.total_rating': totalRatings + 1,
         });
-      } else if (action == ReviewUpdateType.update && rating != null) {
+      } else if (action == ReviewUpdateType.update &&
+          rating != null &&
+          oldRating != null) {
         double newTotal =
-            ((currentRating * totalRatings) - currentRating + rating) /
+            ((currentRating * totalRatings) - oldRating + rating) /
                 totalRatings;
         await hotelRef.update({
           'ratings.rating': newTotal,
         });
-      } else if (action == ReviewUpdateType.delete) {
+      } else if (action == ReviewUpdateType.delete && rating != null) {
         if (totalRatings > 1) {
-          double newTotal = ((currentRating * totalRatings) - currentRating) /
-              (totalRatings - 1);
+          double newTotal =
+              ((currentRating * totalRatings) - rating) / (totalRatings - 1);
           await hotelRef.update({
             'ratings.rating': newTotal,
             'ratings.total_rating': totalRatings - 1,

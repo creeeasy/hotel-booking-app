@@ -29,6 +29,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           title: const Text(
             'Verification Email',
             style: TextStyle(
+              fontFamily: 'Poppins',
               color: ThemeColors.blackColor,
               fontSize: 22,
               fontWeight: FontWeight.w600,

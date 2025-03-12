@@ -1,20 +1,17 @@
+import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:flutter/material.dart';
 
 class CardLoadingIndicator extends StatelessWidget {
   final double height;
-  final Color borderColor;
   final Color backgroundColor;
   final Color indicatorColor;
-  final double borderWidth;
   final EdgeInsets padding;
 
   const CardLoadingIndicator({
     Key? key,
-    this.height = 100,
-    this.borderColor = Colors.grey,
-    this.backgroundColor = Colors.white,
-    this.indicatorColor = Colors.deepPurpleAccent,
-    this.borderWidth = 2,
+    this.height = 250,
+    this.backgroundColor = VisitorThemeColors.whiteColor,
+    this.indicatorColor = VisitorThemeColors.radiantPink,
     this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
   }) : super(key: key);
 
@@ -26,8 +23,6 @@ class CardLoadingIndicator extends StatelessWidget {
         height: height,
         width: double.infinity,
         decoration: BoxDecoration(
-          border: Border.all(
-              color: borderColor.withOpacity(0.3), width: borderWidth),
           borderRadius: BorderRadius.circular(12),
           color: backgroundColor,
         ),

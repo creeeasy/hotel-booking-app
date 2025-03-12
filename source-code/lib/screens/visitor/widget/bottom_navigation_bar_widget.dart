@@ -1,7 +1,6 @@
+import 'package:fatiel/enum/bottom_bar_type.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-
-import '../../../enum/bottom_bar_type.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final BottomBarType bottomBarType;
@@ -16,9 +15,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: VisitorThemeColors.whiteColor,
       currentIndex: BottomBarType.values.indexOf(bottomBarType),
       onTap: (index) => onTabClick(BottomBarType.values[index]),
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.travel_explore, size: 28),
           label: "Explore",
@@ -33,11 +33,21 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),
       ],
       selectedItemColor: VisitorThemeColors.primaryColor,
-      unselectedItemColor: VisitorThemeColors.blackColor,
+      unselectedItemColor: VisitorThemeColors.textGreyColor,
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-      unselectedLabelStyle: TextStyle(fontSize: 12),
+      selectedLabelStyle: const TextStyle(
+        fontFamily: "Poppins",
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.0,
+      ),
+      unselectedLabelStyle: const TextStyle(
+        fontFamily: "Poppins",
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        letterSpacing: 0.5,
+      ),
     );
   }
 }

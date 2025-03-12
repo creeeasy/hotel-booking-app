@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/booking.dart';
+import 'package:fatiel/models/room.dart';
 
 class Visitor {
   final String id;
@@ -89,10 +90,11 @@ class Visitor {
     try {
       final booking = await Booking.getBookingById(bookingId);
       final hotel = await Hotel.getHotelById(booking.hotelId);
-
+      final room = await Room.getRoomById(booking.roomId);
       return {
         "booking": booking,
         "hotel": hotel,
+        "room": room,
       };
     } catch (e) {
       print('Error fetching booking or hotel: $e');

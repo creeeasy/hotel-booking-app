@@ -74,7 +74,7 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicatorWidget(
                 indicatorColor:
-                    VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+                    VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
                 containerColor: VisitorThemeColors.whiteColor,
               );
             } else if (snapshot.hasError) {

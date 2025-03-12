@@ -47,63 +47,68 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Hero(
-                  tag:
-                      hasImages ? widget.images[index] : UniqueKey().toString(),
-                  child: Stack(
-                    children: [
-                      Container(
-                        color: Colors.grey.shade100,
-                        child: hasImages
-                            ? Image.network(
-                                widget.images[index],
-                                fit: BoxFit
-                                    .contain, // Ensures full width or height without cropping/stretching
-                                width: double
-                                    .infinity, // Allows the width to expand while maintaining aspect ratio
-                                height: double
-                                    .infinity, // Allows height to expand while maintaining aspect ratio
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(
-                                  Icons.error,
-                                  color: Colors.red,
-                                  size: 48,
-                                ),
-                              )
-                            : _buildNoImagePlaceholder(),
-                      ),
-                      if (widget.hotelId != null)
-                        PositionedFavoriteButton(hotelId: widget.hotelId!),
-                      if (widget.hotelId != null)
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: const Icon(
-                              Icons.chevron_left,
-                              color: Colors.black,
-                              size: 32,
+                    tag: hasImages
+                        ? widget.images[index]
+                        : UniqueKey().toString(),
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(
+                              color: hasImages
+                                  ? VisitorThemeColors.accentColor
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: hasImages
+                              ? Image.network(
+                                  widget.images[index],
+                                  fit: BoxFit.contain,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                    Icons.error,
+                                    color: Colors.red,
+                                    size: 48,
+                                  ),
+                                )
+                              : _buildNoImagePlaceholder(),
+                        ),
+                        if (widget.hotelId != null)
+                          PositionedFavoriteButton(hotelId: widget.hotelId!),
+                        if (widget.hotelId != null)
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: const Icon(
+                                Icons.chevron_left,
+                                color: Colors.black,
+                                size: 32,
+                              ),
                             ),
                           ),
-                        ),
-                      if (hasImages)
-                        Positioned(
-                          bottom: 8,
-                          right: 8,
-                          child: _buildImageIndicator(index),
-                        ),
-                    ],
-                  ),
-                ),
+                        if (hasImages)
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: _buildImageIndicator(index),
+                          ),
+                      ],
+                    )),
               );
             },
           ),
@@ -208,7 +213,7 @@ class ThumbnailList extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: currentIndex == index
-                      ? VisitorThemeColors.deepPurpleAccent
+                      ? VisitorThemeColors.deepBlueAccent
                       : Colors.transparent,
                   width: 2,
                 ),

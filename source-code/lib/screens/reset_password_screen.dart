@@ -28,6 +28,7 @@ class _RESETpassword extends State<ResetPassowrdView> {
               style: TextStyle(
                 color: ThemeColors.blackColor,
                 fontSize: 22,
+                fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
               ),

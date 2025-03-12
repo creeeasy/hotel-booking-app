@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/models/room.dart';
+import 'package:fatiel/models/visitor.dart';
 
 class Booking {
   final String id;
@@ -57,15 +58,39 @@ class Booking {
     };
   }
 
-  static Future<List<Booking>> getBookingsByUser(String visitorId) async {
+  // static Future<List<Booking>> getBookingsByUser(String visitorId) async {
+  //   try {
+  //     final querySnapshot = await FirebaseFirestore.instance
+  //         .collection('bookings')
+  //         .where('visitorId', isEqualTo: visitorId)
+  //         .get();
+  //     return querySnapshot.docs
+  //         .map((doc) => Booking.fromFirestore(doc))
+  //         .toList();
+  //   } catch (e) {
+  //     log('Error fetching bookings by user: $e');
+  //     return [];
+  //   }
+  // }
+  static Future<List<Booking>> getBookingsByUser(
+      String visitorId, BookingStatus status) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('bookings')
-          .where('visitorId', isEqualTo: visitorId)
-          .get();
-      return querySnapshot.docs
-          .map((doc) => Booking.fromFirestore(doc))
-          .toList();
+      final visitor = await Visitor.getVisitorById(visitorId);
+      if (visitor!.bookings == null) {
+        return [];
+      }
+      final bookingIds = visitor.bookings!;
+
+      List<Booking> filteredBookings = [];
+
+      for (final bookingId in bookingIds) {
+        final bookingData = await Booking.getBookingById(bookingId);
+
+        if (bookingData.status == status) {
+          filteredBookings.add(bookingData);
+        }
+      }
+      return filteredBookings;
     } catch (e) {
       log('Error fetching bookings by user: $e');
       return [];

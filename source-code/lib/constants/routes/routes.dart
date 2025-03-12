@@ -17,3 +17,4 @@ const bookingDetailsViewRoute = '/booking-details/';
 const roomBookingOffersViewRoute = '/room-booking-offers/';
 const allWilayaViewRoute = '/all-wilayas/';
 const reviewsScreenRoute = 'reviews-screen';
+const hotelBrowseScreenRoute = 'hotel-browse-screen';

@@ -1,3 +1,4 @@
+import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomOutlinedButton extends StatelessWidget {
@@ -17,13 +18,13 @@ class CustomOutlinedButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: Colors.black, width: 1.5),
-          foregroundColor: Colors.black,
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+          side: const BorderSide(color: VisitorThemeColors.primaryColor, width: 1.5),
+          foregroundColor: VisitorThemeColors.primaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
@@ -31,8 +32,9 @@ class CustomOutlinedButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
+            fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -101,7 +101,7 @@ class Review {
       final querySnapshot = await FirebaseFirestore.instance
           .collection("reviews")
           .where("hotelId", isEqualTo: hotelId)
-          .orderBy("createdAt", descending: true) // Sorting by createdAt
+          // .orderBy("createdAt", descending: true) // Sorting by createdAt
           .get();
 
       return querySnapshot.docs
@@ -113,14 +113,115 @@ class Review {
     }
   }
 
-  static Future<bool> hasVisitorReviewed(
-      {required String visitorId, required String bookingId}) async {
-    final query = await FirebaseFirestore.instance
-        .collection('reviews')
-        .where('visitorId', isEqualTo: visitorId)
-        .where('bookingId', isEqualTo: bookingId)
-        .get();
-    return query.docs.isNotEmpty;
+  static Future<Review?> hasVisitorReviewed({
+    required String visitorId,
+    required String bookingId,
+  }) async {
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('visitorId', isEqualTo: visitorId)
+          .where('bookingId', isEqualTo: bookingId)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        return Review.fromFirestore(query.docs.first);
+      }
+      return null;
+    } catch (e) {
+      print("Error checking if visitor has reviewed: $e");
+      return null;
+    }
+  }
+
+  static Future<ReviewingResult> updateReview({
+    required String reviewId,
+    required String visitorId,
+    required double newRating,
+    required String newComment,
+  }) async {
+    try {
+      final reviewDoc = await FirebaseFirestore.instance
+          .collection("reviews")
+          .doc(reviewId)
+          .get();
+
+      if (!reviewDoc.exists) {
+        return const ReviewingFailure("Review not found.");
+      }
+
+      final review = Review.fromFirestore(reviewDoc);
+      if (review.visitorId != visitorId) {
+        return const ReviewingFailure("You can only edit your own review.");
+      }
+
+      await FirebaseFirestore.instance
+          .collection("reviews")
+          .doc(reviewId)
+          .update({
+        'rating': newRating,
+        'comment': newComment,
+      });
+
+      await Hotel.updateHotelReview(
+        hotelId: review.hotelId,
+        action: ReviewUpdateType.update,
+        rating: newRating,
+        oldRating: review.rating,
+      );
+      return ReviewingSuccess(
+        Review(
+          id: reviewId,
+          visitorId: review.visitorId,
+          hotelId: review.hotelId,
+          bookingId: review.bookingId,
+          rating: newRating,
+          comment: newComment,
+          createdAt: review.createdAt,
+        ),
+      );
+    } catch (e) {
+      return const ReviewingFailure(
+          "An error occurred while updating your review.");
+    }
+  }
+
+  static Future<ReviewingResult> deleteReview({
+    required String reviewId,
+    required String visitorId,
+  }) async {
+    try {
+      final reviewDoc = await FirebaseFirestore.instance
+          .collection("reviews")
+          .doc(reviewId)
+          .get();
+
+      if (!reviewDoc.exists) {
+        return const ReviewingFailure("Review not found.");
+      }
+
+      final review = Review.fromFirestore(reviewDoc);
+      if (review.visitorId != visitorId) {
+        return const ReviewingFailure("You can only delete your own review.");
+      }
+
+      await FirebaseFirestore.instance
+          .collection("reviews")
+          .doc(reviewId)
+          .delete();
+
+      // Update the hotel review statistics
+      await Hotel.updateHotelReview(
+        hotelId: review.hotelId,
+        action: ReviewUpdateType.delete,
+        rating: review.rating,
+      );
+
+      return ReviewingSuccess(review);
+    } catch (e) {
+      return const ReviewingFailure(
+          "An error occurred while deleting your review.");
+    }
   }
 }
 

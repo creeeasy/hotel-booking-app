@@ -8,6 +8,7 @@ import 'package:fatiel/screens/visitor/booking_details_screen.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
 import 'package:fatiel/screens/visitor/explore_screen.dart';
 import 'package:fatiel/screens/visitor/favorite_screen.dart';
+import 'package:fatiel/screens/visitor/hotel_browse_view.dart';
 import 'package:fatiel/screens/visitor/room_booking_offers_screen.dart';
 import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
           bookingDetailsViewRoute: (context) => const BookingDetailsView(),
           allWilayaViewRoute: (context) => const AllWilayaScreen(),
           reviewsScreenRoute: (context) => const ReviewsScreen(),
+          hotelBrowseScreenRoute: (context) => const HotelBrowseView(),
         },
         home: const SafeArea(child: Traffic()));
   }
@@ -105,7 +107,7 @@ class _TrafficState extends State<Traffic> {
       if (state is AuthStateHotelLoggedIn) {
         return const HotelHomeView();
       } else if (state is AuthStateVisitorLoggedIn) {
-        // return const ReviewsScreen();
+        // return const NoBookingsWidget();
 
         return const VisitorHomeScreen();
       } else if (state is AuthStateNeedsVerification) {

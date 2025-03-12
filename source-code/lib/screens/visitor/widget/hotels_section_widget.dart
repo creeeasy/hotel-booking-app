@@ -2,15 +2,16 @@
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/top_bar_type.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/visitor/widget/booking_hotel_details_widget.dart';
+import 'package:fatiel/screens/visitor/widget/section_header_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/tab_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:fatiel/widgets/explore_item_header_widget.dart';
 
 class ExploreSectionWidget extends StatefulWidget {
   const ExploreSectionWidget({Key? key, this.location}) : super(key: key);
@@ -23,26 +24,11 @@ class ExploreSectionWidget extends StatefulWidget {
 class _ExploreSectionWidgetState extends State<ExploreSectionWidget>
     with SingleTickerProviderStateMixin {
   late TopBarType selectedTab;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
     selectedTab = TopBarType.Popular;
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _animation =
-        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   int hotelsCount = 0;
@@ -79,17 +65,12 @@ class _ExploreSectionWidgetState extends State<ExploreSectionWidget>
 
                 return Column(
                   children: [
-                    ExploreItemHeaderWidget(
-                      hotelsCount: hotels.length,
-                      titleTxt: selectedTab == TopBarType.Popular
-                          ? 'Popular Hotels'
-                          : 'Hotels Near You',
-                      subTxt: 'See all',
-                      animationController: _animationController,
-                      animation: _animation,
-                      isLeftButton: true,
-                      click: () {},
-                    ),
+                    SectionHeader(
+                        title: selectedTab == TopBarType.Popular
+                            ? 'Popular Hotels (${hotels.length})'
+                            : 'Hotels Near You (${hotels.length})',
+                        onSeeAllTap: () => Navigator.of(context)
+                            .pushNamed(hotelBrowseScreenRoute)),
                     const SizedBox(height: 20),
                     CarouselSlider(
                       options: CarouselOptions(

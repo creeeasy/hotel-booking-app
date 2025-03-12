@@ -84,6 +84,7 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
             'Hotel Registration',
             style: TextStyle(
               fontSize: 19,
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.w600,
               color: ThemeColors.blackColor,
               letterSpacing: 0.3,

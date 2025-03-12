@@ -1,4 +1,6 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/screens/empty_states/no_favorites_found_screen.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:fatiel/widgets/hotel_widget.dart';
@@ -35,20 +37,8 @@ class _FavoritePageState extends State<FavoritePage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: VisitorThemeColors.whiteColor,
-      appBar: AppBar(
-        backgroundColor: VisitorThemeColors.whiteColor,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Favorites',
-          style: TextStyle(
-            color: VisitorThemeColors.blackColor,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ),
+      appBar: const CustomBackAppBar(
+          title: "Favorites", titleColor: VisitorThemeColors.vibrantOrange),
       body: SafeArea(
         child: _buildFavoriteHotels(),
       ),
@@ -60,15 +50,13 @@ class _FavoritePageState extends State<FavoritePage>
       stream: VisitorFavoritesStream.favoritesStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicatorWidget(
-            indicatorColor:
-                VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
-            containerColor: VisitorThemeColors.whiteColor,
+          return const CircularProgressIndicatorWidget(
+            indicatorColor: VisitorThemeColors.vibrantOrange,
           );
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildNoFavoritesUI();
+          return const NoFavoritesScreen();
         }
 
         final List<String> favorites = snapshot.data!;
@@ -97,40 +85,6 @@ class _FavoritePageState extends State<FavoritePage>
           },
         );
       },
-    );
-  }
-
-  Widget _buildNoFavoritesUI() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.favorite_border,
-            size: 80,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'No favorites yet!',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Tap the heart icon to add hotels to your favorites.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black38,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

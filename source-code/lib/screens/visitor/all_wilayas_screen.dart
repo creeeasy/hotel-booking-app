@@ -3,6 +3,7 @@ import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
@@ -28,30 +29,11 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: VisitorThemeColors.whiteColor,
-        elevation: 0,
-        leading: IconButton(
-          color: VisitorThemeColors.blackColor,
-          icon: const Icon(
-            Icons.chevron_left,
-            size: 32,
-            // Matching Visitor screen
-          ),
-          onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
-          },
-        ),
-        centerTitle: true,
-        title: const Text(
-          "All Wilayas",
-          style: TextStyle(
-            color: VisitorThemeColors.blackColor,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-        ),
+      appBar: CustomBackAppBar(
+        title: "All Wilayas",
+        titleColor: VisitorThemeColors.playfulLime,
+        iconColor: VisitorThemeColors.playfulLime,
+        onBack: () => Navigator.pop(context),
       ),
       body: FutureBuilder<Map<int, int>>(
         future: Hotel.getHotelStatistics(),
@@ -59,7 +41,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicatorWidget(
               indicatorColor:
-                  VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
+                  VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
               containerColor: VisitorThemeColors.whiteColor,
             );
           } else if (snapshot.hasError) {

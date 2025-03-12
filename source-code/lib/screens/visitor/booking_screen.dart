@@ -1,9 +1,19 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
+import 'package:fatiel/models/booking.dart';
+import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/screens/empty_states/no_bookings_found_screen.dart';
 import 'package:fatiel/screens/visitor/widget/booking_widget.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
+import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
+import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
+import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BookingView extends StatefulWidget {
   const BookingView({super.key});
@@ -45,58 +55,42 @@ class _BookingViewState extends State<BookingView>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeader(),
-        _buildTabView(),
-        Expanded(
-          child: StreamBuilder<List<String>>(
-            stream: VisitorBookingsStream.bookingsStream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicatorWidget(
-                  indicatorColor:
-                      VisitorThemeColors.deepPurpleAccent.withOpacity(0.8),
-                  containerColor: VisitorThemeColors.whiteColor,
-                );
-              }
+    return Scaffold(
+      appBar: const CustomBackAppBar(
+        title: "Bookings",
+        titleColor: VisitorThemeColors.vibrantOrange,
+      ),
+      body: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final visitorId = (state.currentUser as Visitor).id;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTabView(),
+              Expanded(
+                child: FutureBuilder<List<Booking>>(
+                  future: Booking.getBookingsByUser(visitorId, _selectedTab),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicatorWidget(
+                        indicatorColor: VisitorThemeColors.vibrantOrange,
+                      );
+                    }
 
-              if (snapshot.hasError) {
-                return _buildError(snapshot.error.toString());
-              }
+                    if (snapshot.hasError) {
+                      return _buildError(snapshot.error.toString());
+                    }
 
-              final bookings = snapshot.data ?? [];
-              return bookings.isEmpty
-                  ? _buildNoBookingsUI()
-                  : _buildBookingsList(bookings);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            "Bookings",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.search, size: 28),
-            color: VisitorThemeColors.primaryColor,
-            onPressed: () {},
-            tooltip: 'Search',
-          ),
-        ],
+                    final bookings = snapshot.data ?? [];
+                    return bookings.isEmpty
+                        ? NoBookingsWidget()
+                        : _buildBookingsList(bookings);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -108,33 +102,42 @@ class _BookingViewState extends State<BookingView>
     );
   }
 
-  Widget _buildBookingsList(List<String> bookings) {
-    final itemCount =
-        bookings.length.clamp(1, 10); // Limits max animation count
+  Widget _buildBookingsList(List<Booking> bookings) {
+    final itemCount = bookings.length.clamp(1, 10);
 
-    return ListView.builder(
-      itemCount: bookings.length,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemBuilder: (context, index) {
-        final animation = Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Interval(
-              (1 / itemCount) * index,
-              1.0,
-              curve: Curves.fastOutSlowIn,
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      color: VisitorThemeColors.whiteColor,
+      child: ListView.separated(
+        separatorBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: DividerWidget(),
+        ),
+        itemCount: bookings.length,
+        itemBuilder: (context, index) {
+          final animation = Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(
+            CurvedAnimation(
+              parent: _animationController,
+              curve: Interval(
+                (1 / itemCount) * index,
+                1.0,
+                curve: Curves.fastOutSlowIn,
+              ),
             ),
-          ),
-        );
+          );
 
-        return FadeTransition(
-          opacity: animation,
-          child: BookingWidget(bookingId: bookings[index]),
-        );
-      },
+          return FadeTransition(
+            opacity: animation,
+            child: BookingWidget(
+              bookingId: bookings[index].id,
+              onAction: () => setState(() {}),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -208,52 +211,20 @@ Widget _buildTabItem({
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: isSelected ? VisitorThemeColors.pinkAccent : Colors.transparent,
+        color:
+            isSelected ? VisitorThemeColors.secondaryColor : Colors.transparent,
       ),
       child: Text(
         title,
         style: TextStyle(
+          fontFamily: "Poppins",
           fontSize: 14.0,
           color: isSelected
               ? VisitorThemeColors.whiteColor
-              : VisitorThemeColors.blackColor,
+              : VisitorThemeColors.greyColor,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
         ),
       ),
-    ),
-  );
-}
-
-Widget _buildNoBookingsUI() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.bookmark_border,
-          size: 80,
-          color: Colors.grey.shade400,
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'No bookings yet!',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Colors.black54,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Start booking your favorite hotels now.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black38,
-          ),
-        ),
-      ],
     ),
   );
 }
