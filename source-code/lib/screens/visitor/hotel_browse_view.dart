@@ -3,6 +3,7 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/enum/filter_option.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
+import 'package:fatiel/screens/visitor/widget/range_slider_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -98,94 +99,59 @@ class _HotelBrowseViewState extends State<HotelBrowseView> {
     );
   }
 
-  Widget _buildSortTitle(FilterOption _option) {
+  Widget _buildSortTitle(FilterOption option) {
+    final title = switch (option) {
+      FilterOption.minPeople => "Minimum People Required",
+      FilterOption.price => "Price Range",
+      FilterOption.rating => "Customer Rating",
+    };
+
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          vertical: 8.0), // Add vertical padding for spacing
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
-        'Sort by ${_option.name}',
+        'Sort by $title',
         style: TextStyle(
           fontFamily: 'Poppins',
-          fontSize: 20, // Increased font size for better readability
-          fontWeight:
-              FontWeight.w600, // Slightly lighter than bold for a modern feel
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
           color: VisitorThemeColors.primaryColor,
-          letterSpacing:
-              0.5, // Add some letter spacing for better text legibility
-          shadows: [
-            Shadow(
-              blurRadius: 2.0,
-              color: Colors.black.withOpacity(0.2), // Subtle shadow for depth
-              offset: Offset(0.0, 1.0), // Shadow slightly offset
-            ),
-          ],
+          letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildSortOptions(FilterOption _option) {
-    switch (_option) {
+  Widget _buildSortOptions(FilterOption option) {
+    switch (option) {
       case FilterOption.rating:
-        return Text(
-          'Sort by ${_option.displayName}',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 20, // Adjust font size as needed
-            fontWeight: FontWeight.w600,
-            color: VisitorThemeColors.primaryColor,
-            letterSpacing: 0.5,
-            shadows: [
-              Shadow(
-                blurRadius: 2.0,
-                color: Colors.black.withOpacity(0.2),
-                offset: Offset(0.0, 1.0),
-              ),
-            ],
-          ),
+        return RangeSliderWidget<int>(
+          minValue: 0,
+          maxValue: 5,
+          divisions: 5,
+          label: 'Rating',
+          onChanged: (val) => print("Rating filter set to: $val"),
         );
 
       case FilterOption.price:
-        return Text(
-          'Sort by ${_option.displayName}',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: VisitorThemeColors.primaryColor,
-            letterSpacing: 0.5,
-            shadows: [
-              Shadow(
-                blurRadius: 2.0,
-                color: Colors.black.withOpacity(0.2),
-                offset: Offset(0.0, 1.0),
-              ),
-            ],
-          ),
+        return RangeSliderWidget<int>(
+          minValue: 0,
+          maxValue: 1000,
+          divisions: 20,
+          label: 'Price',
+          onChanged: (val) => print("Price filter set to: $val"),
         );
 
       case FilterOption.minPeople:
-        return Text(
-          'Sort by ${_option.displayName}',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: VisitorThemeColors.primaryColor,
-            letterSpacing: 0.5,
-            shadows: [
-              Shadow(
-                blurRadius: 2.0,
-                color: Colors.black.withOpacity(0.2),
-                offset: Offset(0.0, 1.0),
-              ),
-            ],
-          ),
+        return RangeSliderWidget<int>(
+          minValue: 1,
+          maxValue: 20,
+          divisions: 19,
+          label: 'Minimum People',
+          onChanged: (val) => print("Minimum people filter set to: $val"),
         );
 
       default:
-        return SizedBox
-            .shrink(); // Return an empty widget for unexpected options
+        return const SizedBox.shrink(); // Handles unexpected cases
     }
   }
 }
