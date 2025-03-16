@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:fatiel/enum/review_update_type.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/rating.dart';
@@ -236,6 +237,52 @@ class Hotel {
     } catch (e) {
       log('Error searching for hotel: $e');
       return [];
+    }
+  }
+
+  static Future<void> updateHotelDetails({
+    required String hotelId,
+    required int step,
+    required String newValue,
+  }) async {
+    try {
+      if (newValue.trim().isEmpty) {
+        log("Error: Cannot update with an empty value.");
+        return;
+      }
+
+      final hotelRef =
+          FirebaseFirestore.instance.collection('hotels').doc(hotelId);
+
+      final Map<int, String> stepFields = {
+        0: 'location',
+        1: 'description',
+        2: 'mapLink',
+        3: 'contactInfo',
+      };
+
+      if (!stepFields.containsKey(step)) {
+        log("Error: Invalid step value ($step).");
+        return;
+      }
+
+      final String fieldToUpdate = stepFields[step]!;
+      dynamic updateData;
+
+      if (step == 0) {
+        final int? parsedLocation = int.tryParse(newValue);
+        if (parsedLocation == null) {
+          log("Error: Invalid integer value for location.");
+          return;
+        }
+        updateData = parsedLocation;
+      } else {
+        updateData = newValue;
+      }
+
+      await hotelRef.update({fieldToUpdate: updateData});
+    } catch (e) {
+      log('Error updating hotel details: $e');
     }
   }
 

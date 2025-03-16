@@ -1,3 +1,4 @@
+import 'package:fatiel/screens/hotel/hotel_details_completion_view.dart';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
@@ -41,7 +42,9 @@ void main() {
         providers: [
           BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
         ],
-        child: const MyApp(),
+        child: const SafeArea(
+          child: MyApp(),
+        ),
       ),
     );
   });
@@ -79,7 +82,7 @@ class MyApp extends StatelessWidget {
           reviewsScreenRoute: (context) => const ReviewsScreen(),
           hotelBrowseScreenRoute: (context) => const HotelBrowseView(),
         },
-        home: const SafeArea(child: Traffic()));
+        home: const Traffic());
   }
 }
 
@@ -120,6 +123,8 @@ class _TrafficState extends State<Traffic> {
         return RegisterView();
       } else if (state is AuthStateHotelRegistering) {
         return const HotelRegistrationView();
+      } else if (state is AuthStateHotelDetailsCompletion) {
+        return const HotelDetailsCompletion();
       } else if (state is AuthStateVisitorRegistering) {
         return const VisitorRegistrationView();
       } else {

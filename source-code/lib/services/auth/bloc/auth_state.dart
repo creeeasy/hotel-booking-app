@@ -36,6 +36,15 @@ class AuthStateVisitorRegistering extends AuthState {
       : super(isLoading: isLoading);
 }
 
+class AuthStateHotelDetailsCompletion extends AuthState {
+  final Exception? exception;
+  final Hotel? hotel;
+
+  const AuthStateHotelDetailsCompletion(
+      {required this.exception, required bool isLoading, this.hotel})
+      : super(isLoading: isLoading);
+}
+
 class AuthStateRegistering extends AuthState {
   final Exception? exception;
 

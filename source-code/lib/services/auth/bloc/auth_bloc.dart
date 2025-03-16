@@ -54,6 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ));
       }
     });
+
     on<AuthEventVisitorRegistering>((event, emit) async {
       emit(
           const AuthStateVisitorRegistering(exception: null, isLoading: false));
@@ -129,10 +130,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(const AuthStateNeedsVerification(isLoading: false));
         } else {
           final authenticatedUser = await provider.getUser();
-          if (authenticatedUser is Hotel) {
-            return emit(AuthStateHotelLoggedIn(
+          if (authenticatedUser is Map<String, dynamic> &&
+              authenticatedUser["hotel"] is Hotel) {
+            final bool isCompleted = authenticatedUser["isCompleted"] as bool;
+            final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+
+            if (isCompleted) {
+              return emit(AuthStateHotelLoggedIn(
+                isLoading: false,
+                user: hotel,
+              ));
+            }
+
+            emit(AuthStateHotelDetailsCompletion(
+              exception: null,
               isLoading: false,
-              user: authenticatedUser,
+              hotel: hotel,
             ));
           } else {
             VisitorBookingsStream.listenToBookings(null);
@@ -147,6 +160,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     }));
 
+    on<AuthEventHotelLogIn>((event, emit) async {
+      final authenticatedUser = await provider.getUser();
+      final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+      emit(AuthStateHotelLoggedIn(
+        isLoading: false,
+        user: hotel,
+      ));
+    });
     on<AuthEventLogIn>((event, emit) async {
       emit(const AuthStateLoggedOut(
         exception: null,
@@ -170,10 +191,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLoading: false,
           ));
           final authenticatedUser = await provider.getUser();
-          if (authenticatedUser is Hotel) {
-            return emit(AuthStateHotelLoggedIn(
+          if (authenticatedUser is Map<String, dynamic> &&
+              authenticatedUser["hotel"] is Hotel) {
+            final bool isCompleted = authenticatedUser["isCompleted"] as bool;
+            final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+
+            if (isCompleted) {
+              return emit(AuthStateHotelLoggedIn(
+                isLoading: false,
+                user: hotel,
+              ));
+            }
+
+            emit(AuthStateHotelDetailsCompletion(
+              exception: null,
               isLoading: false,
-              user: authenticatedUser,
+              hotel: hotel,
             ));
           } else {
             VisitorBookingsStream.listenToBookings(null);

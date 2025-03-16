@@ -32,6 +32,14 @@ class AuthEventHotelRegister extends AuthEvent {
   const AuthEventHotelRegister();
 }
 
+class AuthEventHotelDetailsCompletion extends AuthEvent {
+  const AuthEventHotelDetailsCompletion();
+}
+
+class AuthEventHotelLogIn extends AuthEvent {
+  const AuthEventHotelLogIn();
+}
+
 class AuthEventSendEmailVerification extends AuthEvent {
   const AuthEventSendEmailVerification();
 }

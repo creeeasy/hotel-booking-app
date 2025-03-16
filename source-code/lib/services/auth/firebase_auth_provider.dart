@@ -201,7 +201,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
 
     final hotel = await Hotel.getHotelById(user.id);
     if (hotel != null) {
-      return Hotel(
+      final hotelData = Hotel(
         id: user.id,
         email: user.email,
         hotelName: hotel.hotelName,
@@ -217,6 +217,13 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         longitude: hotel.longitude,
         latitude: hotel.latitude,
       );
+      final isCompleted = [
+        hotel.location,
+        hotel.description?.isNotEmpty == true,
+        hotel.mapLink?.isNotEmpty == true,
+        hotel.contactInfo?.isNotEmpty == true
+      ].every((detail) => detail != null && detail != false);
+      return {'isCompleted': isCompleted, 'hotel': hotelData};
     }
 
     final visitor = await Visitor.getVisitorById(user.id);

@@ -6,6 +6,8 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color backgroundColor;
   final Color iconColor;
   final Color titleColor;
+  final IconData icon;
+  final double titleSize;
 
   final VoidCallback? onBack;
 
@@ -15,6 +17,8 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor = VisitorThemeColors.whiteColor,
     this.iconColor = VisitorThemeColors.blackColor,
     this.titleColor = VisitorThemeColors.blackColor,
+    this.icon = Icons.chevron_left,
+    this.titleSize = 22,
     this.onBack,
   }) : super(key: key);
 
@@ -25,16 +29,14 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       leading: onBack != null
           ? IconButton(
-              icon: const Icon(Icons.chevron_left, size: 32),
-              color: iconColor,
-              onPressed: onBack)
+              icon: Icon(icon, size: 32), color: iconColor, onPressed: onBack)
           : null,
       title: Text(
         title,
         style: TextStyle(
           fontFamily: "Poppins",
           color: titleColor,
-          fontSize: 22,
+          fontSize: titleSize,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),

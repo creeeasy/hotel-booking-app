@@ -15,35 +15,47 @@ class HotelRegistrationView extends StatefulWidget {
 }
 
 class _HotelRegistrationViewState extends State<HotelRegistrationView> {
-  final TextEditingController _hotelNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _hotelNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
-  bool notVisiblePassword = true;
+  bool _isPasswordVisible = false;
 
-  void passwordVisibility() {
-    setState(() {
-      notVisiblePassword = !notVisiblePassword;
-    });
-  }
+  void _togglePasswordVisibility() =>
+      setState(() => _isPasswordVisible = !_isPasswordVisible);
 
-  void createHotelAccount() {
-    if (_hotelNameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All fields are required')),
-      );
+  void _createHotelAccount() {
+    final hotelName = _hotelNameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (hotelName.isEmpty) {
+      _showSnackBar("Please enter your hotel's name.");
+      return;
+    }
+    if (email.isEmpty || !email.contains('@')) {
+      _showSnackBar("Please enter a valid email address.");
+      return;
+    }
+    if (password.length < 6) {
+      _showSnackBar("Password must be at least 6 characters long.");
+      return;
+    }
+    if (password != confirmPassword) {
+      _showSnackBar("Passwords do not match.");
       return;
     }
 
-    context.read<AuthBloc>().add(
-          AuthEventHotelRegistering(
-            _hotelNameController.text.trim(),
-            _emailController.text.trim(),
-            _passwordController.text.trim(),
-          ),
-        );
+    context
+        .read<AuthBloc>()
+        .add(AuthEventHotelRegistering(hotelName, email, password));
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -51,16 +63,10 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateHotelRegistering) {
-          if (state.exception is WeakPasswordException) {
-            await showErrorDialog(context, 'Weak password');
-          } else if (state.exception is MissingPasswordException) {
-            await showErrorDialog(context, 'Missing password');
-          } else if (state.exception is EmailAlreadyInUseException) {
-            await showErrorDialog(context, 'Email is already in use');
-          } else if (state.exception is GenericException) {
-            await showErrorDialog(context, 'Failed to register');
-          } else if (state.exception is InvalidEmailException) {
-            await showErrorDialog(context, 'Invalid email');
+          if (state.exception != null) {
+            final errorMessage = _getErrorMessage(state.exception);
+            if (errorMessage != null)
+              await showErrorDialog(context, errorMessage);
           }
         }
       },
@@ -68,14 +74,10 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
         backgroundColor: ThemeColors.lightGrayColor,
         appBar: AppBar(
           leading: IconButton(
-            color: ThemeColors.blackColor,
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 32, // Matching Visitor screen
-            ),
-            onPressed: () {
-              context.read<AuthBloc>().add(const AuthEventShouldRegister());
-            },
+            icon: const Icon(Icons.chevron_left,
+                size: 32, color: ThemeColors.blackColor),
+            onPressed: () =>
+                context.read<AuthBloc>().add(const AuthEventShouldRegister()),
           ),
           backgroundColor: ThemeColors.lightGrayColor,
           elevation: 0,
@@ -83,130 +85,110 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
           title: const Text(
             'Hotel Registration',
             style: TextStyle(
-              fontSize: 19,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w600,
-              color: ThemeColors.blackColor,
-              letterSpacing: 0.3,
-            ),
+                fontSize: 19,
+                fontWeight: FontWeight.w600,
+                color: ThemeColors.blackColor,
+                letterSpacing: 0.3),
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 24.0), // Consistent padding
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Register your hotel",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: ThemeColors.blackColor,
-                  letterSpacing: 0.3,
-                ),
-              ),
-              const SizedBox(height: 12), // Consistent spacing
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Hotel Name',
-                  icon: Icon(Icons.business, color: ThemeColors.blackColor),
-                  labelStyle: TextStyle(
-                    color: ThemeColors.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.4,
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: ThemeColors.primaryColor),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: ThemeColors.primaryColor),
-                  ),
-                ),
-                controller: _hotelNameController,
-                cursorColor: ThemeColors.primaryColor,
-              ),
+              const Text("Register your hotel",
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: ThemeColors.blackColor)),
+              const SizedBox(height: 12),
+              _buildTextField(
+                  _hotelNameController, 'Hotel Name', Icons.business),
               const SizedBox(height: 15),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  icon: Icon(Icons.alternate_email_outlined,
-                      color: ThemeColors.blackColor),
-                  labelStyle: TextStyle(
-                    color: ThemeColors.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.4,
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: ThemeColors.primaryColor),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: ThemeColors.primaryColor),
-                  ),
-                ),
-                controller: _emailController,
-                cursorColor: ThemeColors.primaryColor,
-              ),
+              _buildTextField(
+                  _emailController, 'Email', Icons.alternate_email_outlined),
               const SizedBox(height: 15),
-              TextFormField(
-                obscureText: notVisiblePassword,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.lock_outline_rounded,
-                      color: ThemeColors.blackColor),
-                  labelText: 'Password',
-                  labelStyle: const TextStyle(
-                    color: ThemeColors.primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.4,
-                  ),
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: ThemeColors.primaryColor),
-                  ),
-                  enabledBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: ThemeColors.primaryColor),
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: passwordVisibility,
-                    icon: Icon(
-                      notVisiblePassword
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: ThemeColors.blackColor,
-                    ),
-                  ),
-                ),
-                controller: _passwordController,
-                cursorColor: ThemeColors.primaryColor,
-              ),
-              const SizedBox(height: 40), // Matched spacing
+              _buildPasswordField(_passwordController),
+              const SizedBox(height: 15),
+              _buildPasswordField(_confirmPasswordController),
+              const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: createHotelAccount,
+                onPressed: _createHotelAccount,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ThemeColors.primaryColor,
-                  minimumSize: const Size.fromHeight(50), // Matched button size
+                  minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      borderRadius: BorderRadius.circular(10)),
                   elevation: 0,
                 ),
-                child: const Text(
-                  "Next Step",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.4,
-                    color: ThemeColors.whiteColor,
-                  ),
-                ),
+                child: const Text("Next Step",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: ThemeColors.whiteColor)),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  TextFormField _buildTextField(
+      TextEditingController controller, String label, IconData icon) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        icon: Icon(icon, color: ThemeColors.blackColor),
+        labelStyle: const TextStyle(
+            color: ThemeColors.primaryColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w500),
+        focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: ThemeColors.primaryColor)),
+        enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: ThemeColors.primaryColor)),
+      ),
+      cursorColor: ThemeColors.primaryColor,
+    );
+  }
+
+  TextFormField _buildPasswordField(TextEditingController _passController) {
+    return TextFormField(
+      controller: _passController,
+      obscureText: !_isPasswordVisible,
+      decoration: InputDecoration(
+        icon: const Icon(Icons.lock_outline_rounded,
+            color: ThemeColors.blackColor),
+        labelText: 'Password',
+        labelStyle: const TextStyle(
+            color: ThemeColors.primaryColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w500),
+        focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: ThemeColors.primaryColor)),
+        enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: ThemeColors.primaryColor)),
+        suffixIcon: IconButton(
+          onPressed: _togglePasswordVisibility,
+          icon: Icon(
+              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+              color: ThemeColors.blackColor),
+        ),
+      ),
+      cursorColor: ThemeColors.primaryColor,
+    );
+  }
+
+  String? _getErrorMessage(Exception? exception) {
+    if (exception is WeakPasswordException) return 'Weak password';
+    if (exception is MissingPasswordException) return 'Missing password';
+    if (exception is EmailAlreadyInUseException)
+      return 'Email is already in use';
+    if (exception is InvalidEmailException) return 'Invalid email';
+    if (exception is GenericException) return 'Failed to register';
+    return null;
   }
 }
