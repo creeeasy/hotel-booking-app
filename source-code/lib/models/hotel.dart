@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fatiel/constants/hotel_price_ranges.dart';
 
 import 'package:fatiel/enum/review_update_type.dart';
 import 'package:fatiel/enum/wilaya.dart';
@@ -236,6 +237,82 @@ class Hotel {
       return querySnapshot.docs.map((doc) => Hotel.fromFirestore(doc)).toList();
     } catch (e) {
       log('Error searching for hotel: $e');
+      return [];
+    }
+  }
+
+  static Future<List<Hotel>> filterHotels({
+    required int? minRating,
+    required int? maxRating,
+    required int? minPrice,
+    required int? minPeople,
+    required int? maxPeople,
+    required int? location,
+  }) async {
+    try {
+      Query hotelQuery = FirebaseFirestore.instance.collection('hotels');
+
+      if (minRating != null && minRating > 0) {
+        hotelQuery = hotelQuery.where('ratings.rating',
+            isGreaterThanOrEqualTo: minRating);
+      }
+      if (maxRating != null && maxRating < 5) {
+        hotelQuery =
+            hotelQuery.where('ratings.rating', isLessThanOrEqualTo: maxRating);
+      }
+
+      if (location != null) {
+        hotelQuery = hotelQuery.where('location', isEqualTo: location);
+      }
+
+      QuerySnapshot hotelSnapshot = await hotelQuery.get();
+      List<Hotel> hotels =
+          hotelSnapshot.docs.map((doc) => Hotel.fromFirestore(doc)).toList();
+
+      if (hotels.isEmpty) return [];
+
+      List<String> hotelIds = hotels.map((hotel) => hotel.id).toList();
+
+      Query roomQuery = FirebaseFirestore.instance
+          .collection('rooms')
+          .where('hotelId', whereIn: hotelIds);
+
+      if (minPrice != null) {
+        roomQuery =
+            roomQuery.where('pricePerNight', isGreaterThanOrEqualTo: minPrice);
+      }
+
+      final maxPrice = minPrice != null
+          ? priceRanges.firstWhere((range) => range["min"] == minPrice,
+              orElse: () => {"max": null})["max"]
+          : null;
+
+      if (maxPrice != null) {
+        roomQuery =
+            roomQuery.where('pricePerNight', isLessThanOrEqualTo: maxPrice);
+      }
+
+      // Fetch rooms with price filter applied
+      QuerySnapshot roomSnapshot = await roomQuery.get();
+
+      // In-memory filtering for capacity (to avoid Firestore limitation)
+      List<QueryDocumentSnapshot> filteredRooms =
+          roomSnapshot.docs.where((doc) {
+        int capacity = doc['capacity'] as int;
+        bool meetsMinPeople = minPeople == null || capacity >= minPeople;
+        bool meetsMaxPeople = maxPeople == null || capacity <= maxPeople;
+        return meetsMinPeople && meetsMaxPeople;
+      }).toList();
+
+      Set<String> matchingHotelIds =
+          filteredRooms.map((doc) => doc['hotelId'] as String).toSet();
+
+      return hotels
+          .where((hotel) => matchingHotelIds.contains(hotel.id))
+          .toList();
+    } catch (e) {
+      print(e);
+      log('Error filtering hotels: $e');
       return [];
     }
   }

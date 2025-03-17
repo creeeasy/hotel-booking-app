@@ -1,33 +1,36 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
+import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+
 class RangeSliderWidget<T extends num> extends StatefulWidget {
-  final T minValue;
-  final T maxValue;
+  final RangeValues rangeValues;
   final int? divisions;
   final ValueChanged<RangeValues>? onChanged;
   final String label;
+  final RangeValues defaultValues;
 
   const RangeSliderWidget({
     super.key,
-    required this.minValue,
-    required this.maxValue,
+    required this.rangeValues,
     required this.label,
     this.divisions,
     this.onChanged,
-  });
+    RangeValues? defaultValues,
+  }) : defaultValues = defaultValues ?? rangeValues;
 
   @override
   State<RangeSliderWidget<T>> createState() => _RangeSliderWidgetState<T>();
 }
 
-class _RangeSliderWidgetState<T extends num> extends State<RangeSliderWidget<T>> {
+class _RangeSliderWidgetState<T extends num>
+    extends State<RangeSliderWidget<T>> {
   late RangeValues currentRangeValues;
 
   @override
   void initState() {
     super.initState();
-    currentRangeValues = RangeValues(widget.minValue.toDouble(), widget.maxValue.toDouble());
+    currentRangeValues = widget.defaultValues;
   }
 
   @override
@@ -41,8 +44,8 @@ class _RangeSliderWidgetState<T extends num> extends State<RangeSliderWidget<T>>
         ),
         RangeSlider(
           values: currentRangeValues,
-          min: widget.minValue.toDouble(),
-          max: widget.maxValue.toDouble(),
+          min: widget.rangeValues.start,
+          max: widget.rangeValues.end,
           divisions: widget.divisions,
           labels: RangeLabels(
             _formattedValue(currentRangeValues.start),

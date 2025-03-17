@@ -9,6 +9,15 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 
+bool isValidUrl(String url) {
+  try {
+    Uri.parse(url);
+    return Uri.parse(url).isAbsolute;
+  } catch (e) {
+    return false;
+  }
+}
+
 class HotelDetailsCompletion extends StatefulWidget {
   const HotelDetailsCompletion({super.key});
 
@@ -28,8 +37,12 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
   void updateHotelDetails(BuildContext context, Hotel hotel) async {
     final controller = getStepData()['controller'] as TextEditingController;
     final input = controller.text.trim();
-
-    if (input.isEmpty) {
+    if (currentIndex == 2 && !isValidUrl(input)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Type a valid url!")),
+      );
+      return;
+    } else if (input.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Input can't be empty!")),
       );
