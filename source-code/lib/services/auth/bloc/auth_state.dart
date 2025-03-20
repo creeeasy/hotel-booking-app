@@ -52,6 +52,13 @@ class AuthStateRegistering extends AuthState {
       : super(isLoading: isLoading);
 }
 
+class AuthStateUpdatePassword extends AuthState {
+  final Exception? exception;
+
+  const AuthStateUpdatePassword({required this.exception, required isLoading})
+      : super(isLoading: isLoading);
+}
+
 class AuthStateVisitorLoggedIn extends AuthState {
   final Visitor user;
   const AuthStateVisitorLoggedIn({required this.user, required bool isLoading})

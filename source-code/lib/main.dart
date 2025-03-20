@@ -12,7 +12,9 @@ import 'package:fatiel/screens/visitor/favorite_screen.dart';
 import 'package:fatiel/screens/visitor/hotel_browse_view.dart';
 import 'package:fatiel/screens/visitor/room_booking_offers_screen.dart';
 import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
+import 'package:fatiel/screens/visitor/update_password_sceen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
+import 'package:fatiel/screens/visitor/visitor_profile_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +83,8 @@ class MyApp extends StatelessWidget {
           allWilayaViewRoute: (context) => const AllWilayaScreen(),
           reviewsScreenRoute: (context) => const ReviewsScreen(),
           hotelBrowseScreenRoute: (context) => const HotelBrowseView(),
+          visitorProfileRoute: (context) => const VisitorProfileScreen(),
+          updatePasswordRoute: (context) => const UpdatePasswordScreen(),
         },
         home: const Traffic());
   }

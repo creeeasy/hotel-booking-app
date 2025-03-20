@@ -13,3 +13,5 @@ class MissingPasswordException implements Exception {}
 class GenericException implements Exception {}
 
 class UserNotLoggedInException implements Exception {}
+
+class RequiresRecentLoginException implements Exception {}

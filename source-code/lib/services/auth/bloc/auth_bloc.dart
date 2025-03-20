@@ -246,5 +246,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     });
+    on<AuthEventUpdatePassword>((event, emit) async {
+      emit(const AuthStateUpdatePassword(
+        exception: null,
+        isLoading: true,
+      ));
+      try {
+        await provider.updatePassword(
+            currentPassword: event.currentPassword,
+            newPassword: event.newPassword);
+        emit(const AuthStateUpdatePassword(
+          exception: null,
+          isLoading: false,
+        ));
+      } on Exception catch (exception) {
+        emit(AuthStateUpdatePassword(
+          exception: exception,
+          isLoading: false,
+        ));
+      }
+    });
   }
 }

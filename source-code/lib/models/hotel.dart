@@ -5,6 +5,7 @@ import 'package:fatiel/constants/hotel_price_ranges.dart';
 import 'package:fatiel/enum/review_update_type.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/rating.dart';
+import 'package:fatiel/utils/generate_search_keywords.dart';
 
 class Hotel {
   final String id;
@@ -15,12 +16,9 @@ class Hotel {
   final List<String> images;
   final List<String> rooms;
   final String? description;
-  final String? thumbnail;
   final String? mapLink;
   final String? contactInfo;
-  final double? startingPricePerNight;
-  final String? longitude;
-  final String? latitude;
+  final List<String>? searchKeywords;
 
   Hotel({
     required this.id,
@@ -28,15 +26,12 @@ class Hotel {
     required this.hotelName,
     required this.images,
     this.description,
-    this.thumbnail,
     this.location,
     Rating? ratings,
     this.mapLink,
     this.contactInfo,
     this.rooms = const [],
-    this.startingPricePerNight,
-    this.latitude,
-    this.longitude,
+    this.searchKeywords = const [],
   }) : ratings = ratings ?? Rating(rating: 0, totalRating: 0);
 
   factory Hotel.fromFirestore(DocumentSnapshot doc) {
@@ -58,16 +53,15 @@ class Hotel {
               .toList() ??
           [],
       description: data['description'] as String?,
-      thumbnail: data['thumbnail'] as String?,
       mapLink: data['mapLink'] as String?,
       contactInfo: data['contactInfo'] as String?,
       rooms:
           (data['rooms'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               [],
-      startingPricePerNight:
-          (data['startingPricePerNight'] as num?)?.toDouble(),
-      longitude: data['longitude'] as String?,
-      latitude: data['latitude'] as String?,
+      searchKeywords: (data['searchKeywords'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -80,13 +74,10 @@ class Hotel {
       'ratings': ratings,
       'images': images,
       'description': description,
-      'thumbnail': thumbnail,
       'mapLink': mapLink,
       'contactInfo': contactInfo,
       'rooms': rooms,
-      'startingPricePerNight': startingPricePerNight,
-      'longitude': longitude,
-      'latitude': latitude,
+      'searchKeywords': searchKeywords
     };
   }
 
@@ -110,7 +101,7 @@ class Hotel {
     required String hotelId,
     required ReviewUpdateType action,
     double? rating,
-    double? oldRating, // Needed for updating
+    double? oldRating,
   }) async {
     try {
       final hotelRef =
@@ -230,13 +221,18 @@ class Hotel {
 
   static Future<List<Hotel>> findHotelsByKeyword(String query) async {
     try {
+      if (query.trim().isEmpty) return [];
+
+      final keywords = query.trim().toLowerCase().split(' ');
+
       final querySnapshot = await FirebaseFirestore.instance
           .collection('hotels')
-          .where('searchKeywords', arrayContains: query.toLowerCase())
+          .where('searchKeywords', arrayContainsAny: keywords)
           .get();
+
       return querySnapshot.docs.map((doc) => Hotel.fromFirestore(doc)).toList();
-    } catch (e) {
-      log('Error searching for hotel: $e');
+    } catch (e, stackTrace) {
+      log('Error searching for hotel: $e\n$stackTrace');
       return [];
     }
   }
@@ -292,10 +288,7 @@ class Hotel {
             roomQuery.where('pricePerNight', isLessThanOrEqualTo: maxPrice);
       }
 
-      // Fetch rooms with price filter applied
       QuerySnapshot roomSnapshot = await roomQuery.get();
-
-      // In-memory filtering for capacity (to avoid Firestore limitation)
       List<QueryDocumentSnapshot> filteredRooms =
           roomSnapshot.docs.where((doc) {
         int capacity = doc['capacity'] as int;
@@ -345,7 +338,7 @@ class Hotel {
 
       final String fieldToUpdate = stepFields[step]!;
       dynamic updateData;
-
+      late String text;
       if (step == 0) {
         final int? parsedLocation = int.tryParse(newValue);
         if (parsedLocation == null) {
@@ -353,11 +346,18 @@ class Hotel {
           return;
         }
         updateData = parsedLocation;
+        text = Wilaya.fromIndex(updateData)!.name;
       } else {
         updateData = newValue;
+        text = updateData;
+      }
+      final updatePayload = {fieldToUpdate: updateData};
+      if (step != 2) {
+        final searchWords = generateSearchKeywords(text);
+        updatePayload['searchKeywords'] = FieldValue.arrayUnion(searchWords);
       }
 
-      await hotelRef.update({fieldToUpdate: updateData});
+      await hotelRef.update(updatePayload);
     } catch (e) {
       log('Error updating hotel details: $e');
     }

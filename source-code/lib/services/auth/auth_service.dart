@@ -67,4 +67,11 @@ class AuthService implements AuthProvider {
   Future<dynamic> getUser() {
     return provider.getUser();
   }
+
+  @override
+  Future<void> updatePassword(
+      {required String newPassword, required String currentPassword}) {
+    return provider.updatePassword(
+        currentPassword: currentPassword, newPassword: newPassword);
+  }
 }

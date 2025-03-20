@@ -8,7 +8,6 @@ import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/action_button.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
-import 'package:fatiel/screens/visitor/widget/hotel_price_widget.dart';
 import 'package:intl/intl.dart';
 
 class HotelBookingCard extends StatefulWidget {
@@ -110,11 +109,6 @@ class _HotelBookingCardState extends State<HotelBookingCard> {
             ],
           ),
           const SizedBox(height: 6),
-          if (hotel.startingPricePerNight != null)
-            HotelPriceWidget(
-              startingPricePerNight: hotel.startingPricePerNight!,
-            ),
-          const SizedBox(height: 14),
           Center(
             child: ActionButton(
               bookingStatus: booking.status,

@@ -5,11 +5,17 @@ import 'package:flutter/material.dart';
 class NetworkImageWithLoader extends StatelessWidget {
   final String? imageUrl;
   final BoxFit fit;
+  final double aspectRatio;
+  final double height;
+  final double width;
 
   const NetworkImageWithLoader({
     Key? key,
     required this.imageUrl,
     this.fit = BoxFit.cover,
+    this.aspectRatio = 16 / 9,
+    this.height = 40,
+    this.width = 40,
   }) : super(key: key);
 
   @override
@@ -27,14 +33,14 @@ class NetworkImageWithLoader extends StatelessWidget {
           return child;
         } else {
           return AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: aspectRatio,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 40,
-                    width: 40,
+                    height: height,
+                    width: width,
                     child: CircularProgressIndicator(
                       color: VisitorThemeColors.primaryColor,
                       value: loadingProgress.expectedTotalBytes != null

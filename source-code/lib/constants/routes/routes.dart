@@ -18,3 +18,5 @@ const roomBookingOffersViewRoute = '/room-booking-offers/';
 const allWilayaViewRoute = '/all-wilayas/';
 const reviewsScreenRoute = 'reviews-screen';
 const hotelBrowseScreenRoute = 'hotel-browse-screen';
+const visitorProfileRoute = 'visitor-profile-screen';
+const updatePasswordRoute = 'update-password-screen';

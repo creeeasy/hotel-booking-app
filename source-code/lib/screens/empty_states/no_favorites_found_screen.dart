@@ -1,3 +1,4 @@
+import 'package:fatiel/constants/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
@@ -60,7 +61,8 @@ class NoFavoritesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(hotelBrowseScreenRoute),
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(

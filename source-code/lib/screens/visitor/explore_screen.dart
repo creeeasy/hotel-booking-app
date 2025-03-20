@@ -8,8 +8,8 @@ import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_section_widget.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/utils/user_profile.dart';
 import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
 import 'package:fatiel/widgets/hotel/explore_city_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -58,18 +58,10 @@ class _ExploreViewState extends State<ExploreView>
                   children: [
                     Row(
                       children: [
-                        TextButton(
-                          onPressed: () => context
-                              .read<AuthBloc>()
-                              .add(const AuthEventLogOut()),
-                          child: Text("Logout"),
-                        ),
-                        // CircleAvatar(
-                        //   radius: 30,
-                        //   backgroundImage: const NetworkImage(
-                        //     "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-                        //   ),
-                        // ),
+                        InkWell(
+                            onTap: () => Navigator.of(context)
+                                .pushNamed(visitorProfileRoute),
+                            child: UserProfile()),
                         const SizedBox(width: 10),
                         Text(
                           "${currentVisitor.firstName} ${currentVisitor.lastName}",

@@ -1,6 +1,7 @@
 import 'package:fatiel/enum/user_role.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/utils/generate_search_keywords.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -153,6 +154,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
     }
   }
 
+  @override
   Future<AuthUser?> createHotel({
     required String email,
     required String password,
@@ -167,11 +169,13 @@ class FirebaseAuthProvider implements AuthProviderImplement {
 
       final user = userCredential.user;
       if (user != null) {
+        final searchWords = generateSearchKeywords(hotelName);
         await FirebaseFirestore.instance
             .collection('hotels')
             .doc(user.uid)
             .set({
           'hotelName': hotelName,
+          'searchKeywords': FieldValue.arrayUnion(searchWords),
         });
         return AuthUser.currentUser(user);
       } else {
@@ -208,14 +212,10 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         images: hotel.images,
         location: hotel.location,
         ratings: hotel.ratings,
-        thumbnail: hotel.thumbnail,
         rooms: hotel.rooms,
         description: hotel.description,
         mapLink: hotel.mapLink,
         contactInfo: hotel.contactInfo,
-        startingPricePerNight: hotel.startingPricePerNight,
-        longitude: hotel.longitude,
-        latitude: hotel.latitude,
       );
       final isCompleted = [
         hotel.location,
@@ -240,5 +240,42 @@ class FirebaseAuthProvider implements AuthProviderImplement {
     }
 
     return null;
+  }
+
+  @override
+  Future<void> updatePassword(
+      {required String currentPassword, required String newPassword}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final credential = EmailAuthProvider.credential(
+            email: user.email!, password: currentPassword);
+        await user.reauthenticateWithCredential(credential);
+
+        await user.updatePassword(newPassword);
+      } on FirebaseAuthException catch (error) {
+        switch (error.code) {
+          case 'invalid-credential':
+            throw WrongPasswordException();
+          case 'weak-password':
+            throw WeakPasswordException();
+          case 'wrong-password':
+            throw WrongPasswordException();
+          case 'requires-recent-login':
+            throw RequiresRecentLoginException();
+          case 'too-many-requests':
+            throw UserNotFoundException();
+          case 'user-not-found':
+            throw UserNotLoggedInException();
+          case 'network-request-failed':
+          default:
+            throw GenericException();
+        }
+      } catch (error) {
+        throw GenericException();
+      }
+    } else {
+      throw UserNotLoggedInException();
+    }
   }
 }

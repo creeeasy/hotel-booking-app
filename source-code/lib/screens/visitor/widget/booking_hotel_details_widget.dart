@@ -2,7 +2,6 @@ import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
-import 'package:fatiel/screens/visitor/widget/hotel_price_widget.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -78,10 +77,6 @@ class BookingHotelCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        if (hotel.startingPricePerNight != null)
-                          HotelPriceWidget(
-                              startingPricePerNight:
-                                  hotel.startingPricePerNight!),
                       ],
                     ),
                   ],

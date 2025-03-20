@@ -12,16 +12,17 @@ class Visitor {
   final List<String>? favorites;
   final List<String>? bookings;
   final int? location;
+  final String? avatarURL;
 
-  Visitor({
-    required this.id,
-    required this.email,
-    required this.firstName,
-    required this.lastName,
-    this.favorites,
-    this.bookings,
-    this.location,
-  });
+  Visitor(
+      {required this.id,
+      required this.email,
+      required this.firstName,
+      required this.lastName,
+      this.favorites,
+      this.bookings,
+      this.location,
+      this.avatarURL});
 
   factory Visitor.fromFirebaseUser({
     required String id,
@@ -32,6 +33,7 @@ class Visitor {
     List<String>? favorites,
     List<String>? bookings,
     int? location,
+    String? avatarURL,
   }) {
     return Visitor(
       id: id,
@@ -41,6 +43,7 @@ class Visitor {
       favorites: favorites ?? [],
       bookings: bookings ?? [],
       location: location,
+      avatarURL: avatarURL,
     );
   }
 
@@ -53,6 +56,7 @@ class Visitor {
       'favorites': favorites ?? [],
       'bookings': bookings ?? [],
       'location': location,
+      "avatarURL": avatarURL
     };
   }
 
@@ -66,6 +70,7 @@ class Visitor {
       favorites: List<String>.from(data['favorites'] ?? []),
       bookings: List<String>.from(data['bookings'] ?? []),
       location: data['location'] as int?,
+      avatarURL: data['avatarURL'] as String?,
     );
   }
 
@@ -111,6 +116,7 @@ class Visitor {
       'favorites': favorites ?? [],
       'bookings': bookings ?? [],
       'location': location,
+      'avatarURL': avatarURL,
     };
   }
 

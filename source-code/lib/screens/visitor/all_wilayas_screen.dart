@@ -111,9 +111,10 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
                                 left: 12,
                                 right: 12,
                                 child: Text(
-                                  wilaya.name,
+                                  "${wilaya.name} - ${wilaya.number}",
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
+                                    fontFamily: 'Poppins',
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
