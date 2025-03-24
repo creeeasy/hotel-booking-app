@@ -95,21 +95,30 @@ class Review {
     }
   }
 
-  static Future<List<Review>> getAllHotelReviews(
+  static Future<Map<String, dynamic>> getAllHotelReviews(
       {required String hotelId}) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection("reviews")
           .where("hotelId", isEqualTo: hotelId)
-          // .orderBy("createdAt", descending: true) // Sorting by createdAt
           .get();
 
-      return querySnapshot.docs
-          .map((doc) => Review.fromFirestore(doc))
-          .toList();
+      final reviews =
+          querySnapshot.docs.map((doc) => Review.fromFirestore(doc)).toList();
+
+      final hotelSnapshot = await FirebaseFirestore.instance
+          .collection("hotels")
+          .doc(hotelId)
+          .get();
+      final hotel = Hotel.fromFirestore(hotelSnapshot);
+
+      return {
+        "reviews": reviews,
+        "ratings": hotel.ratings,
+      };
     } catch (e) {
       print("Error fetching reviews: $e");
-      return [];
+      return {};
     }
   }
 

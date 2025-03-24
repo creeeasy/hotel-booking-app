@@ -1,0 +1,4 @@
+enum HotelListType {
+  recommended,
+  nearMe,
+}

@@ -38,16 +38,18 @@ class _VisitorHomeScreenState extends State<VisitorHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: VisitorThemeColors.whiteColor,
-        body: getCurrentPage(),
-        bottomNavigationBar: CustomBottomNavigationBar(
-          bottomBarType: bottomBarType,
-          onTabClick: (selectedTab) {
-            setState(() {
-              bottomBarType = selectedTab;
-            });
-          },
-        ));
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: VisitorThemeColors.whiteColor,
+          body: getCurrentPage(),
+          bottomNavigationBar: CustomBottomNavigationBar(
+            bottomBarType: bottomBarType,
+            onTabClick: (selectedTab) {
+              setState(() {
+                bottomBarType = selectedTab;
+              });
+            },
+          )),
+    );
   }
 }

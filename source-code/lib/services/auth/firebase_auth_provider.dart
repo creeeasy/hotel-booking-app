@@ -175,6 +175,11 @@ class FirebaseAuthProvider implements AuthProviderImplement {
             .doc(user.uid)
             .set({
           'hotelName': hotelName,
+          'totalRooms': 0,
+          "ratings": {
+            'rating': 0,
+            'totalRating': 0,
+          },
           'searchKeywords': FieldValue.arrayUnion(searchWords),
         });
         return AuthUser.currentUser(user);
@@ -212,7 +217,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         images: hotel.images,
         location: hotel.location,
         ratings: hotel.ratings,
-        rooms: hotel.rooms,
+        totalRooms: hotel.totalRooms,
         description: hotel.description,
         mapLink: hotel.mapLink,
         contactInfo: hotel.contactInfo,
@@ -236,6 +241,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         favorites: visitor.favorites,
         bookings: visitor.bookings,
         location: visitor.location,
+        avatarURL: visitor.avatarURL,
       );
     }
 

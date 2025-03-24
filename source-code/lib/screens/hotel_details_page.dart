@@ -75,7 +75,6 @@ class HotelDetailsBody extends StatefulWidget {
 
 class _HotelDetailsBodyState extends State<HotelDetailsBody> {
   late Hotel hotel;
-  void _bookNow() {}
   @override
   void initState() {
     super.initState();
@@ -126,15 +125,15 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
 
                     /// **Offers Count** - Dynamic & Subtle
                     Text(
-                      hotel.rooms.isNotEmpty
-                          ? "${hotel.rooms.length} ${hotel.rooms.length == 1 ? 'Offer' : 'Offers'}"
+                      hotel.totalRooms != 0
+                          ? "${hotel.totalRooms} ${hotel.totalRooms == 1 ? 'Offer' : 'Offers'}"
                           : "No Offers Available",
                       style: TextStyle(
                         fontSize: 14.5, // Adjusted for better balance
                         fontWeight:
                             FontWeight.w600, // Slightly bold for readability
                         letterSpacing: 0.8,
-                        color: hotel.rooms.isNotEmpty
+                        color: hotel.totalRooms != 0
                             ? VisitorThemeColors.textGreyColor
                             : VisitorThemeColors.textGreyColor
                                 .withOpacity(0.6), // Faded for no offers
@@ -345,23 +344,43 @@ class _HotelDetailsBodyState extends State<HotelDetailsBody> {
                       )
                   ],
                 ),
-                if (hotel.mapLink != null)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DividerWidget(),
-                      SectionTitle(
-                        titleColor: Colors.deepOrange,
-                        title: "View Hotel Location on Google Maps",
-                      ),
-                      CustomOutlinedButton(
-                        text: "Open in Google Maps",
-                        onPressed: () {
-                          launchUrl(Uri.parse(hotel.mapLink!));
-                        },
-                      )
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DividerWidget(),
+                    SectionTitle(
+                      titleColor: Colors.deepOrange,
+                      title: "View Hotel Location on Google Maps",
+                    ),
+                    hotel.mapLink != null
+                        ? CustomOutlinedButton(
+                            text: "Open in Google Maps",
+                            onPressed: () {
+                              launchUrl(Uri.parse(hotel.mapLink!));
+                            },
+                          )
+                        : Center(
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: VisitorThemeColors.primaryColor
+                                    .withOpacity(0.16),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                "Map link unavailable for this hotel.",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: VisitorThemeColors.primaryColor,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                  ],
+                ),
                 DividerWidget(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

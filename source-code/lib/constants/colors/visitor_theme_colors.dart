@@ -32,8 +32,8 @@ class VisitorThemeColors {
       Color(0xFF1B5E20); // Dark Green
 
   static const Color cancelledTextColor = Color(0xFFC62828); // Deep Red
-static const Color emeraldGreen = Color(0xFF00AE77); // Vibrant Emerald Green
-static const Color vibrantRed = Color(0xFFFF4C51); // Bright Vibrant Red
+  static const Color emeraldGreen = Color(0xFF00AE77); // Vibrant Emerald Green
+  static const Color vibrantRed = Color(0xFFFF4C51); // Bright Vibrant Red
 
   static const Color livelyTurquoise =
       Color(0xFF00BFA6); // Fresh & Cheerful Turquoise
@@ -47,4 +47,19 @@ static const Color vibrantRed = Color(0xFFFF4C51); // Bright Vibrant Red
       Color(0xFFFFD54F); // Warm & Inviting Golden Yellow
   static const Color freshMint =
       Color(0xFF80CBC4); // Cool & Soothing Mint Green
+
+  // 🔵 Additional Colors for Enhanced Theming 🔵
+  static const Color midnightBlue = Color(0xFF003366); // Deep Dark Blue
+  static const Color oceanBlue = Color(0xFF0277BD); // Rich Ocean Blue
+  static const Color forestGreen = Color(0xFF2E7D32); // Strong Natural Green
+  static const Color sunsetOrange = Color(0xFFFF3D00); // Fiery Sunset Orange
+  static const Color blushPink = Color(0xFFFFC1E3); // Soft & Feminine Pink
+  static const Color lavenderPurple =
+      Color(0xFF9575CD); // Gentle & Soothing Purple
+  static const Color sandBeige = Color(0xFFFFE0B2); // Warm, Neutral Beige
+  static const Color charcoalGrey =
+      Color(0xFF424242); // Modern & Sleek Dark Grey
+  static const Color iceBlue = Color(0xFFE3F2FD); // Light, Airy Blue
+  static const Color shadowBlack =
+      Color(0xFF121212); // Darkest Black (For Depth)
 }

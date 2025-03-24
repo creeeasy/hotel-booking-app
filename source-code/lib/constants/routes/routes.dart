@@ -20,3 +20,4 @@ const reviewsScreenRoute = 'reviews-screen';
 const hotelBrowseScreenRoute = 'hotel-browse-screen';
 const visitorProfileRoute = 'visitor-profile-screen';
 const updatePasswordRoute = 'update-password-screen';
+const updateInformationRoute = 'update-information-screen';

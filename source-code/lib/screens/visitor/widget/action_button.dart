@@ -122,37 +122,79 @@ class _ActionButtonState extends State<ActionButton> {
                     bool hasReviewed =
                         reviewSnapshot.hasData && reviewSnapshot.data != null;
 
-                    return GestureDetector(
-                      onTap: () => _showReviewDialog(
-                        context, visitorId, bookingId, hotelId,
-                        existingReview: reviewSnapshot.data, // Simplified
-                      ),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: hasReviewed
-                              ? VisitorThemeColors.joyfulPurple
-                                  .withOpacity(0.16) // Reviewed → Purple
-                              : VisitorThemeColors.radiantPink
-                                  .withOpacity(0.16), // Not Reviewed → Pink
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 6,
-                              offset: const Offset(2, 2),
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _showReviewDialog(
+                            context,
+                            visitorId,
+                            bookingId,
+                            hotelId,
+                            existingReview: reviewSnapshot.data,
+                          ),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: hasReviewed
+                                  ? VisitorThemeColors.joyfulPurple
+                                      .withOpacity(0.16)
+                                  : VisitorThemeColors.radiantPink
+                                      .withOpacity(0.16),
+                              shape: BoxShape.circle,
                             ),
-                          ],
+                            child: Icon(
+                              hasReviewed
+                                  ? Icons.mode_edit_outline
+                                  : Icons.reviews,
+                              color: hasReviewed
+                                  ? VisitorThemeColors.joyfulPurple
+                                  : VisitorThemeColors.radiantPink,
+                              size: 20,
+                            ),
+                          ),
                         ),
-                        child: Icon(
-                          hasReviewed ? Icons.mode_edit_outline : Icons.reviews,
-                          color: hasReviewed
-                              ? VisitorThemeColors.joyfulPurple
-                              : VisitorThemeColors.radiantPink,
-                          size: 26,
-                        ),
-                      ),
+                        if (hasReviewed) SizedBox(width: 8),
+                        if (hasReviewed)
+                          GestureDetector(
+                            onTap: () async {
+                              final shouldDelete =
+                                  await showGenericDialog<bool>(
+                                context: context,
+                                title: "Delete Review",
+                                content:
+                                    "Are you sure you want to delete this review? This action cannot be undone.",
+                                optionBuilder: () => {
+                                  "Cancel": false,
+                                  "Delete": true,
+                                },
+                              );
+
+                              if (shouldDelete == true) {
+                                await Review.deleteReview(
+                                  visitorId: visitorId,
+                                  reviewId: reviewSnapshot.data!.id,
+                                );
+                                setState(() {});
+                              }
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: VisitorThemeColors.vibrantRed
+                                    .withOpacity(0.16),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: VisitorThemeColors.vibrantRed,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                      ],
                     );
                   },
                 );

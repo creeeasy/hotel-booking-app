@@ -35,12 +35,14 @@ class _FavoritePageState extends State<FavoritePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: VisitorThemeColors.whiteColor,
-      appBar: const CustomBackAppBar(
-          title: "Favorites", titleColor: VisitorThemeColors.vibrantOrange),
-      body: SafeArea(
-        child: _buildFavoriteHotels(),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: VisitorThemeColors.whiteColor,
+        appBar: const CustomBackAppBar(
+            title: "Favorites", titleColor: VisitorThemeColors.vibrantOrange),
+        body: SafeArea(
+          child: _buildFavoriteHotels(),
+        ),
       ),
     );
   }

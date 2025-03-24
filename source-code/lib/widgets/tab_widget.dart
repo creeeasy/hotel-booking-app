@@ -1,10 +1,10 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/enum/top_bar_type.dart';
+import 'package:fatiel/enum/hotel_list_type.dart';
 import 'package:flutter/material.dart';
 
 class TripsTabView extends StatelessWidget {
-  final TopBarType selectedTab;
-  final Function(TopBarType) onTabChange;
+  final HotelListType selectedTab;
+  final Function(HotelListType) onTabChange;
 
   const TripsTabView({
     Key? key,
@@ -20,19 +20,19 @@ class TripsTabView extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: _buildTabItem(
-                title: 'Popular',
-                isSelected: selectedTab == TopBarType.Popular,
+                title: 'Recommended',
+                isSelected: selectedTab == HotelListType.recommended,
                 onTap: () {
-                  onTabChange(TopBarType.Popular);
+                  onTabChange(HotelListType.recommended);
                 },
               ),
             ),
             Expanded(
               child: _buildTabItem(
                 title: 'Near Me',
-                isSelected: selectedTab == TopBarType.NearMe,
+                isSelected: selectedTab == HotelListType.nearMe,
                 onTap: () {
-                  onTabChange(TopBarType.NearMe);
+                  onTabChange(HotelListType.nearMe);
                 },
               ),
             ),

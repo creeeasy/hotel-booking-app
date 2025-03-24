@@ -1,4 +1,0 @@
-enum TopBarType {
-  Popular,
-  NearMe,
-}

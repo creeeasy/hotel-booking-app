@@ -39,85 +39,87 @@ class _BookingDetailsViewState extends State<BookingDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: fetchBookingDetails(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicatorWidget(
-              indicatorColor: VisitorThemeColors.viewBookingBackground,
-              containerColor: VisitorThemeColors.whiteColor,
-            );
-          } else if (snapshot.hasError) {
-            return ErrorWidgetWithRetry(
-              errorMessage: 'Error: ${snapshot.error}',
-            );
-          } else if (!snapshot.hasData) {
-            return const NoDataWidget(
-              message: "No hotel listings found.",
-            );
-          }
+    return SafeArea(
+      child: FutureBuilder(
+          future: fetchBookingDetails(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicatorWidget(
+                indicatorColor: VisitorThemeColors.viewBookingBackground,
+                containerColor: VisitorThemeColors.whiteColor,
+              );
+            } else if (snapshot.hasError) {
+              return ErrorWidgetWithRetry(
+                errorMessage: 'Error: ${snapshot.error}',
+              );
+            } else if (!snapshot.hasData) {
+              return const NoDataWidget(
+                message: "No hotel listings found.",
+              );
+            }
 
-          final hotel = snapshot.data!["hotel"] as Hotel;
-          final booking = snapshot.data!["booking"] as Booking;
-          final room = snapshot.data!["room"] as Room;
+            final hotel = snapshot.data!["hotel"] as Hotel;
+            final booking = snapshot.data!["booking"] as Booking;
+            final room = snapshot.data!["room"] as Room;
 
-          return BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              final currentVisitor = state.currentUser as Visitor;
+            return BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                final currentVisitor = state.currentUser as Visitor;
 
-              return Scaffold(
-                backgroundColor: VisitorThemeColors.whiteColor,
-                appBar: CustomBackAppBar(
-                  title: "Booking Summary",
-                  titleColor: VisitorThemeColors.emeraldGreen,
-                  iconColor: VisitorThemeColors.emeraldGreen,
-                  onBack: () => Navigator.pop(context),
-                ),
-                body: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _buildVisitorInfo(currentVisitor),
-                      const SizedBox(height: 16),
-                      _buildCheckInCheckOutSection(booking),
-                      const SizedBox(height: 16),
-                      _buildTotalPriceSection(booking),
-                      const SizedBox(height: 16),
-                      _buildRoomWidget(room, booking),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushNamed(context, hotelDetailsRoute,
-                              arguments: booking.hotelId);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: VisitorThemeColors
-                              .deepBlueAccent, // Change to your defined deep blue color
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 16),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        icon: const Icon(Icons.info,
-                            size: 20, color: Colors.white), // Changed icon
-                        label: const Text(
-                          "Explore Hotel Info", // Updated text
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                return Scaffold(
+                  backgroundColor: VisitorThemeColors.whiteColor,
+                  appBar: CustomBackAppBar(
+                    title: "Booking Summary",
+                    titleColor: VisitorThemeColors.emeraldGreen,
+                    iconColor: VisitorThemeColors.emeraldGreen,
+                    onBack: () => Navigator.pop(context),
+                  ),
+                  body: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildVisitorInfo(currentVisitor),
+                        const SizedBox(height: 16),
+                        _buildCheckInCheckOutSection(booking),
+                        const SizedBox(height: 16),
+                        _buildTotalPriceSection(booking),
+                        const SizedBox(height: 16),
+                        _buildRoomWidget(room, booking),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(context, hotelDetailsRoute,
+                                arguments: booking.hotelId);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: VisitorThemeColors
+                                .deepBlueAccent, // Change to your defined deep blue color
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          icon: const Icon(Icons.info,
+                              size: 20, color: Colors.white), // Changed icon
+                          label: const Text(
+                            "Explore Hotel Info", // Updated text
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        });
+                );
+              },
+            );
+          }),
+    );
   }
 
   /// **Current Visitor Section**

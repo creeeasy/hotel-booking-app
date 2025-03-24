@@ -38,63 +38,65 @@ class _SearchHotelViewState extends State<SearchHotelView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: VisitorThemeColors.whiteColor,
-      appBar: CustomBackAppBar(
-        title: "Search for a hotel",
-        iconColor: VisitorThemeColors.cancelTextColor,
-        titleColor: VisitorThemeColors.cancelTextColor,
-        onBack: () => Navigator.of(context).pop(),
-      ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: VisitorThemeColors.lightGrayColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                hintText: "Search hotels, locations...",
-                hintStyle: TextStyle(fontFamily: 'Poppins'),
-                prefixIcon: Icon(Icons.search,
-                    color: VisitorThemeColors.cancelTextColor),
-                border: InputBorder.none,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: VisitorThemeColors.whiteColor,
+        appBar: CustomBackAppBar(
+          title: "Search for a hotel",
+          iconColor: VisitorThemeColors.cancelTextColor,
+          titleColor: VisitorThemeColors.cancelTextColor,
+          onBack: () => Navigator.of(context).pop(),
+        ),
+        body: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: VisitorThemeColors.lightGrayColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: "Search hotels, locations...",
+                  hintStyle: TextStyle(fontFamily: 'Poppins'),
+                  prefixIcon: Icon(Icons.search,
+                      color: VisitorThemeColors.cancelTextColor),
+                  border: InputBorder.none,
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: FutureBuilder<List<Hotel>>(
-              future: _searchResults,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicatorWidget(
-                      indicatorColor: VisitorThemeColors.cancelTextColor,
-                    ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: FutureBuilder<List<Hotel>>(
+                future: _searchResults,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicatorWidget(
+                        indicatorColor: VisitorThemeColors.cancelTextColor,
+                      ),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const NoHotelsFoundScreen();
+                  }
+
+                  final hotels = snapshot.data!;
+
+                  return HotelsListWidget(
+                    hotels: hotels,
                   );
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const NoHotelsFoundScreen();
-                }
-
-                final hotels = snapshot.data!;
-
-                return HotelsListWidget(
-                  hotels: hotels,
-                );
-              },
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -55,42 +55,44 @@ class _BookingViewState extends State<BookingView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomBackAppBar(
-        title: "Bookings",
-        titleColor: VisitorThemeColors.vibrantOrange,
-      ),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          final visitorId = (state.currentUser as Visitor).id;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTabView(),
-              Expanded(
-                child: FutureBuilder<List<Booking>>(
-                  future: Booking.getBookingsByUser(visitorId, _selectedTab),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicatorWidget(
-                        indicatorColor: VisitorThemeColors.vibrantOrange,
-                      );
-                    }
+    return SafeArea(
+      child: Scaffold(
+        appBar: const CustomBackAppBar(
+          title: "Bookings",
+          titleColor: VisitorThemeColors.vibrantOrange,
+        ),
+        body: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            final visitorId = (state.currentUser as Visitor).id;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTabView(),
+                Expanded(
+                  child: FutureBuilder<List<Booking>>(
+                    future: Booking.getBookingsByUser(visitorId, _selectedTab),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicatorWidget(
+                          indicatorColor: VisitorThemeColors.vibrantOrange,
+                        );
+                      }
 
-                    if (snapshot.hasError) {
-                      return _buildError(snapshot.error.toString());
-                    }
+                      if (snapshot.hasError) {
+                        return _buildError(snapshot.error.toString());
+                      }
 
-                    final bookings = snapshot.data ?? [];
-                    return bookings.isEmpty
-                        ? NoBookingsWidget()
-                        : _buildBookingsList(bookings);
-                  },
+                      final bookings = snapshot.data ?? [];
+                      return bookings.isEmpty
+                          ? NoBookingsWidget()
+                          : _buildBookingsList(bookings);
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

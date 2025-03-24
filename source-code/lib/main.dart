@@ -12,6 +12,7 @@ import 'package:fatiel/screens/visitor/favorite_screen.dart';
 import 'package:fatiel/screens/visitor/hotel_browse_view.dart';
 import 'package:fatiel/screens/visitor/room_booking_offers_screen.dart';
 import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
+import 'package:fatiel/screens/visitor/update_informations_screen.dart';
 import 'package:fatiel/screens/visitor/update_password_sceen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_profile_screen.dart';
@@ -31,25 +32,26 @@ import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/services/auth/firebase_auth_provider.dart';
 import "package:fatiel/constants/routes/routes.dart";
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setPreferredOrientations([
+  await dotenv.load(fileName: ".env");
+
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]).then((_) {
-    runApp(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
-        ],
-        child: const SafeArea(
-          child: MyApp(),
-        ),
-      ),
-    );
-  });
+  ]);
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -85,6 +87,7 @@ class MyApp extends StatelessWidget {
           hotelBrowseScreenRoute: (context) => const HotelBrowseView(),
           visitorProfileRoute: (context) => const VisitorProfileScreen(),
           updatePasswordRoute: (context) => const UpdatePasswordScreen(),
+          updateInformationRoute: (context) => const UpdateUserInformation(),
         },
         home: const Traffic());
   }

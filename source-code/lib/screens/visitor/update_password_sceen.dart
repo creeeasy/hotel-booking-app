@@ -68,14 +68,58 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(
+          color: VisitorThemeColors.blackColor.withOpacity(0.23),
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
         suffixIcon: IconButton(
-          icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility,
-              color: VisitorThemeColors.primaryColor),
+          icon: Icon(
+            obscureText ? Icons.visibility_off : Icons.visibility,
+            color: VisitorThemeColors.lavenderPurple,
+          ),
           onPressed: toggleVisibility,
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: VisitorThemeColors.blackColor
+                .withOpacity(0.06), // Gradient effect alternative
+            width: 1.5,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: VisitorThemeColors.blackColor
+                .withOpacity(0.16), // Lighter focus color
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: VisitorThemeColors.cancelBorderColor, // Red for errors
+            width: 1.5,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: VisitorThemeColors.cancelBorderColor,
+            width: 2,
+          ),
+        ),
         filled: true,
-        fillColor: VisitorThemeColors.lightGrayColor,
+        fillColor: VisitorThemeColors.whiteColor, // Background fill
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
+      cursorColor: VisitorThemeColors.lavenderPurple,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: VisitorThemeColors.blackColor, // Text color
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -91,93 +135,96 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) async {
-        if (state is AuthStateUpdatePassword) {
-          if (state.exception == null && !state.isLoading) {
-            await showGenericDialog<void>(
-              context: context,
-              title: "Success",
-              content: "Your password has been updated successfully.",
-              optionBuilder: () => {'OK': true},
-            );
-            if (context.mounted) {
-              Navigator.of(context).pop();
+    return SafeArea(
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) async {
+          if (state is AuthStateUpdatePassword) {
+            if (state.exception == null && !state.isLoading) {
+              await showGenericDialog<void>(
+                context: context,
+                title: "Success",
+                content: "Your password has been updated successfully.",
+                optionBuilder: () => {'OK': true},
+              );
+              if (context.mounted) {
+                Navigator.of(context).pop();
+              }
+            } else if (state.exception is WeakPasswordException) {
+              await showErrorDialog(context, 'Weak password.');
+            } else if (state.exception is WrongPasswordException) {
+              await showErrorDialog(context, 'Wrong credentials.');
+            } else if (state.exception is RequiresRecentLoginException) {
+              await showErrorDialog(context, 'Reauthentication required.');
+            } else if (state.exception is GenericException) {
+              await showErrorDialog(context, 'Authentication error.');
             }
-          } else if (state.exception is WeakPasswordException) {
-            await showErrorDialog(context, 'Weak password.');
-          } else if (state.exception is WrongPasswordException) {
-            await showErrorDialog(context, 'Wrong credentials.');
-          } else if (state.exception is RequiresRecentLoginException) {
-            await showErrorDialog(context, 'Reauthentication required.');
-          } else if (state.exception is GenericException) {
-            await showErrorDialog(context, 'Authentication error.');
           }
-        }
-      },
-      child: Scaffold(
-        backgroundColor: VisitorThemeColors.whiteColor,
-        appBar: CustomBackAppBar(
-          title: "Update Password",
-          titleColor: VisitorThemeColors.deepBlueAccent,
-          iconColor: VisitorThemeColors.deepBlueAccent,
-          onBack: () => Navigator.of(context).pop(),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildPasswordField(
-                  controller: _currentPasswordController,
-                  label: "Current Password",
-                  obscureText: _obscureCurrentPassword,
-                  toggleVisibility: () {
-                    setState(() =>
-                        _obscureCurrentPassword = !_obscureCurrentPassword);
-                  },
-                ),
-                const SizedBox(height: 15),
-                _buildPasswordField(
-                  controller: _newPasswordController,
-                  label: "New Password",
-                  obscureText: _obscureNewPassword,
-                  toggleVisibility: () {
-                    setState(() => _obscureNewPassword = !_obscureNewPassword);
-                  },
-                ),
-                const SizedBox(height: 15),
-                _buildPasswordField(
-                  controller: _confirmPasswordController,
-                  label: "Confirm Password",
-                  obscureText: _obscureConfirmPassword,
-                  toggleVisibility: () {
-                    setState(() =>
-                        _obscureConfirmPassword = !_obscureConfirmPassword);
-                  },
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton.icon(
-                  onPressed: _updatePassword,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: VisitorThemeColors.primaryColor,
-                    foregroundColor: VisitorThemeColors.whiteColor,
-                    minimumSize: const Size(double.infinity, 50),
+        },
+        child: Scaffold(
+          backgroundColor: VisitorThemeColors.whiteColor,
+          appBar: CustomBackAppBar(
+            title: "Update Password",
+            titleColor: VisitorThemeColors.lavenderPurple,
+            iconColor: VisitorThemeColors.lavenderPurple,
+            onBack: () => Navigator.of(context).pop(),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildPasswordField(
+                    controller: _currentPasswordController,
+                    label: "Current Password",
+                    obscureText: _obscureCurrentPassword,
+                    toggleVisibility: () {
+                      setState(() =>
+                          _obscureCurrentPassword = !_obscureCurrentPassword);
+                    },
                   ),
-                  icon: const Icon(Icons.lock_reset, size: 24),
-                  label: const Text(
-                    "Update Password",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins'),
+                  const SizedBox(height: 15),
+                  _buildPasswordField(
+                    controller: _newPasswordController,
+                    label: "New Password",
+                    obscureText: _obscureNewPassword,
+                    toggleVisibility: () {
+                      setState(
+                          () => _obscureNewPassword = !_obscureNewPassword);
+                    },
                   ),
-                ),
-              ],
+                  const SizedBox(height: 15),
+                  _buildPasswordField(
+                    controller: _confirmPasswordController,
+                    label: "Confirm Password",
+                    obscureText: _obscureConfirmPassword,
+                    toggleVisibility: () {
+                      setState(() =>
+                          _obscureConfirmPassword = !_obscureConfirmPassword);
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton.icon(
+                    onPressed: _updatePassword,
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        backgroundColor: VisitorThemeColors.lavenderPurple,
+                        foregroundColor: VisitorThemeColors.whiteColor,
+                        minimumSize: const Size(double.infinity, 50),
+                        elevation: 0),
+                    icon: const Icon(Icons.lock_reset, size: 24),
+                    label: const Text(
+                      "Update Password",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

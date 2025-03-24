@@ -1,11 +1,11 @@
 // ignore_for_file: sort_child_properties_last, prefer_const_constructors
 
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/models/rating.dart';
 import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
-import 'package:fatiel/utils/rating_utils.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,70 +20,73 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  Future<List<Review>> getHotelReviews(BuildContext context) async {
+  Future<Map<String, dynamic>> getHotelReviews(BuildContext context) async {
     final hotelId = ModalRoute.of(context)!.settings.arguments as String;
-    print(hotelId);
     return await Review.getAllHotelReviews(hotelId: hotelId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<Review>>(
-        future: getHotelReviews(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicatorWidget(
-                indicatorColor:
-                    VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
-                containerColor: VisitorThemeColors.whiteColor,
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return ErrorWidgetWithRetry(
-              errorMessage: 'Error: ${snapshot.error}',
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return _buildNoReviewsUi();
-          }
+    return SafeArea(
+      child: Scaffold(
+        body: FutureBuilder<Map<String, dynamic>>(
+          future: getHotelReviews(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicatorWidget(
+                  indicatorColor:
+                      VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
+                  containerColor: VisitorThemeColors.whiteColor,
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return ErrorWidgetWithRetry(
+                errorMessage: 'Error: ${snapshot.error}',
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return _buildNoReviewsUi();
+            }
 
-          final reviews = snapshot.data!;
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            itemCount: reviews.length + 2, // +2 for the header and count text
-            itemBuilder: (context, index) {
-              if (index == 0) return _buildHeaderCard(reviews);
-              if (index == 1) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DividerWidget(
-                      verticalPadding: 0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      child: Text(
-                        "${reviews.length} reviews",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
+            final reviews = snapshot.data!["reviews"];
+            final rating =
+                (snapshot.data!["ratings"] as Rating).rating.toString();
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              itemCount: reviews.length + 2, // +2 for the header and count text
+              itemBuilder: (context, index) {
+                if (index == 0) return _buildHeaderCard(reviews, rating);
+                if (index == 1) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DividerWidget(
+                        verticalPadding: 0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
+                        child: Text(
+                          "${reviews.length} reviews",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
-                    ),
-                    DividerWidget(
-                      verticalPadding: 0,
-                    ),
-                  ],
-                );
-              }
-              final review = reviews[index - 2];
-              return _buildReviewCard(review);
-            },
-          );
-        },
+                      DividerWidget(
+                        verticalPadding: 0,
+                      ),
+                    ],
+                  );
+                }
+                final review = reviews[index - 2];
+                return _buildReviewCard(review);
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -97,7 +100,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     );
   }
 
-  Widget _buildHeaderCard(List<Review> reviews) {
+  Widget _buildHeaderCard(List<Review> reviews, String rating) {
     return Stack(
       children: [
         Container(
@@ -119,7 +122,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    getTotalReviewsRatings(reviews).toStringAsFixed(1),
+                    rating,
                     style: const TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -194,7 +197,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               }
 
               final responseData = snapshot.data ?? {};
-              final avatarUrl = responseData["avatarUrl"];
+              final avatarUrl = responseData["avatarURL"];
               final fullName =
                   "${responseData["firstName"] ?? ""} ${responseData["lastName"] ?? ""}"
                       .trim();

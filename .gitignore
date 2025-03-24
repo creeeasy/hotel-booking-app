@@ -1,2 +1,3 @@
-source-code/lib/firebase_options.dart
+#source-code/lib/firebase_options.dart
+source-code/.env
 dev-inspo/*

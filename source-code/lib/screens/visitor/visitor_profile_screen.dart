@@ -1,11 +1,11 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'dart:typed_data';
-import 'package:fatiel/constants/routes/routes.dart';
+import 'package:fatiel/enum/avatar_action.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fatiel/constants/routes/routes.dart';
+import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
@@ -21,136 +21,250 @@ class VisitorProfileScreen extends StatefulWidget {
 
 class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
   Uint8List? _imageBytes;
+  String? _imageUrl;
+  bool _isUploading = false;
 
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
 
-    if (pickedFile != null) {
-      final Uint8List bytes = await pickedFile.readAsBytes();
+  Future<void> _loadProfileImage() async {
+    final visitor = context.read<AuthBloc>().state.currentUser as Visitor;
+    setState(() => _imageUrl = visitor.avatarURL);
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
+
+    setState(() => _isUploading = true);
+
+    try {
+      Uint8List fileBytes = await pickedFile.readAsBytes();
+      String? imageUrl =
+          await CloudinaryService.uploadImageWeb(fileBytes, pickedFile.name);
+      if (imageUrl == null) throw Exception("Image upload failed");
+
+      final visitorId =
+          (context.read<AuthBloc>().state.currentUser as Visitor).id;
+      await Visitor.modifyVisitorAvatar(
+        action: AvatarAction.update,
+        visitorId: visitorId,
+        newAvatarUrl: imageUrl,
+      );
+
       setState(() {
-        _imageBytes = bytes;
+        _imageBytes = fileBytes;
+        _imageUrl = imageUrl;
       });
+
+      _showSnackBar("Image updated successfully");
+    } catch (e) {
+      _showSnackBar("Failed to upload image");
+    } finally {
+      setState(() => _isUploading = false);
     }
   }
 
-  void _logout() async {
-    final context = this.context; // Capture context before the async call
+  Future<void> _deleteProfileImage() async {
+    final shouldDelete = await _showConfirmationDialog(
+        "Delete Image", "Are you sure you want to delete your profile image?");
+    if (!shouldDelete) return;
 
-    final shouldLogout = await showGenericDialog<bool>(
-      context: context,
-      title: "Logout",
-      content: 'Are you sure you want to log out?',
-      optionBuilder: () => {'No': false, 'Yes, Logout': true},
-    ).then((value) => value ?? false);
+    try {
+      final visitorId =
+          (context.read<AuthBloc>().state.currentUser as Visitor).id;
+      await Visitor.modifyVisitorAvatar(
+          action: AvatarAction.remove, visitorId: visitorId);
+      setState(() {
+        _imageBytes = null;
+        _imageUrl = null;
+      });
+      _showSnackBar("Image deleted successfully");
+    } catch (e) {
+      _showSnackBar("Failed to delete image");
+    }
+  }
 
+  Future<void> _logout() async {
+    final shouldLogout = await _showConfirmationDialog(
+        "Logout", "Are you sure you want to log out?");
     if (!shouldLogout) return;
+    if (!context.mounted) return;
 
-    if (context.mounted) {
-      Navigator.of(context).pop();
-    }
+    context.read<AuthBloc>().add(const AuthEventLogOut());
+    Navigator.of(context).pop();
+  }
 
-    if (context.mounted) {
-      context.read<AuthBloc>().add(const AuthEventLogOut());
-    }
+  Future<bool> _showConfirmationDialog(String title, String content) async {
+    return await showGenericDialog<bool>(
+      context: context,
+      title: title,
+      content: content,
+      optionBuilder: () => {"No": false, "Yes": true},
+    ).then((value) => value ?? false);
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CustomBackAppBar(
-        title: "Your Profile",
-        titleColor: VisitorThemeColors.deepBlueAccent,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-
-            // Profile Avatar with Camera Button
-            Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                CircleAvatar(
-                  radius: 65,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: _imageBytes != null
-                      ? MemoryImage(_imageBytes!)
-                      : const AssetImage(
-                              "assets/images/default-avatar-icon.jpg")
-                          as ImageProvider,
-                ),
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: VisitorThemeColors.deepBlueAccent,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 25),
-
-            // Profile Action Buttons
-            ProfileActionButton(
-              text: "Update Information",
-              icon: Icons.person_outline,
-              onTap: () {},
-            ),
-            ProfileActionButton(
-              text: "Update Password",
-              icon: Icons.lock_outline,
-              onTap: () => Navigator.of(context).pushNamed(updatePasswordRoute),
-            ),
-
-            const Spacer(),
-
-            // Log Out Button
-            TextButton(
-              onPressed: _logout,
-              style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                backgroundColor: Colors.redAccent.withOpacity(0.1),
-                foregroundColor: VisitorThemeColors.deepBlueAccent,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.logout, color: Colors.redAccent, size: 22),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Log Out",
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 30),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CustomBackAppBar(
+          title: "Your Profile",
+          titleColor: VisitorThemeColors.joyfulPurple,
+          iconColor: VisitorThemeColors.joyfulPurple,
+          onBack: () => Navigator.of(context).pop(),
         ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              _buildProfileAvatar(),
+              if (_isUploading) _buildUploadingText(),
+              const SizedBox(height: 7),
+              if (_imageUrl != null || _imageBytes != null)
+                _buildDeleteButton(),
+              const SizedBox(height: 25),
+              _buildProfileActions(),
+              const Spacer(),
+              _buildLogoutButton(),
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileAvatar() {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        CircleAvatar(
+          radius: 70,
+          backgroundColor: Colors.grey[300],
+          backgroundImage: _imageBytes != null
+              ? MemoryImage(_imageBytes!)
+              : _imageUrl != null
+                  ? NetworkImage(_imageUrl!)
+                  : const AssetImage("assets/images/default-avatar-icon.jpg")
+                      as ImageProvider,
+        ),
+        GestureDetector(
+          onTap: _pickAndUploadImage,
+          child: _buildCameraIcon(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCameraIcon() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: VisitorThemeColors.joyfulPurple,
+        border: Border.all(color: Colors.white, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: _isUploading
+          ? const SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(
+                  strokeWidth: 2, color: Colors.white))
+          : const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 24),
+    );
+  }
+
+  Widget _buildUploadingText() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 7),
+      child: Text(
+        'Uploading...',
+        style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: VisitorThemeColors.joyfulPurple,
+            letterSpacing: 0.5),
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton() {
+    return TextButton.icon(
+        onPressed: _deleteProfileImage,
+        style: TextButton.styleFrom(
+            foregroundColor: VisitorThemeColors.vibrantRed,
+            backgroundColor: VisitorThemeColors.vibrantRed.withOpacity(0.16)),
+        icon: const Icon(Icons.delete,
+            size: 20, color: VisitorThemeColors.vibrantRed),
+        label: const Text("DELETE IMAGE",
+            style: TextStyle(
+              fontSize: 13,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              color: VisitorThemeColors.vibrantRed,
+            )));
+  }
+
+  Widget _buildProfileActions() {
+    return Column(
+      children: [
+        ProfileActionButton(
+            text: "Update Information",
+            icon: Icons.person_outline,
+            onTap: () =>
+                Navigator.of(context).pushNamed(updateInformationRoute)),
+        ProfileActionButton(
+            text: "Update Password",
+            icon: Icons.lock_outline,
+            onTap: () => Navigator.of(context).pushNamed(updatePasswordRoute)),
+      ],
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return TextButton(
+      onPressed: _logout,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: Colors.redAccent.withOpacity(0.16),
+        foregroundColor: VisitorThemeColors.vibrantRed,
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.logout, color: Colors.redAccent, size: 22),
+          SizedBox(width: 10),
+          Text(
+            "Log Out",
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.redAccent,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -178,8 +292,8 @@ class ProfileActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              VisitorThemeColors.deepBlueAccent.withOpacity(0.1),
-              VisitorThemeColors.deepBlueAccent.withOpacity(0.16),
+              VisitorThemeColors.lavenderPurple.withOpacity(0.1),
+              VisitorThemeColors.lavenderPurple.withOpacity(0.16),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -188,7 +302,7 @@ class ProfileActionButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: VisitorThemeColors.deepBlueAccent, size: 26),
+            Icon(icon, color: VisitorThemeColors.lavenderPurple, size: 26),
             const SizedBox(width: 18),
             Expanded(
               child: Text(
@@ -197,13 +311,13 @@ class ProfileActionButton extends StatelessWidget {
                   fontSize: 16,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: VisitorThemeColors.lavenderPurple,
                   letterSpacing: 0.5,
                 ),
               ),
             ),
-            Icon(Icons.chevron_right,
-                color: VisitorThemeColors.deepBlueAccent, size: 26),
+            const Icon(Icons.chevron_right,
+                color: VisitorThemeColors.lavenderPurple, size: 26),
           ],
         ),
       ),

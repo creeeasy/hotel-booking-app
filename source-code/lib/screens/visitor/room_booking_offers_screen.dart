@@ -31,35 +31,37 @@ class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomBackAppBar(
-        title: 'Explore room offers',
-        onBack: () => Navigator.pop(context),
-      ),
-      body: FutureBuilder<List<Room>>(
-        future: initializeRoomsData(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicatorWidget(
-              indicatorColor: VisitorThemeColors.deepBlueAccent,
-              containerColor: VisitorThemeColors.whiteColor,
-            );
-          }
-          if (snapshot.hasError) {
-            return ErrorWidgetWithRetry(
-              errorMessage: 'Error: ${snapshot.error}',
-            );
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const NoDataWidget(
-              message: "No room listings found.",
-            );
-          }
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomBackAppBar(
+          title: 'Explore room offers',
+          onBack: () => Navigator.pop(context),
+        ),
+        body: FutureBuilder<List<Room>>(
+          future: initializeRoomsData(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicatorWidget(
+                indicatorColor: VisitorThemeColors.deepBlueAccent,
+                containerColor: VisitorThemeColors.whiteColor,
+              );
+            }
+            if (snapshot.hasError) {
+              return ErrorWidgetWithRetry(
+                errorMessage: 'Error: ${snapshot.error}',
+              );
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const NoDataWidget(
+                message: "No room listings found.",
+              );
+            }
 
-          final rooms = snapshot.data!;
+            final rooms = snapshot.data!;
 
-          return BuildRoomList(rooms: rooms);
-        },
+            return BuildRoomList(rooms: rooms);
+          },
+        ),
       ),
     );
   }
