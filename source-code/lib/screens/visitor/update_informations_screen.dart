@@ -1,6 +1,7 @@
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
+import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,6 +68,7 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
         );
         if (context.mounted) {
           Navigator.of(context).pop();
+          context.read<AuthBloc>().add(const AuthEventInitialize());
         }
       }
     } catch (e) {

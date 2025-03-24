@@ -148,6 +148,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
               );
               if (context.mounted) {
                 Navigator.of(context).pop();
+                context.read<AuthBloc>().add(const AuthEventInitialize());
               }
             } else if (state.exception is WeakPasswordException) {
               await showErrorDialog(context, 'Weak password.');

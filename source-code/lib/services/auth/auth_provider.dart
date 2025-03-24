@@ -16,6 +16,7 @@ abstract class AuthProvider {
   Future<void> sendPasswordReset({required String email});
   Future<void> firebaseIntialize();
   Future<void> logOut();
+
   Future<void> updatePassword(
       {required String currentPassword, required String newPassword});
   AuthUser? get currentUser;
