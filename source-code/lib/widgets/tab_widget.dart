@@ -1,15 +1,18 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/enum/hotel_list_type.dart';
 import 'package:flutter/material.dart';
 
-class TripsTabView extends StatelessWidget {
-  final HotelListType selectedTab;
-  final Function(HotelListType) onTabChange;
+class TabWidget<T> extends StatelessWidget {
+  final T selectedTab;
+  final List<T> tabs;
+  final Function(T) onTabChange;
+  final String Function(T) getTabTitle;
 
-  const TripsTabView({
+  const TabWidget({
     Key? key,
     required this.selectedTab,
+    required this.tabs,
     required this.onTabChange,
+    required this.getTabTitle,
   }) : super(key: key);
 
   @override
@@ -17,30 +20,21 @@ class TripsTabView extends StatelessWidget {
     return Column(
       children: <Widget>[
         Row(
-          children: <Widget>[
-            Expanded(
+          children: tabs.map((tab) {
+            return Expanded(
               child: _buildTabItem(
-                title: 'Recommended',
-                isSelected: selectedTab == HotelListType.recommended,
+                title: getTabTitle(tab),
+                isSelected: selectedTab == tab,
                 onTap: () {
-                  onTabChange(HotelListType.recommended);
+                  onTabChange(tab);
                 },
               ),
-            ),
-            Expanded(
-              child: _buildTabItem(
-                title: 'Near Me',
-                isSelected: selectedTab == HotelListType.nearMe,
-                onTap: () {
-                  onTabChange(HotelListType.nearMe);
-                },
-              ),
-            ),
-          ],
+            );
+          }).toList(),
         ),
         SizedBox(
           height: MediaQuery.of(context).padding.bottom,
-        )
+        ),
       ],
     );
   }
@@ -56,7 +50,7 @@ class TripsTabView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0), // More compact
+          borderRadius: BorderRadius.circular(16.0),
           color:
               isSelected ? VisitorThemeColors.primaryColor : Colors.transparent,
         ),
@@ -64,8 +58,7 @@ class TripsTabView extends StatelessWidget {
           title,
           style: TextStyle(
             fontFamily: "Poppins",
-
-            fontSize: 14.0, // Balanced size for tabs
+            fontSize: 14.0,
             color: isSelected
                 ? VisitorThemeColors.whiteColor
                 : VisitorThemeColors.blackColor,

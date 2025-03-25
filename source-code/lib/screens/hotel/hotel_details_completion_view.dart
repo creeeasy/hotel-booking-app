@@ -1,7 +1,6 @@
 import 'package:fatiel/enum/wilaya.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fatiel/constants/colors/hotel_theme_colors.dart';
 import 'package:fatiel/constants/icons/theme_icons.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
@@ -114,8 +113,10 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
           return Scaffold(
             appBar: CustomBackAppBar(
               title: "Complete Your Hotel Profile",
-              iconColor: HotelThemeColors.primaryColor,
-              titleColor: HotelThemeColors.blackColor,
+              iconColor: const Color(
+                  0xFF1D3557), // Replace HotelThemeColors.primaryColor
+              titleColor: const Color(
+                  0xFF000000), // Replace HotelThemeColors.blackColor
               titleSize: 19,
               icon: ThemeIcons.logout,
               onBack: () =>
@@ -131,7 +132,8 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: HotelThemeColors.primaryColor,
+                      color: Color(
+                          0xFF1D3557), // Replace HotelThemeColors.primaryColor
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -187,8 +189,8 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                    color: HotelThemeColors.primaryColor
-                                        .withOpacity(0.77),
+                                    color: const Color(0xFF1D3557).withOpacity(
+                                        0.77), // Replace HotelThemeColors.primaryColor
                                     width: 2,
                                   ),
                                 ),
@@ -215,7 +217,8 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                                       setState(() => currentIndex--);
                                     },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: HotelThemeColors.greyColor,
+                                backgroundColor: const Color(
+                                    0xFFB0B0B0), // Replace HotelThemeColors.greyColor
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12)),
                                 padding: const EdgeInsets.symmetric(
@@ -233,7 +236,8 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                             ? null
                             : () => updateHotelDetails(context, state.hotel!),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: HotelThemeColors.primaryColor,
+                          backgroundColor: const Color(
+                              0xFF1D3557), // Replace HotelThemeColors.primaryColor
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(

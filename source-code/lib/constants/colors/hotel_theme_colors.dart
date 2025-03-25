@@ -1,43 +1,54 @@
 import 'package:flutter/material.dart';
 
-class HotelThemeColors {
-  static const Color primaryColor = Color(0xFFFF7043); // Bright Sunset Orange
-  static const Color secondaryColor = Color(0xFFFFC107); // Warm Golden Yellow
+class BoutiqueHotelTheme {
+  // Primary Colors
+  static const Color primary = Color(0xFF673AB7); // Deep Purple
+  static const Color secondary = Color(0xFF9C27B0); // Vivid Magenta
+  static const Color accent = Color(0xFFFF5722); // Tangerine
+  static const Color background =
+      Color.fromARGB(255, 255, 255, 255); // Pale Lilac
+  static const Color textColor = Color(0xFF311B92); // Deep Indigo
+  static const Color primaryBlue = Color(0xFF0D47A1);
+  // Button Colors
+  static const Color buttonPrimaryBg = primary;
+  static const Color buttonPrimaryText = Colors.white;
+  static const Color buttonSecondaryBg = secondary;
+  static const Color buttonSecondaryText = Colors.white;
+  static const Color buttonAccentBg = accent;
+  static const Color buttonAccentText = Colors.white;
+  static const Color buttonDisabledBg = Color(0xFFE0E0E0);
+  static const Color buttonDisabledText = Color(0xFF9E9E9E);
 
-  static const Color whiteColor = Color(0xFFFFFFFF);
-  static const Color blackColor = Color(0xFF2C2C2C); // Deep Charcoal Black
+  // Text Colors
+  static const Color headlineText = textColor;
+  static const Color bodyText = textColor;
+  static Color mutedText = const Color(0x009c27b0).withOpacity(0.6);
+  static const Color linkText = accent;
 
-  static const Color greyColor = Color(0xFFDCDCDC); // Soft Light Gray
-  static const Color textGreyColor = Color(0xFF757575); // Gentle Text Gray
-  static const Color lightGrayColor = Color(0xFFF5F5F5); // Soft Light Gray
+  // Card Colors
+  static const Color cardBackground = Colors.white;
+  static const Color cardBorder = Color(0xFFEDE7F6);
+  static const Color cardTitleText = textColor;
+  static const Color cardIconAccent = accent;
 
-  static const Color accentColor = Color(0xFFEF5350); // Bright Coral Red
-  static const Color warningColor = Color(0xFFFFC107); // Cheerful Yellow
-  static const Color successColor = Color(0xFF66BB6A); // Fresh Lime Green
+  // Input Field Colors
+  static const Color inputFieldBackground = background;
+  static const Color inputFieldBorder = primary;
+  static const Color inputFieldPlaceholder = secondary;
+  static const Color inputFieldText = textColor;
 
-  static const Color deepMaroonAccent = Color(0xFFD32F2F); // Bold Red
-  static const Color softBeigeAccent = Color(0xFFF8BBD0); // Soft Pink Beige
+  // Tab Bar Colors
+  static const Color activeTabBackground = primary;
+  static const Color activeTabText = Colors.white;
+  static const Color inactiveTabBackground = Color(0xFFEDE7F6);
+  static const Color inactiveTabText = secondary;
 
-  static const Color cancelBorderColor = Color(0xFFB71C1C); // Vibrant Red
-  static const Color cancelTextColor = Color(0xFFB71C1C);
-  static const Color cancelBackground = Color(0xFFFFF8E1); // Light Cream
+  // Badge/Tag Colors
+  static const Color successBadge = Color(0xFF4CAF50); // Green
+  static const Color warningBadge = Color(0xFFFFC107); // Amber
+  static const Color errorBadge = Color(0xFFF44336); // Red
+  static const Color infoBadge = primary;
 
-  static const Color viewBookingBackground = Color(0xFF00BCD4); // Bright Turquoise
-  static const Color viewBookingTextColor = Color(0xFFFFFFFF);
-
-  static const Color bookingCompletedBackground = Color(0xFF81C784); // Soft Lime Green
-  static const Color bookingCompletedTextColor = Color(0xFF388E3C); // Rich Green
-
-  static const Color cancelledTextColor = Color(0xFFC62828); // Bold Red
-
-  static const Color royalBlue = Color(0xFF1E88E5); // Bright Royal Blue
-  static const Color warmCopper = Color(0xFFDD6E42); // Cheerful Copper Tone
-
-  static const Color sereneAqua = Color(0xFF4DD0E1); // Lively Aqua
-  static const Color sunsetOrange = Color(0xFFFF7043); // Warm Sunset Orange
-  static const Color tranquilTeal = Color(0xFF00796B); // Vibrant Deep Teal
-  static const Color richBurgundy = Color(0xFF8E24AA); // Bright Burgundy
-  static const Color pearlWhite = Color(0xFFFFF8E1); // Soft Creamy White
-  static const Color champagneGold = Color(0xFFFFD54F); // Bright Champagne Gold
-  static const Color deepOlive = Color(0xFF558B2F); // Bright Olive Green
+  // Modal Background
+  static const Color modalOverlay = Color(0x66311B92); // 40% opacity overlay
 }

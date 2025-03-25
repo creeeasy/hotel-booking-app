@@ -180,6 +180,44 @@ class Booking {
       print("Error updating visitor booking: $e");
     }
   }
+
+  static Future<int> fetchMonthlyBookingsFuture(
+      {required String hotelId}) async {
+    try {
+      final now = DateTime.now();
+      final firstDayOfMonth = DateTime(now.year, now.month, 1);
+      final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('hotelId', isEqualTo: hotelId)
+          .where('createdAt', isGreaterThanOrEqualTo: firstDayOfMonth)
+          .where('createdAt', isLessThanOrEqualTo: lastDayOfMonth)
+          .get();
+
+      return querySnapshot.size;
+    } catch (e) {
+      print(e);
+      log('Error fetching monthly bookings: $e');
+      return 0;
+    }
+  }
+
+  static Future<int> fetchPendingBookingsFuture(
+      {required String hotelId}) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('hotelId', isEqualTo: hotelId)
+          .where('status', isEqualTo: 'pending')
+          .get();
+
+      return querySnapshot.size;
+    } catch (e) {
+      log('Error fetching pending bookings: $e');
+      return 0;
+    }
+  }
 }
 
 sealed class BookingResult {

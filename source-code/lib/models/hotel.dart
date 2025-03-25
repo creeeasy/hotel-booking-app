@@ -1,12 +1,18 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/constants/hotel_price_ranges.dart';
-
+import 'package:fatiel/enum/activity_type.dart';
 import 'package:fatiel/enum/review_update_type.dart';
 import 'package:fatiel/enum/wilaya.dart';
+import 'package:fatiel/models/activity_item.dart';
+import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel_filter_parameters.dart';
 import 'package:fatiel/models/rating.dart';
+import 'package:fatiel/models/review.dart';
+import 'package:fatiel/models/room.dart';
+import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/utils/generate_search_keywords.dart';
+import 'package:iconsax/iconsax.dart';
 
 class Hotel {
   final String id;
@@ -477,5 +483,83 @@ class Hotel {
     return hotels
         .where((hotel) => matchingHotelIds.contains(hotel.id))
         .toList();
+  }
+
+  static const int maxRecentActivities = 5;
+  static const Duration recentActivityPeriod = Duration(days: 7);
+
+  static Future<List<ActivityItem>> getRecentActivity({
+    required String hotelId,
+  }) async {
+    try {
+      final recentBookings = _getRecentBookings(hotelId);
+      final recentReviews = _getRecentReviews(hotelId);
+      final results = await Future.wait([recentBookings, recentReviews]);
+      final allActivities = [...results[0], ...results[1]];
+      allActivities.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return allActivities.take(maxRecentActivities).toList();
+    } catch (e) {
+      print('Error fetching recent activity: $e');
+      return [];
+    }
+  }
+
+  static Future<List<ActivityItem>> _getRecentBookings(String hotelId) async {
+    final cutoffDate = DateTime.now().subtract(recentActivityPeriod);
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('bookings')
+        .where('hotelId', isEqualTo: hotelId)
+        .where('createdAt', isGreaterThanOrEqualTo: cutoffDate)
+        .orderBy('createdAt', descending: true)
+        .limit(maxRecentActivities)
+        .get();
+
+    final activities = <ActivityItem>[];
+
+    for (final doc in querySnapshot.docs) {
+      final booking = Booking.fromFirestore(doc);
+      final visitor = await Visitor.getVisitorById(booking.visitorId);
+      final room = await Room.getRoomById(booking.roomId);
+
+      activities.add(ActivityItem(
+        type: ActivityType.booking,
+        title: 'New Booking',
+        description:
+            '${visitor!.firstName} ${visitor.lastName} booked ${room!.name}',
+        timestamp: booking.createdAt,
+        icon: Iconsax.calendar_add,
+      ));
+    }
+
+    return activities;
+  }
+
+  static Future<List<ActivityItem>> _getRecentReviews(String hotelId) async {
+    final cutoffDate = DateTime.now().subtract(recentActivityPeriod);
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('hotelId', isEqualTo: hotelId)
+        .where('createdAt', isGreaterThanOrEqualTo: cutoffDate)
+        .orderBy('createdAt', descending: true)
+        .limit(maxRecentActivities)
+        .get();
+
+    final activities = <ActivityItem>[];
+
+    for (final doc in querySnapshot.docs) {
+      final review = Review.fromFirestore(doc);
+      final visitor = await Visitor.getVisitorById(review.visitorId);
+
+      activities.add(ActivityItem(
+        type: ActivityType.review,
+        title: 'New Review',
+        description:
+            '${visitor!.firstName} ${visitor.lastName} left a ${review.rating}-star review',
+        timestamp: review.createdAt,
+        icon: Iconsax.star,
+      ));
+    }
+
+    return activities;
   }
 }

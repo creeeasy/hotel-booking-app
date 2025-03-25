@@ -7,6 +7,7 @@ import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/no_reviews_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -45,7 +46,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 errorMessage: 'Error: ${snapshot.error}',
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return _buildNoReviewsUi();
+              return NoReviewsUI();
             }
 
             final reviews = snapshot.data!["reviews"];
@@ -87,15 +88,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildNoReviewsUi() {
-    return Center(
-      child: Text(
-        "No reviews yet.",
-        style: TextStyle(fontSize: 16, color: Colors.grey),
       ),
     );
   }

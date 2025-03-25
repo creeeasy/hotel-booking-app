@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/enum/review_update_type.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/rating.dart';
+import 'package:intl/intl.dart';
 
 class Review {
   final String id;
@@ -22,7 +26,19 @@ class Review {
     required this.comment,
     required this.createdAt,
   });
+  String get initials => comment.isNotEmpty
+      ? comment
+          .trim()
+          .split(' ')
+          .map((w) => w.isNotEmpty ? w[0] : '')
+          .take(2)
+          .join()
+          .toUpperCase()
+      : '?';
 
+  String get formattedDate => DateFormat('MMM d, yyyy').format(createdAt);
+
+  double get validatedRating => rating.clamp(0.0, 5.0);
   factory Review.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
@@ -95,30 +111,75 @@ class Review {
     }
   }
 
-  static Future<Map<String, dynamic>> getAllHotelReviews(
-      {required String hotelId}) async {
+  static Future<Map<String, dynamic>> getAllHotelReviews({
+    int? limit,
+    int? currentRatingStar,
+    required String hotelId,
+    bool sortByNewest = true,
+  }) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
+      // Initialize base query for fetching reviews
+      Query reviewQuery = FirebaseFirestore.instance
           .collection("reviews")
-          .where("hotelId", isEqualTo: hotelId)
-          .get();
+          .where("hotelId", isEqualTo: hotelId);
+
+      // Apply rating filter if a specific rating is provided
+      if (currentRatingStar != null) {
+        reviewQuery = reviewQuery.where("rating", isEqualTo: currentRatingStar);
+      }
+
+      // Apply sorting order based on the flag
+      reviewQuery = sortByNewest
+          ? reviewQuery.orderBy("createdAt", descending: true)
+          : reviewQuery.orderBy("createdAt");
+
+      // Apply pagination limit if provided
+      if (limit != null) {
+        reviewQuery = reviewQuery.limit(limit);
+      }
+
+      // Execute multiple queries in parallel
+      final results = await Future.wait([
+        reviewQuery.get(), // Fetch reviews
+        FirebaseFirestore.instance
+            .collection("hotels")
+            .doc(hotelId)
+            .get(), // Fetch hotel details
+        FirebaseFirestore.instance
+            .collection("reviews")
+            .where("hotelId", isEqualTo: hotelId)
+            .count()
+            .get(), // Get total reviews count
+      ]);
+
+      // Extract the results
+      final reviewsSnapshot = results[0] as QuerySnapshot;
+      final hotelSnapshot = results[1] as DocumentSnapshot;
+      final totalReviewsCount = (results[2] as AggregateQuerySnapshot).count;
 
       final reviews =
-          querySnapshot.docs.map((doc) => Review.fromFirestore(doc)).toList();
-
-      final hotelSnapshot = await FirebaseFirestore.instance
-          .collection("hotels")
-          .doc(hotelId)
-          .get();
+          reviewsSnapshot.docs.map((doc) => Review.fromFirestore(doc)).toList();
       final hotel = Hotel.fromFirestore(hotelSnapshot);
 
       return {
         "reviews": reviews,
         "ratings": hotel.ratings,
+        "hotel": hotel,
+        "totalReviews": totalReviewsCount,
+        "hasMore": limit != null
+            ? reviews.length == limit
+            : false, // Updated logic for 'hasMore'
       };
+    } on FirebaseException catch (e) {
+      log(e.message.toString());
+      print(e);
+      // log("FirebaseException: ${e.message}"); // Print Firebase-specific error
+      throw Exception(e.message);
     } catch (e) {
-      print("Error fetching reviews: $e");
-      return {};
+      print(e);
+      log(e.toString());
+      // log("Error fetching hotel reviews: $e"); // Print general error
+      rethrow;
     }
   }
 
@@ -230,6 +291,67 @@ class Review {
     } catch (e) {
       return const ReviewingFailure(
           "An error occurred while deleting your review.");
+    }
+  }
+
+  static Future<int> fetchAvailableRoomsCountFuture({
+    required String hotelId,
+  }) async {
+    try {
+      final hotelFuture =
+          FirebaseFirestore.instance.collection('hotels').doc(hotelId).get();
+
+      final now = DateTime.now();
+      final bookingsFuture = FirebaseFirestore.instance
+          .collection('bookings')
+          .where('hotelId', isEqualTo: hotelId)
+          .where('checkInDate', isLessThanOrEqualTo: now)
+          .get();
+
+      final results = await Future.wait([hotelFuture, bookingsFuture]);
+      final hotelDoc = results[0] as DocumentSnapshot;
+      final activeBookingsQuery = results[1] as QuerySnapshot;
+
+      final totalRooms =
+          (hotelDoc.data() as Map<String, dynamic>?)?['totalRooms'] as int? ??
+              0;
+
+      int activeBookings = 0;
+      for (final doc in activeBookingsQuery.docs) {
+        final checkOutDate = (doc['checkOutDate'] as Timestamp).toDate();
+        if (checkOutDate.isAfter(now)) {
+          activeBookings++;
+        }
+      }
+
+      return totalRooms - activeBookings > 0 ? totalRooms - activeBookings : 0;
+    } catch (e) {
+      log('Error fetching available rooms: $e',
+          stackTrace: StackTrace.current,
+          name: 'fetchAvailableRoomsCountFuture');
+      return 0;
+    }
+  }
+
+  static Future<int> fetchReviewStatisticsFuture(
+      {required String hotelId}) async {
+    try {
+      final hotelDoc = await FirebaseFirestore.instance
+          .collection('hotels')
+          .doc(hotelId)
+          .get();
+
+      final ratingsMap = hotelDoc.data()?['ratings'] as Map<String, dynamic>?;
+      final ratings = ratingsMap != null
+          ? Rating(
+              rating: (ratingsMap['rating'] as num).toDouble(),
+              totalRating: ratingsMap['totalRating'] as int,
+            )
+          : null;
+      return ratings?.totalRating ?? 0;
+    } catch (e) {
+      log('Error fetching review statistics: $e');
+      return 0;
     }
   }
 }

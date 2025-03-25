@@ -37,12 +37,21 @@ class _ExploreSectionWidgetState extends State<ExploreSectionWidget>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        TripsTabView(
+        TabWidget<HotelListType>(
           selectedTab: selectedTab,
           onTabChange: (HotelListType newTab) {
             setState(() {
               selectedTab = newTab;
             });
+          },
+          tabs: HotelListType.values,
+          getTabTitle: (tab) {
+            switch (tab) {
+              case HotelListType.recommended:
+                return 'Recommended';
+              case HotelListType.nearMe:
+                return 'Near Me';
+            }
           },
         ),
         const SizedBox(height: 20),

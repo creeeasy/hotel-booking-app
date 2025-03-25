@@ -1,5 +1,11 @@
+import 'package:fatiel/screens/hotel/bookings_screen.dart';
+import 'package:fatiel/screens/hotel/home_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_details_completion_view.dart';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_profile_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_settings_screen.dart';
+import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
@@ -59,6 +65,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'Barlow',
         ),
@@ -88,6 +95,12 @@ class MyApp extends StatelessWidget {
           visitorProfileRoute: (context) => const VisitorProfileScreen(),
           updatePasswordRoute: (context) => const UpdatePasswordScreen(),
           updateInformationRoute: (context) => const UpdateUserInformation(),
+          hotelHomeRoute: (context) => const HotelHomeScreen(),
+          hotelRoomsRoute: (context) => const RoomsScreen(),
+          hotelBookingsRoute: (context) => const BookingsScreen(),
+          hotelReviewsRoute: (context) => const HotelReviewsScreen(),
+          hotelProfileRoute: (context) => const HotelProfileView(),
+          hotelSettingsRoute: (context) => const HotelSettingsView(),
         },
         home: const Traffic());
   }
@@ -115,10 +128,9 @@ class _TrafficState extends State<Traffic> {
       }
     }, builder: ((context, state) {
       if (state is AuthStateHotelLoggedIn) {
-        return const HotelHomeView();
+        return const HotelHomeScreen();
+        // return const HotelHomeView();
       } else if (state is AuthStateVisitorLoggedIn) {
-        // return const NoBookingsWidget();
-
         return const VisitorHomeScreen();
       } else if (state is AuthStateNeedsVerification) {
         return const VerifyEmailView();

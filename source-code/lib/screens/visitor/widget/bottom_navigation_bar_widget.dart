@@ -1,37 +1,34 @@
-import 'package:fatiel/enum/bottom_bar_type.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 
-class CustomBottomNavigationBar extends StatelessWidget {
-  final BottomBarType bottomBarType;
-  final Function(BottomBarType) onTabClick;
+class CustomBottomNavigationBar<T> extends StatelessWidget {
+  final T selectedTab;
+  final List<T> tabs;
+  final Function(T) onTabClick;
+  final Icon Function(T) getTabIcon;
+  final String Function(T) getTabLabel;
 
   const CustomBottomNavigationBar({
     Key? key,
-    required this.bottomBarType,
+    required this.selectedTab,
+    required this.tabs,
     required this.onTabClick,
+    required this.getTabIcon,
+    required this.getTabLabel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       backgroundColor: VisitorThemeColors.whiteColor,
-      currentIndex: BottomBarType.values.indexOf(bottomBarType),
-      onTap: (index) => onTabClick(BottomBarType.values[index]),
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.travel_explore, size: 28),
-          label: "Explore",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.book_online, size: 28),
-          label: "Booking",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite, size: 28),
-          label: "Favorite",
-        ),
-      ],
+      currentIndex: tabs.indexOf(selectedTab),
+      onTap: (index) => onTabClick(tabs[index]),
+      items: tabs.map((tab) {
+        return BottomNavigationBarItem(
+          icon: getTabIcon(tab),
+          label: getTabLabel(tab),
+        );
+      }).toList(),
       selectedItemColor: VisitorThemeColors.primaryColor,
       unselectedItemColor: VisitorThemeColors.textGreyColor,
       showUnselectedLabels: true,

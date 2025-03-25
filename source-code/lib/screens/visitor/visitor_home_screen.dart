@@ -4,8 +4,7 @@ import 'package:fatiel/screens/visitor/favorite_screen.dart';
 import 'package:fatiel/screens/visitor/widget/bottom_navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-
-import '../../enum/bottom_bar_type.dart';
+import '../../enum/visitor_nav_bar.dart';
 
 class VisitorHomeScreen extends StatefulWidget {
   const VisitorHomeScreen({super.key});
@@ -15,24 +14,22 @@ class VisitorHomeScreen extends StatefulWidget {
 }
 
 class _VisitorHomeScreenState extends State<VisitorHomeScreen> {
-  BottomBarType bottomBarType = BottomBarType.Explore;
+  VisitorNavBar selectedTab = VisitorNavBar.explore;
 
-  void onTabClick(BottomBarType tabType) {
+  void onTabClick(VisitorNavBar tabType) {
     setState(() {
-      bottomBarType = tabType;
+      selectedTab = tabType;
     });
   }
 
   Widget getCurrentPage() {
-    switch (bottomBarType) {
-      case BottomBarType.Explore:
+    switch (selectedTab) {
+      case VisitorNavBar.explore:
         return ExploreView();
-      case BottomBarType.Booking:
+      case VisitorNavBar.booking:
         return const BookingView();
-      case BottomBarType.Favorite:
+      case VisitorNavBar.favorite:
         return const FavoritePage();
-      default:
-        return ExploreView();
     }
   }
 
@@ -40,16 +37,34 @@ class _VisitorHomeScreenState extends State<VisitorHomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: VisitorThemeColors.whiteColor,
-          body: getCurrentPage(),
-          bottomNavigationBar: CustomBottomNavigationBar(
-            bottomBarType: bottomBarType,
-            onTabClick: (selectedTab) {
-              setState(() {
-                bottomBarType = selectedTab;
-              });
-            },
-          )),
+        backgroundColor: VisitorThemeColors.whiteColor,
+        body: getCurrentPage(),
+        bottomNavigationBar: CustomBottomNavigationBar<VisitorNavBar>(
+          selectedTab: selectedTab,
+          tabs: VisitorNavBar.values,
+          onTabClick: onTabClick,
+          getTabIcon: (tab) {
+            switch (tab) {
+              case VisitorNavBar.explore:
+                return const Icon(Icons.travel_explore, size: 28);
+              case VisitorNavBar.booking:
+                return const Icon(Icons.book_online, size: 28);
+              case VisitorNavBar.favorite:
+                return const Icon(Icons.favorite, size: 28);
+            }
+          },
+          getTabLabel: (tab) {
+            switch (tab) {
+              case VisitorNavBar.explore:
+                return 'Explore';
+              case VisitorNavBar.booking:
+                return 'Booking';
+              case VisitorNavBar.favorite:
+                return 'Favorite';
+            }
+          },
+        ),
+      ),
     );
   }
 }
