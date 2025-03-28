@@ -1,11 +1,13 @@
 import 'package:fatiel/enum/hotel_nav_bar.dart';
 import 'package:fatiel/screens/hotel/bookings_screen.dart';
 import 'package:fatiel/screens/hotel/home_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_profile_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
 import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/visitor/widget/bottom_navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:iconsax/iconsax.dart';
 
 class HotelHomeView extends StatefulWidget {
   const HotelHomeView({super.key});
@@ -28,11 +30,13 @@ class _HotelHomeViewState extends State<HotelHomeView> {
       case HotelNavBar.home:
         return const HotelHomeScreen();
       case HotelNavBar.rooms:
-        return const RoomsScreen();
+        return const HotelRoomsPage();
       case HotelNavBar.bookings:
-        return const BookingsScreen();
+        return const HotelBookingsPage();
       case HotelNavBar.reviews:
         return const HotelReviewsScreen();
+      case HotelNavBar.profile:
+        return const HotelProfileView();
     }
   }
 
@@ -53,13 +57,15 @@ class _HotelHomeViewState extends State<HotelHomeView> {
           getTabIcon: (tab) {
             switch (tab) {
               case HotelNavBar.home:
-                return const Icon(Icons.home, size: 28);
+                return const Icon(Iconsax.home, size: 24);
               case HotelNavBar.rooms:
-                return const Icon(Icons.bed, size: 28);
+                return const Icon(Iconsax.building_3, size: 24);
               case HotelNavBar.bookings:
-                return const Icon(Icons.book_online, size: 28);
+                return const Icon(Iconsax.calendar, size: 24);
               case HotelNavBar.reviews:
-                return const Icon(Icons.star, size: 28);
+                return const Icon(Iconsax.star, size: 24);
+              case HotelNavBar.profile:
+                return const Icon(Iconsax.profile_circle, size: 24);
             }
           },
           getTabLabel: (tab) {
@@ -72,6 +78,8 @@ class _HotelHomeViewState extends State<HotelHomeView> {
                 return 'Bookings';
               case HotelNavBar.reviews:
                 return 'Reviews';
+              case HotelNavBar.profile:
+                return 'Profile';
             }
           },
         ),

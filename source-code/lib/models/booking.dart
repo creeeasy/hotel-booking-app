@@ -218,6 +218,63 @@ class Booking {
       return 0;
     }
   }
+
+  static Future<List<Booking>> fetchHotelBookingsById(
+      {required String hotelId}) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('hotelId', isEqualTo: hotelId)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Booking.fromFirestore(doc))
+          .toList();
+    } catch (e) {
+      log('Error fetching hotel bookings: $e');
+      return [];
+    }
+  }
+
+  static Future<BookingResult> updateBookingStatus({
+    required String bookingId,
+    required BookingStatus newStatus,
+  }) async {
+    try {
+      final bookingRef =
+          FirebaseFirestore.instance.collection('bookings').doc(bookingId);
+
+      // First get the current booking to check roomId
+      final bookingDoc = await bookingRef.get();
+      if (!bookingDoc.exists) {
+        return const BookingFailure('Booking not found');
+      }
+
+      final booking = Booking.fromFirestore(bookingDoc);
+
+      // Update the booking status
+      await bookingRef.update({
+        'status': newStatus.name,
+      });
+
+      // If completed or cancelled, update room availability
+      if (newStatus == BookingStatus.completed ||
+          newStatus == BookingStatus.cancelled) {
+        await FirebaseFirestore.instance
+            .collection('rooms')
+            .doc(booking.roomId)
+            .update({
+          'availability.isAvailable': true,
+          'availability.nextAvailableDate': null,
+        });
+      }
+
+      return BookingSuccess(booking);
+    } catch (e) {
+      log('Error updating booking status: $e');
+      return BookingFailure('Failed to update booking status: $e');
+    }
+  }
 }
 
 sealed class BookingResult {

@@ -96,8 +96,8 @@ class MyApp extends StatelessWidget {
           updatePasswordRoute: (context) => const UpdatePasswordScreen(),
           updateInformationRoute: (context) => const UpdateUserInformation(),
           hotelHomeRoute: (context) => const HotelHomeScreen(),
-          hotelRoomsRoute: (context) => const RoomsScreen(),
-          hotelBookingsRoute: (context) => const BookingsScreen(),
+          hotelRoomsRoute: (context) => const HotelRoomsPage(),
+          hotelBookingsRoute: (context) => const HotelBookingsPage(),
           hotelReviewsRoute: (context) => const HotelReviewsScreen(),
           hotelProfileRoute: (context) => const HotelProfileView(),
           hotelSettingsRoute: (context) => const HotelSettingsView(),
@@ -128,8 +128,7 @@ class _TrafficState extends State<Traffic> {
       }
     }, builder: ((context, state) {
       if (state is AuthStateHotelLoggedIn) {
-        return const HotelHomeScreen();
-        // return const HotelHomeView();
+        return const HotelHomeView();
       } else if (state is AuthStateVisitorLoggedIn) {
         return const VisitorHomeScreen();
       } else if (state is AuthStateNeedsVerification) {

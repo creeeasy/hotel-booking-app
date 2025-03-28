@@ -97,10 +97,12 @@ class Visitor {
       final booking = await Booking.getBookingById(bookingId);
       final hotel = await Hotel.getHotelById(booking.hotelId);
       final room = await Room.getRoomById(booking.roomId);
+      final visitor = await Visitor.getVisitorById(booking.visitorId);
       return {
         "booking": booking,
         "hotel": hotel,
         "room": room,
+        "visitor": visitor,
       };
     } catch (e) {
       print('Error fetching booking or hotel: $e');

@@ -7,7 +7,6 @@ import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
 import 'package:fatiel/widgets/no_reviews_ui.dart';
 import 'package:flutter/material.dart';
@@ -64,12 +63,6 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: TextButton(
-            onPressed: () =>
-                context.read<AuthBloc>().add(const AuthEventLogOut()),
-            child: Text("logout")),
-      ),
       backgroundColor: BoutiqueHotelTheme.background,
       body: FutureBuilder<Map<String, dynamic>>(
         future: _reviewsFuture,

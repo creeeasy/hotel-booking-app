@@ -40,6 +40,50 @@ class Hotel {
     this.contactInfo,
     this.searchKeywords = const [],
   }) : ratings = ratings ?? Rating(rating: 0, totalRating: 0);
+  Hotel copyWith({
+    String? id,
+    String? email,
+    String? hotelName,
+    int? location,
+    List<String>? images,
+    int? totalRooms,
+    String? description,
+    String? mapLink,
+    String? contactInfo,
+    List<String>? searchKeywords,
+    Rating? ratings,
+  }) {
+    return Hotel(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      hotelName: hotelName ?? this.hotelName,
+      location: location ?? this.location,
+      images: images ?? this.images,
+      totalRooms: totalRooms ?? this.totalRooms,
+      description: description ?? this.description,
+      mapLink: mapLink ?? this.mapLink,
+      contactInfo: contactInfo ?? this.contactInfo,
+      searchKeywords: searchKeywords ?? this.searchKeywords,
+      ratings: ratings ?? this.ratings,
+    );
+  }
+
+  Map<String, dynamic> toUpdateMap() {
+    return {
+      'hotelName': hotelName,
+      'location': location,
+      'images': images,
+      'totalRooms': totalRooms,
+      'description': description,
+      'mapLink': mapLink,
+      'contactInfo': contactInfo,
+      'searchKeywords': searchKeywords,
+      'ratings': {
+        'rating': ratings.rating,
+        'totalRating': ratings.totalRating,
+      },
+    };
+  }
 
   factory Hotel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
@@ -561,5 +605,17 @@ class Hotel {
     }
 
     return activities;
+  }
+
+  static Future<void> updateHotel({required Hotel hotel}) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('hotels')
+          .doc(hotel.id)
+          .update(hotel.toUpdateMap());
+    } catch (e) {
+      log('An error occured $e');
+      rethrow;
+    }
   }
 }

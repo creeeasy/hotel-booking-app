@@ -1,1 +1,1 @@
-enum HotelNavBar { home, rooms, bookings, reviews }
+enum HotelNavBar { home, rooms, bookings, reviews, profile }
