@@ -9,7 +9,7 @@ import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
-import 'package:fatiel/screens/reviews_screen.dart';
+import 'package:fatiel/screens/visitor/reviews_screen.dart';
 import 'package:fatiel/screens/visitor/all_wilayas_screen.dart';
 import 'package:fatiel/screens/visitor/booking_details_screen.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
@@ -23,7 +23,7 @@ import 'package:fatiel/screens/visitor/update_password_sceen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_profile_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,8 +66,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Barlow',
+        theme: ThemeData.light().copyWith(
+          textTheme: ThemeData.light().textTheme.apply(
+                fontFamily: 'Barlow',
+              ),
+          primaryTextTheme: ThemeData.light().textTheme.apply(
+                fontFamily: 'Barlow',
+              ),
         ),
         routes: {
           loginViewRoute: (context) => const LoginView(),
@@ -82,7 +87,7 @@ class MyApp extends StatelessWidget {
           hotelRegistrationRoute: (context) => const HotelRegistrationView(),
           hotelDetailsRoute: (context) => const HotelDetailsView(),
           favoritesViewRoute: (context) => const FavoritePage(),
-          exploreViewRoute: (context) => ExploreView(),
+          exploreViewRoute: (context) => const ExploreView(),
           bookingsViewRoute: (context) => const BookingView(),
           wilayaDetailsViewRoute: (context) => const WilayaDetailsPageView(),
           searchHotelViewRoute: (context) => const SearchHotelView(),

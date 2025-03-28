@@ -1,11 +1,13 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/enum/wilaya.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
-import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
-import 'package:fatiel/widgets/hotel_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class WilayaDetailsPageView extends StatefulWidget {
   const WilayaDetailsPageView({super.key});
@@ -16,20 +18,35 @@ class WilayaDetailsPageView extends StatefulWidget {
 
 class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
     with TickerProviderStateMixin {
-  late AnimationController animationController;
+  late AnimationController _animationController;
+  late Animation<double> _titleAnimation;
+  late Animation<Color?> appBarColorAnimation;
 
   @override
   void initState() {
-    animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
     super.initState();
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    )..forward();
+
+    _titleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
+    appBarColorAnimation = ColorTween(
+      begin: ThemeColors.background.withOpacity(0.5),
+      end: ThemeColors.background,
+    ).animate(_animationController);
   }
 
   @override
   void dispose() {
-    animationController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -40,100 +57,372 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
   @override
   Widget build(BuildContext context) {
     final wilayaId = ModalRoute.of(context)?.settings.arguments as int;
-
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: VisitorThemeColors.whiteColor,
-        appBar: AppBar(
-          backgroundColor: VisitorThemeColors.whiteColor,
-          elevation: 0,
-          leading: IconButton(
-            color: VisitorThemeColors.blackColor,
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 32, // Matching Visitor screen
-            ),
-            onPressed: () {
-              Navigator.pop(context); // Go back to the previous screen
-            },
-          ),
-          centerTitle: true,
-          title: Text(
-            Wilaya.fromIndex(wilayaId)!.name,
-            style: TextStyle(
-              color: VisitorThemeColors.blackColor,
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+    final wilaya = Wilaya.fromIndex(wilayaId);
+    if (wilaya == null) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Invalid wilaya ID: $wilayaId',
+            style: const TextStyle(
+              color: ThemeColors.error,
+              fontSize: 16,
             ),
           ),
         ),
-        body: FutureBuilder<List<Hotel>>(
-          future: fetchHotels(context, wilayaId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicatorWidget(
-                indicatorColor:
-                    VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
-                containerColor: VisitorThemeColors.whiteColor,
-              );
-            } else if (snapshot.hasError) {
-              return ErrorWidgetWithRetry(
-                errorMessage: 'Error: ${snapshot.error}',
-              );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return NoDataWidget(
-                message: "No hotels are currently listed in this wilaya.",
-              );
-            }
+      );
+    }
 
-            final hotels = snapshot.data!;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Text(
-                    "Find your perfect hotel in ${Wilaya.fromIndex(wilayaId)!.name}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      letterSpacing: 0.5,
-                      color: VisitorThemeColors.blackColor,
+    return Scaffold(
+      backgroundColor: ThemeColors.background,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _titleAnimation.value,
+                child: const Icon(
+                  Iconsax.arrow_left_2,
+                  color: ThemeColors.textPrimary,
+                  size: 24,
+                ),
+              );
+            },
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+        title: AnimatedBuilder(
+          animation: _titleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _titleAnimation.value,
+              child: Text(
+                wilaya.name,
+                style: TextStyle(
+                  color: ThemeColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  shadows: [
+                    Shadow(
+                      color: ThemeColors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
+                  ],
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: hotels.length,
-                    itemBuilder: (context, index) {
-                      final hotel = hotels[index];
-                      final count = hotels.length > 10 ? 10 : hotels.length;
-                      final animation = Tween<double>(
-                        begin: 0.0,
-                        end: 1.0,
-                      ).animate(
-                        CurvedAnimation(
-                          parent: animationController,
-                          curve: Interval((1 / count) * index, 1.0,
-                              curve: Curves.fastOutSlowIn),
-                        ),
-                      );
-                      animationController.forward();
-                      return HotelRowOneWidget(
-                        hotelId: hotel.id,
-                        animation: animation,
-                        animationController: animationController,
-                      );
-                    },
-                  ),
-                ),
-              ],
+              ),
             );
           },
         ),
+      ),
+      body: FutureBuilder<List<Hotel>>(
+        future: fetchHotels(context, wilayaId),
+        builder: (context, snapshot) {
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                backgroundColor: ThemeColors.primary.withOpacity(0.16),
+                automaticallyImplyLeading: false,
+                expandedHeight: 240,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Hero(
+                    tag: 'wilaya-$wilayaId',
+                    child: CachedNetworkImage(
+                      imageUrl: wilaya.image,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: ThemeColors.grey200,
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: ThemeColors.grey200,
+                        child: const Icon(
+                          Iconsax.gallery_slash,
+                          color: ThemeColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                  child: Text(
+                    "Hotels in ${wilaya.name}",
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: ThemeColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicatorWidget(
+                      indicatorColor: ThemeColors.primary,
+                    ),
+                  ),
+                )
+              else if (snapshot.hasError)
+                SliverFillRemaining(
+                  child: ErrorWidgetWithRetry(
+                    errorMessage: 'Failed to load hotels',
+                    onRetry: () => setState(() {}),
+                  ),
+                )
+              else if (!snapshot.hasData || snapshot.data!.isEmpty)
+                SliverFillRemaining(
+                  child: NoHotelsWidget(
+                    wilayaName: wilaya.name,
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final hotel = snapshot.data![index];
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: HotelCard(
+                                  hotel: hotel,
+                                  onTap: () => _navigateToHotelDetails(hotel),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      childCount: snapshot.data!.length,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _navigateToHotelDetails(Hotel hotel) {
+    Navigator.pushNamed(
+      context,
+      hotelDetailsRoute,
+      arguments: hotel.id,
+    );
+  }
+}
+
+class HotelCard extends StatelessWidget {
+  final Hotel hotel;
+  final VoidCallback onTap;
+
+  const HotelCard({
+    super.key,
+    required this.hotel,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hotel.images.isNotEmpty)
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: CachedNetworkImage(
+                  imageUrl: hotel.images.first,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: ThemeColors.grey200,
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: ThemeColors.grey200,
+                    child: const Icon(
+                      Iconsax.gallery_slash,
+                      color: ThemeColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hotel.hotelName,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: ThemeColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  if (hotel.location != null)
+                    Row(
+                      children: [
+                        const Icon(
+                          Iconsax.location,
+                          size: 16,
+                          color: ThemeColors.textSecondary,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            Wilaya.fromIndex(hotel.location!)?.name ??
+                                'Unknown location',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: ThemeColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Iconsax.star1,
+                            color: ThemeColors.star,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            hotel.ratings.rating.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: ThemeColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '(${hotel.ratings.totalRating})',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: ThemeColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (hotel.totalRooms != null)
+                        Text(
+                          '${hotel.totalRooms} rooms',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: ThemeColors.textSecondary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NoHotelsWidget extends StatelessWidget {
+  final String wilayaName;
+  final VoidCallback? onExploreNearby;
+
+  const NoHotelsWidget({
+    super.key,
+    required this.wilayaName,
+    this.onExploreNearby,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ThemeColors.primary.withOpacity(0.1),
+            ),
+            child: const Icon(
+              Iconsax.building_4,
+              size: 48,
+              color: ThemeColors.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'No Hotels Available',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: ThemeColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'There are currently no hotels registered in $wilayaName',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              color: ThemeColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 32),
+          if (onExploreNearby != null)
+            ElevatedButton(
+              onPressed: onExploreNearby,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ThemeColors.primary,
+                foregroundColor: ThemeColors.textOnPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+              ),
+              child: const Text('Explore Nearby Wilayas'),
+            ),
+        ],
       ),
     );
   }

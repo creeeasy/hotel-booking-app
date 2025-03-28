@@ -1,5 +1,4 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
-import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:flutter/material.dart';
 
@@ -20,15 +19,12 @@ class ExploreCityWidget extends StatefulWidget {
 }
 
 class _ExploreCityWidgetState extends State<ExploreCityWidget> {
-  late final WilayaModel wilaya;
+  late Wilaya wilaya;
 
   @override
   void initState() {
     super.initState();
-    wilaya = WilayaModel(
-      number: widget.wilaya.ind,
-      name: widget.wilaya.name,
-    );
+    wilaya = Wilaya.fromIndex(widget.wilaya.ind)!;
   }
 
   @override
@@ -70,7 +66,7 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
                     height: imageHeight,
                     width: double.infinity,
                     child: Image.asset(
-                      wilaya.getImage(),
+                      wilaya.image,
                       fit: BoxFit.cover,
                     ),
                   ),

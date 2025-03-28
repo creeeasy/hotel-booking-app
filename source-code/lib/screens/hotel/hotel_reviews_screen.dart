@@ -7,7 +7,7 @@ import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:fatiel/widgets/no_reviews_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/constants/hotel_price_ranges.dart';
 import 'package:fatiel/enum/activity_type.dart';
 import 'package:fatiel/enum/review_update_type.dart';
-import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/activity_item.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel_filter_parameters.dart';
@@ -11,6 +10,7 @@ import 'package:fatiel/models/rating.dart';
 import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/utils/generate_search_keywords.dart';
 import 'package:iconsax/iconsax.dart';
 

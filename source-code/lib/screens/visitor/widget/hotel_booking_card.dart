@@ -3,9 +3,9 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/wilaya.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/constants/routes/routes.dart';
-import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/action_button.dart';
 import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
 import 'package:intl/intl.dart';

@@ -9,7 +9,7 @@ import 'package:fatiel/screens/visitor/widget/cancel_button_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,11 +1,12 @@
-// ignore_for_file: prefer_const_constructors
+import 'dart:ui';
 
-import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 
 class RegisterView extends StatefulWidget {
   @override
@@ -15,149 +16,155 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
-    // Get screen height and width
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/hotel.jpg', // Your background image path
-                fit: BoxFit.cover,
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Enhanced Background with Parallax Effect
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/hotel.jpg'),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
               child: Container(
-                width: screenWidth, // Take full width
-                height: screenHeight *
-                    0.45, // Limit container height to 45% of screen height
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    stops: [
-                      0.0,
-                      0.5
-                    ], // Gradient stops adjusted for a smoother fade
                     colors: [
-                      Colors.transparent, // Start transparent
-                      Colors.white.withOpacity(0.7), // Soft white fade
+                      ThemeColors.primary.withOpacity(0.4),
+                      ThemeColors.primaryDark.withOpacity(0.8),
                     ],
                   ),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              ),
+            ),
+          ),
+
+          // Frosted Glass Content Panel
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(32, 48, 32, 48),
+                  decoration: BoxDecoration(
+                    color: ThemeColors.background.withOpacity(0.85),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment
-                        .center, // Ensure buttons are centered
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Client Button
-                      SizedBox(
-                        width: screenWidth *
-                            0.7, // Buttons take 70% of the screen width
-                        child: TextButton(
-                          onPressed: () {
-                            context
-                                .read<AuthBloc>()
-                                .add(const AuthEventVisitorRegister());
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor:
-                                ThemeColors.clientButtonColor, // Button color
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  20), // Slightly rounded corners
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 15), // Vertical padding
-                            shadowColor: Colors.black.withOpacity(0.3),
-                            elevation: 8,
-                          ),
-                          child: Text(
-                            'Visitor',
+                      // Elegant Title with Divider
+                      Column(
+                        children: [
+                          Text(
+                            'Join Fatiel',
                             style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: ThemeColors.primaryDark,
+                              letterSpacing: 0.8,
                               fontFamily: 'Poppins',
-
-                              color: Colors.white,
-                              fontWeight: FontWeight
-                                  .w600, // Bold font weight for emphasis
-                              fontSize: 18, // Larger font size for readability
                             ),
                           ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: 80,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: ThemeColors.primaryLight,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Select your account type to begin',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: ThemeColors.textSecondary.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: 20), // Spacer between buttons
-                      // Hotel Owner Button
-                      SizedBox(
-                        width: screenWidth *
-                            0.7, // Buttons take 70% of the screen width
-                        child: TextButton(
-                          onPressed: () {
-                            context
-                                .read<AuthBloc>()
-                                .add(const AuthEventHotelRegister());
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor:
-                                ThemeColors.hotelButtonColor, // Button color
-                            primary: Colors.white, // Text color
-                            padding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  20), // Slightly rounded corners
-                            ),
-                            shadowColor: Colors.black.withOpacity(0.3),
-                            elevation: 8,
-                          ),
-                          child: Text(
-                            'Hotel',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
+                      const SizedBox(height: 40),
 
-                              fontWeight: FontWeight
-                                  .w600, // Bold font weight for emphasis
-                              fontSize: 18, // Larger font size for readability
-                            ),
-                          ),
+                      // Premium Account Type Cards
+                      _buildAccountTypeCard(
+                        icon: Iconsax.user,
+                        title: 'Traveler',
+                        subtitle: 'Discover and book luxury stays',
+                        gradient: LinearGradient(
+                          colors: [
+                            ThemeColors.primaryLight.withOpacity(0.9),
+                            ThemeColors.primary.withOpacity(0.9),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
+                        onPressed: () {
+                          context.read<AuthBloc>().add(const AuthEventVisitorRegister());
+                        },
                       ),
-                      SizedBox(height: 20), // Spacer between buttons
-                      // Already Have an Account? Login
-                      // RichText for "Already have an account? Login"
+                      const SizedBox(height: 20),
+                      _buildAccountTypeCard(
+                        icon: Iconsax.building,
+                        title: 'Hotel Partner',
+                        subtitle: 'List and manage your property',
+                        gradient: LinearGradient(
+                          colors: [
+                            ThemeColors.secondaryLight.withOpacity(0.9),
+                            ThemeColors.secondary.withOpacity(0.9),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        onPressed: () {
+                          context.read<AuthBloc>().add(const AuthEventHotelRegister());
+                        },
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Stylish Login Prompt
                       RichText(
                         text: TextSpan(
                           style: TextStyle(
-                            color: ThemeColors.blackColor
-                                .withOpacity(0.77), // Color for the normal text
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+                            color: ThemeColors.textSecondary.withOpacity(0.8),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
                           ),
                           children: [
+                            const TextSpan(text: 'Already a member? '),
                             TextSpan(
-                              text:
-                                  'Already have an account? ', // Non-clickable part
-                            ),
-                            TextSpan(
-                              text: 'Login', // Clickable part
+                              text: 'Sign In',
                               style: TextStyle(
-                                color: ThemeColors
-                                    .blackColor, // Primary color for the clickable text
+                                color: ThemeColors.primaryLight,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 16,
+                                decoration: TextDecoration.underline,
+                                decorationColor: ThemeColors.primaryLight.withOpacity(0.4),
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  context
-                                      .read<AuthBloc>()
-                                      .add(const AuthEventLogOut());
+                                  context.read<AuthBloc>().add(const AuthEventLogOut());
                                 },
                             ),
                           ],
@@ -168,7 +175,89 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountTypeCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Gradient gradient,
+    required VoidCallback onPressed,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: onPressed,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                spreadRadius: 2,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Icon(
+                  icon,
+                  size: 28,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Iconsax.arrow_right_3,
+                size: 24,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ],
+          ),
         ),
       ),
     );

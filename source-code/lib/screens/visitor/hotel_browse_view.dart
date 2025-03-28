@@ -7,7 +7,7 @@ import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/empty_states/no_hotels_found_screen.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/filter_hotels_widget.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 
 class HotelBrowseView extends StatefulWidget {
   final Future<List<Hotel>> Function(HotelFilterParameters params)?

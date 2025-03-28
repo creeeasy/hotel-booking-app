@@ -1,125 +1,138 @@
 import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/models/hotel.dart';
-import 'package:fatiel/widgets/hotel_widget.dart';
+import 'package:fatiel/widgets/hotel_card.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iconsax/iconsax.dart';
 
-class HotelsListWidget extends StatefulWidget {
+class HotelsListWidget extends StatelessWidget {
   final List<Hotel> hotels;
+  final String? title;
+  final bool showCount;
 
-  const HotelsListWidget({super.key, required this.hotels});
-
-  @override
-  State<HotelsListWidget> createState() => _HotelsListWidgetState();
-}
-
-class _HotelsListWidgetState extends State<HotelsListWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+  const HotelsListWidget({
+    super.key,
+    required this.hotels,
+    this.title = "Hotels Found",
+    this.showCount = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.blueAccent.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const FaIcon(
-                      FontAwesomeIcons.hotel,
-                      color: Colors.blueAccent,
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Hotels Found",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.blueAccent.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  "${widget.hotels.length} hotels",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    color: VisitorThemeColors.skyBlue,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.hotels.length,
-              padding: const EdgeInsets.only(top: 8),
-              itemBuilder: (context, index) {
-                final animation = Tween<double>(
-                  begin: 0.0,
-                  end: 1.0,
-                ).animate(
-                  CurvedAnimation(
-                    parent: _animationController,
-                    curve: Interval(
-                      (1 / widget.hotels.length) * index,
-                      1.0,
-                      curve: Curves.easeInOut,
-                    ),
-                  ),
-                );
+          // Header Section
+          if (title != null) _buildHeaderSection(),
+          const SizedBox(height: 16),
 
-                return FadeTransition(
-                  opacity: animation,
-                  child: HotelRowOneWidget(
-                    hotelId: widget.hotels[index].id,
-                    animation: animation,
-                    animationController: _animationController,
-                  ),
-                );
-              },
+          // Hotels List
+          if (hotels.isEmpty) _buildEmptyState(),
+          if (hotels.isNotEmpty) _buildHotelsList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderSection() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Title with Icon
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: VisitorThemeColors.deepBlueAccent.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Iconsax.building_4,
+                size: 20,
+                color: VisitorThemeColors.deepBlueAccent,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              title!,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: VisitorThemeColors.blackColor,
+              ),
+            ),
+          ],
+        ),
+
+        // Hotel Count
+        if (showCount)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: VisitorThemeColors.deepBlueAccent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              "${hotels.length} ${hotels.length == 1 ? 'hotel' : 'hotels'}",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: VisitorThemeColors.deepBlueAccent,
+              ),
             ),
           ),
-        ],
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Expanded(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Iconsax.building_4,
+              size: 48,
+              color: VisitorThemeColors.textGreyColor.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "No Hotels Found",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: VisitorThemeColors.textGreyColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Try adjusting your search filters",
+              style: TextStyle(
+                fontSize: 14,
+                color: VisitorThemeColors.textGreyColor.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHotelsList() {
+    return Expanded(
+      child: ListView.separated(
+        physics: const BouncingScrollPhysics(),
+        itemCount: hotels.length,
+        padding: EdgeInsets.zero,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          return HotelCard(
+            hotelId: hotels[index].id,
+          );
+        },
       ),
     );
   }

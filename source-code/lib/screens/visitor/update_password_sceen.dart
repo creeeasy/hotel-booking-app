@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
@@ -18,15 +19,14 @@ class UpdatePasswordScreen extends StatefulWidget {
 
 class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _currentPasswordController =
-      TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -36,18 +36,18 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     super.dispose();
   }
 
-  void _updatePassword() {
+  Future<void> _updatePassword() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_newPasswordController.text != _confirmPasswordController.text) {
-      showGenericDialog<void>(
-        context: context,
-        title: "Error",
-        content: "New password and confirmation do not match.",
-        optionBuilder: () => {'OK': true},
+      await showErrorDialog(
+        context,
+        'Password Mismatch',
       );
       return;
     }
+
+    setState(() => _isLoading = true);
 
     context.read<AuthBloc>().add(
           AuthEventUpdatePassword(
@@ -61,7 +61,8 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     required TextEditingController controller,
     required String label,
     required bool obscureText,
-    required VoidCallback toggleVisibility,
+    required VoidCallback onToggleVisibility,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
@@ -69,167 +70,196 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
-          color: VisitorThemeColors.blackColor.withOpacity(0.23),
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
+          color: VisitorThemeColors.textGreyColor,
+          fontWeight: FontWeight.w500,
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            obscureText ? Icons.visibility_off : Icons.visibility,
+            obscureText ? Iconsax.eye_slash : Iconsax.eye,
             color: VisitorThemeColors.lavenderPurple,
+            size: 20,
           ),
-          onPressed: toggleVisibility,
+          onPressed: onToggleVisibility,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: VisitorThemeColors.lightGrayColor,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: VisitorThemeColors.blackColor
-                .withOpacity(0.06), // Gradient effect alternative
-            width: 1.5,
+            color: VisitorThemeColors.lightGrayColor,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: VisitorThemeColors.blackColor
-                .withOpacity(0.16), // Lighter focus color
-            width: 2,
+          borderSide: const BorderSide(
+            color: VisitorThemeColors.lavenderPurple,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: VisitorThemeColors.cancelBorderColor, // Red for errors
-            width: 1.5,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: VisitorThemeColors.cancelBorderColor,
-            width: 2,
+            color: VisitorThemeColors.vibrantRed,
           ),
         ),
         filled: true,
-        fillColor: VisitorThemeColors.whiteColor, // Background fill
+        fillColor: VisitorThemeColors.whiteColor,
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
-      cursorColor: VisitorThemeColors.lavenderPurple,
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: VisitorThemeColors.blackColor, // Text color
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Please enter your $label.";
-        }
-        if (value.length < 6) {
-          return "Password must be at least 6 characters.";
-        }
-        return null;
-      },
+      validator: validator,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) async {
-          if (state is AuthStateUpdatePassword) {
-            if (state.exception == null && !state.isLoading) {
-              await showGenericDialog<void>(
-                context: context,
-                title: "Success",
-                content: "Your password has been updated successfully.",
-                optionBuilder: () => {'OK': true},
-              );
-              if (context.mounted) {
-                Navigator.of(context).pop();
-                context.read<AuthBloc>().add(const AuthEventInitialize());
-              }
-            } else if (state.exception is WeakPasswordException) {
-              await showErrorDialog(context, 'Weak password.');
-            } else if (state.exception is WrongPasswordException) {
-              await showErrorDialog(context, 'Wrong credentials.');
-            } else if (state.exception is RequiresRecentLoginException) {
-              await showErrorDialog(context, 'Reauthentication required.');
-            } else if (state.exception is GenericException) {
-              await showErrorDialog(context, 'Authentication error.');
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateUpdatePassword) {
+          setState(() => _isLoading = state.isLoading);
+
+          if (state.exception == null && !state.isLoading) {
+            await showGenericDialog<void>(
+              context: context,
+              title: 'Success',
+              content: 'Your password has been updated successfully',
+              optionBuilder: () => {'OK': true},
+            );
+            if (mounted) {
+              Navigator.of(context).pop();
+              context.read<AuthBloc>().add(const AuthEventInitialize());
             }
+          } else if (state.exception != null) {
+            final errorMessage = _getErrorMessage(state.exception);
+            await showErrorDialog(context, errorMessage);
           }
-        },
-        child: Scaffold(
-          backgroundColor: VisitorThemeColors.whiteColor,
-          appBar: CustomBackAppBar(
-            title: "Update Password",
-            titleColor: VisitorThemeColors.lavenderPurple,
-            iconColor: VisitorThemeColors.lavenderPurple,
-            onBack: () => Navigator.of(context).pop(),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  _buildPasswordField(
-                    controller: _currentPasswordController,
-                    label: "Current Password",
-                    obscureText: _obscureCurrentPassword,
-                    toggleVisibility: () {
-                      setState(() =>
-                          _obscureCurrentPassword = !_obscureCurrentPassword);
-                    },
+        }
+      },
+      child: Scaffold(
+        backgroundColor: VisitorThemeColors.whiteColor,
+        appBar: CustomBackAppBar(
+          title: 'Update Password',
+          titleColor: VisitorThemeColors.lavenderPurple,
+          iconColor: VisitorThemeColors.lavenderPurple,
+          onBack: () => Navigator.of(context).pop(),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                _buildPasswordField(
+                  controller: _currentPasswordController,
+                  label: 'Current Password',
+                  obscureText: _obscureCurrentPassword,
+                  onToggleVisibility: () => setState(
+                    () => _obscureCurrentPassword = !_obscureCurrentPassword,
                   ),
-                  const SizedBox(height: 15),
-                  _buildPasswordField(
-                    controller: _newPasswordController,
-                    label: "New Password",
-                    obscureText: _obscureNewPassword,
-                    toggleVisibility: () {
-                      setState(
-                          () => _obscureNewPassword = !_obscureNewPassword);
-                    },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your current password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildPasswordField(
+                  controller: _newPasswordController,
+                  label: 'New Password',
+                  obscureText: _obscureNewPassword,
+                  onToggleVisibility: () => setState(
+                    () => _obscureNewPassword = !_obscureNewPassword,
                   ),
-                  const SizedBox(height: 15),
-                  _buildPasswordField(
-                    controller: _confirmPasswordController,
-                    label: "Confirm Password",
-                    obscureText: _obscureConfirmPassword,
-                    toggleVisibility: () {
-                      setState(() =>
-                          _obscureConfirmPassword = !_obscureConfirmPassword);
-                    },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a new password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildPasswordField(
+                  controller: _confirmPasswordController,
+                  label: 'Confirm Password',
+                  obscureText: _obscureConfirmPassword,
+                  onToggleVisibility: () => setState(
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword,
                   ),
-                  const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: _updatePassword,
+                  validator: (value) {
+                    if (value != _newPasswordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _updatePassword,
                     style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        backgroundColor: VisitorThemeColors.lavenderPurple,
-                        foregroundColor: VisitorThemeColors.whiteColor,
-                        minimumSize: const Size(double.infinity, 50),
-                        elevation: 0),
-                    icon: const Icon(Icons.lock_reset, size: 24),
-                    label: const Text(
-                      "Update Password",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins'),
+                      backgroundColor: VisitorThemeColors.lavenderPurple,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
                     ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Iconsax.lock_1, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Update Password',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _getErrorMessage(Exception? exception) {
+    if (exception is WeakPasswordException) {
+      return 'The password provided is too weak.';
+    } else if (exception is WrongPasswordException) {
+      return 'Your current password is incorrect.';
+    } else if (exception is RequiresRecentLoginException) {
+      return 'Please reauthenticate to update your password.';
+    } else if (exception is GenericException) {
+      return 'An unexpected error occurred. Please try again.';
+    }
+    return 'Failed to update password. Please try again.';
   }
 }

@@ -1,448 +1,408 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/routes/routes.dart';
-import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_outlined_button.dart';
 import 'package:fatiel/screens/visitor/widget/details_image_with_hero_widget.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/screens/visitor/widget/section_title_widget.dart';
-import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_state.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HotelDetailsView extends StatefulWidget {
   const HotelDetailsView({super.key});
 
   @override
-  _HotelDetailsViewState createState() => _HotelDetailsViewState();
+  State<HotelDetailsView> createState() => _HotelDetailsViewState();
 }
 
 class _HotelDetailsViewState extends State<HotelDetailsView> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<Hotel> initializeHotelData(BuildContext context) async {
+  Future<Hotel> _initializeHotelData(BuildContext context) async {
     final hotelId = ModalRoute.of(context)?.settings.arguments as String;
     final hotel = await Hotel.getHotelById(hotelId);
     return hotel!;
   }
 
   @override
-  Widget build(BuildContext context) => Container(
-        color: Theme.of(context).canvasColor,
-        child: SafeArea(
-          child: FutureBuilder<Hotel>(
-              future: initializeHotelData(context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicatorWidget(
-                    indicatorColor:
-                        VisitorThemeColors.deepBlueAccent.withOpacity(0.8),
-                    containerColor: VisitorThemeColors.whiteColor,
-                  );
-                } else if (snapshot.hasError) {
-                  return ErrorWidgetWithRetry(
-                    errorMessage: 'Error: ${snapshot.error}',
-                  );
-                } else if (!snapshot.hasData) {
-                  return NoDataWidget(
-                    message: "No hotel listings found.",
-                  );
-                } else {
-                  Hotel hotel = snapshot.data!;
-                  return HotelDetailsBody(hotel: hotel);
-                }
-              }),
+  Widget build(BuildContext context) {
+    return Container(
+      color: ThemeColors.background,
+      child: SafeArea(
+        child: FutureBuilder<Hotel>(
+          future: _initializeHotelData(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicatorWidget(
+                indicatorColor: ThemeColors.primary,
+                containerColor: ThemeColors.background,
+              );
+            }
+
+            if (snapshot.hasError) {
+              return ErrorWidgetWithRetry(
+                errorMessage: 'Failed to load hotel details',
+                onRetry: () => setState(() {}),
+              );
+            }
+
+            if (!snapshot.hasData) {
+              return const NoDataWidget(
+                message: "No hotel information available",
+                // icon: Iconsax.house_2,
+              );
+            }
+
+            return HotelDetailsBody(hotel: snapshot.data!);
+          },
         ),
-      );
+      ),
+    );
+  }
 }
 
-class HotelDetailsBody extends StatefulWidget {
+class HotelDetailsBody extends StatelessWidget {
   final Hotel hotel;
   const HotelDetailsBody({super.key, required this.hotel});
 
   @override
-  State<HotelDetailsBody> createState() => _HotelDetailsBodyState();
-}
-
-class _HotelDetailsBodyState extends State<HotelDetailsBody> {
-  late Hotel hotel;
-  @override
-  void initState() {
-    super.initState();
-    hotel = widget.hotel;
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ThemeColors.background,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 400,
+            flexibleSpace: FlexibleSpaceBar(
+              background: DetailsImageWithHero(
+                images: hotel.images,
+                hotelId: hotel.id,
+              ),
+            ),
+            backgroundColor: ThemeColors.background,
+            automaticallyImplyLeading: false,
+            pinned: true,
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                _buildHotelHeader(),
+                const DividerWidget(),
+                _buildLocationSection(),
+                const DividerWidget(),
+                _buildDescriptionSection(),
+                const DividerWidget(),
+                _buildContactSection(),
+                const DividerWidget(),
+                _buildRatingsSection(context),
+                const DividerWidget(),
+                _buildMapSection(),
+                const DividerWidget(),
+                _buildRoomOffersSection(context),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        return Scaffold(
-          backgroundColor: VisitorThemeColors.whiteColor,
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildHotelHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          hotel.hotelName.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: ThemeColors.primary,
+            letterSpacing: 1.2,
+            height: 1.3,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 8),
+        if (hotel.totalRooms != null)
+          Text(
+            "${hotel.totalRooms} ${hotel.totalRooms == 1 ? 'Room' : 'Rooms'} available",
+            style: const TextStyle(
+              fontSize: 14,
+              color: ThemeColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildLocationSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(
+          title: "Location",
+          titleColor: ThemeColors.primary,
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(
+              Iconsax.location,
+              color: ThemeColors.primary,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                hotel.location != null
+                    ? Wilaya.fromIndex(hotel.location!)?.name ??
+                        'Unknown location'
+                    : 'Location not specified',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: ThemeColors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(
+          title: "Description",
+          titleColor: ThemeColors.primary,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          hotel.description ?? 'No description available',
+          style: const TextStyle(
+            fontSize: 15,
+            color: ThemeColors.textPrimary,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContactSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(
+          title: "Contact Information",
+          titleColor: ThemeColors.primary,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          hotel.contactInfo ?? 'No contact information available',
+          style: const TextStyle(
+            fontSize: 15,
+            color: ThemeColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRatingsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(
+          title: "Ratings & Reviews",
+          titleColor: ThemeColors.primary,
+        ),
+        const SizedBox(height: 12),
+        hotel.ratings.totalRating == 0
+            ? _buildNoRatings()
+            : Column(
+                children: [
+                  _buildRatingsSummary(),
+                  const SizedBox(height: 16),
+                  CustomOutlinedButton(
+                    text: "View all ${hotel.ratings.totalRating} reviews",
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        reviewsScreenRoute,
+                        arguments: hotel.id,
+                      );
+                    },
+                  ),
+                ],
+              ),
+      ],
+    );
+  }
+
+  Widget _buildNoRatings() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: ThemeColors.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: ThemeColors.primary.withOpacity(0.1),
+          ),
+        ),
+        child: const Text(
+          'No reviews yet',
+          style: TextStyle(
+            color: ThemeColors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingsSummary() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ThemeColors.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: ThemeColors.primary.withOpacity(0.2),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            children: [
+              Text(
+                hotel.ratings.rating.toStringAsFixed(1),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: ThemeColors.primary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Average Rating',
+                style: TextStyle(
+                  color: ThemeColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            children: [
+              Text(
+                hotel.ratings.totalRating.toString(),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: ThemeColors.primary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Total Reviews',
+                style: TextStyle(
+                  color: ThemeColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMapSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(
+          title: "Location on Map",
+          titleColor: ThemeColors.primary,
+        ),
+        const SizedBox(height: 12),
+        hotel.mapLink != null
+            ? CustomOutlinedButton(
+                text: "Open in Maps",
+                onPressed: () => launchUrl(Uri.parse(hotel.mapLink!)),
+              )
+            : const Text(
+                'Map location not available',
+                style: TextStyle(
+                  color: ThemeColors.textSecondary,
+                ),
+              ),
+      ],
+    );
+  }
+
+  Widget _buildRoomOffersSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(
+          title: "Room Offers",
+          titleColor: ThemeColors.primary,
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Explore our available room options and special offers',
+          style: TextStyle(
+            color: ThemeColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                roomBookingOffersViewRoute,
+                arguments: hotel.id,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ThemeColors.primary,
+              foregroundColor: ThemeColors.textOnPrimary,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                DetailsImageWithHero(
-                  images: hotel.images,
-                  hotelId: hotel.id,
-                ),
-                DividerWidget(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    /// **Hotel Name** - Bold & eye-catching
-                    Expanded(
-                      child: Text(
-                        hotel.hotelName
-                            .toUpperCase(), // Converts to uppercase for luxury feel
-                        style: TextStyle(
-                          fontSize: 20, // Slightly larger for a premium look
-                          fontFamily: 'Poppins',
-                          fontWeight:
-                              FontWeight.bold, // Increased for brand identity
-                          color: VisitorThemeColors.primaryColor,
-                          letterSpacing: 1.5, // More spacing = more elegance
-                          height: 1.4,
-                        ),
-                        maxLines: 1,
-                        overflow:
-                            TextOverflow.ellipsis, // Prevents overflow issues
-                      ),
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    /// **Offers Count** - Dynamic & Subtle
-                    Text(
-                      hotel.totalRooms != 0
-                          ? "${hotel.totalRooms} ${hotel.totalRooms == 1 ? 'Offer' : 'Offers'}"
-                          : "No Offers Available",
-                      style: TextStyle(
-                        fontSize: 14.5, // Adjusted for better balance
-                        fontWeight:
-                            FontWeight.w600, // Slightly bold for readability
-                        letterSpacing: 0.8,
-                        color: hotel.totalRooms != 0
-                            ? VisitorThemeColors.textGreyColor
-                            : VisitorThemeColors.textGreyColor
-                                .withOpacity(0.6), // Faded for no offers
-                      ),
-                    ),
-                  ],
-                ),
-                DividerWidget(),
-                SectionTitle(
-                  titleColor: Colors.deepOrange,
-                  title: "Location",
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: VisitorThemeColors.textGreyColor,
-                      size: 22,
-                    ),
-                    SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        (hotel.location != null)
-                            ? Wilaya.fromIndex(hotel.location!)?.name ??
-                                'Location not available'
-                            : 'Location not available',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: VisitorThemeColors.textGreyColor,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                DividerWidget(),
-                SectionTitle(
-                  titleColor: Colors.deepOrange,
-                  title: "Description",
-                ),
+                Icon(Iconsax.house_2, size: 20),
+                SizedBox(width: 8),
                 Text(
-                  hotel.description ?? 'No description available',
+                  'View Room Offers',
                   style: TextStyle(
                     fontSize: 16,
-                    color: VisitorThemeColors.textGreyColor,
-                    fontWeight: FontWeight.w500,
-                    height: 1.5,
-                    letterSpacing: 0.5,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-                DividerWidget(),
-                SectionTitle(
-                  titleColor: Colors.deepOrange,
-                  title: "Contact Info",
-                ),
-                Text(
-                  hotel.contactInfo ?? 'No contact information available',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: VisitorThemeColors.textGreyColor,
-                    letterSpacing: 0.3,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                DividerWidget(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SectionTitle(
-                      titleColor: Colors.deepOrange,
-                      title: "Ratings",
-                    ),
-                    hotel.ratings.totalRating == 0
-                        ? Center(
-                            child: Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: VisitorThemeColors.primaryColor
-                                    .withOpacity(0.16),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                'No Reviews Available',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: VisitorThemeColors.primaryColor,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          )
-                        : Container(
-                            padding: EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: VisitorThemeColors.primaryColor
-                                  .withOpacity(0.06),
-                              border: Border.all(
-                                color: VisitorThemeColors.primaryColor,
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        hotel.ratings.rating.toStringAsFixed(1),
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              VisitorThemeColors.primaryColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 6),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: List.generate(
-                                          5,
-                                          (index) => Icon(Icons.star,
-                                              color: VisitorThemeColors
-                                                  .primaryColor,
-                                              size: 20),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color:
-                                                VisitorThemeColors.primaryColor,
-                                            width: 2,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.emoji_events,
-                                          color:
-                                              VisitorThemeColors.primaryColor,
-                                          size: 30,
-                                        ),
-                                      ),
-                                      SizedBox(height: 6),
-                                      Text(
-                                        "Top Rated",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color:
-                                              VisitorThemeColors.primaryColor,
-                                          letterSpacing: 0.5,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        hotel.ratings.totalRating.toString(),
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              VisitorThemeColors.primaryColor,
-                                        ),
-                                      ),
-                                      SizedBox(height: 6),
-                                      Text(
-                                        'Reviews',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: VisitorThemeColors
-                                                .primaryColor),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                    SizedBox(height: 10),
-                    if ((hotel.ratings.totalRating) > 0)
-                      CustomOutlinedButton(
-                        text: "View all ${hotel.ratings.totalRating} reviews",
-                        onPressed: () {
-                          Navigator.pushNamed(context, reviewsScreenRoute,
-                              arguments: hotel.id);
-                        },
-                      )
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DividerWidget(),
-                    SectionTitle(
-                      titleColor: Colors.deepOrange,
-                      title: "View Hotel Location on Google Maps",
-                    ),
-                    hotel.mapLink != null
-                        ? CustomOutlinedButton(
-                            text: "Open in Google Maps",
-                            onPressed: () {
-                              launchUrl(Uri.parse(hotel.mapLink!));
-                            },
-                          )
-                        : Center(
-                            child: Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: VisitorThemeColors.primaryColor
-                                    .withOpacity(0.16),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                "Map link unavailable for this hotel.",
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: VisitorThemeColors.primaryColor,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                  ],
-                ),
-                DividerWidget(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.hotel, color: Colors.deepOrange, size: 22),
-                        const SizedBox(width: 6),
-                        Text(
-                          "Explore Room Offers",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepOrange,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Find the best deals for your stay and book your preferred room easily.",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: VisitorThemeColors.blackColor),
-                    ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, roomBookingOffersViewRoute,
-                              arguments: hotel.id);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 16),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          elevation: 0,
-                        ),
-                        icon: Icon(Icons.arrow_forward,
-                            size: 20, color: Colors.white),
-                        label: Text(
-                          "View Room Offers",
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

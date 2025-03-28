@@ -1,12 +1,12 @@
 import 'package:fatiel/constants/colors/hotel_theme_colors.dart';
-import 'package:fatiel/enum/wilaya.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
 import 'package:fatiel/utils/multi_value_listenable_builder.dart';
-import 'package:fatiel/widgets/circular_progress_inducator_widget.dart';
+import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
