@@ -1,7 +1,6 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 
 class PositionedFavoriteButton extends StatelessWidget {
   final String hotelId;
@@ -28,11 +27,11 @@ class PositionedFavoriteButton extends StatelessWidget {
       left: left,
       child: Container(
         decoration: BoxDecoration(
-          color: VisitorThemeColors.whiteColor.withOpacity(0.9),
+          color: ThemeColors.white.withOpacity(0.9),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: ThemeColors.black.withOpacity(0.1),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),

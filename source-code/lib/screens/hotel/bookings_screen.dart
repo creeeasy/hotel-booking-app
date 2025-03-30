@@ -1,9 +1,10 @@
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/visitor.dart';
-import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,102 +65,122 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: _refreshBookings,
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              sliver: SliverToBoxAdapter(
-                child: _buildHeader(),
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomBackAppBar(
+          title: 'Bookings',
+          actions: [
+            IconButton(
+              icon: const Icon(Iconsax.filter, color: ThemeColors.primary),
+              onPressed: _showFilterDialog,
+              style: IconButton.styleFrom(
+                backgroundColor: ThemeColors.surface,
+                padding: const EdgeInsets.all(12),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverToBoxAdapter(
-                child: FutureBuilder<List<Booking>>(
+          ],
+        ),
+        backgroundColor: ThemeColors.background,
+        body: RefreshIndicator(
+          color: ThemeColors.primary,
+          onRefresh: _refreshBookings,
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverToBoxAdapter(
+                  child: FutureBuilder<List<Booking>>(
+                    future: _bookingsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: ThemeColors.primary,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError || snapshot.data == null) {
+                        return _buildErrorState();
+                      }
+
+                      final bookings = snapshot.data!;
+                      return ValueListenableBuilder<String>(
+                        valueListenable: _filterStatus,
+                        builder: (context, filterValue, _) {
+                          return _buildSummaryCards(bookings, filterValue);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                sliver: FutureBuilder<List<Booking>>(
                   future: _bookingsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox(
-                        height: 100,
-                        child: Center(child: CircularProgressIndicator()),
+                      return const SliverFillRemaining(
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: ThemeColors.primary,
+                          ),
+                        ),
                       );
                     }
 
                     if (snapshot.hasError || snapshot.data == null) {
-                      return _buildErrorState();
+                      return SliverFillRemaining(
+                        child: _buildErrorState(),
+                      );
                     }
 
                     final bookings = snapshot.data!;
                     return ValueListenableBuilder<String>(
                       valueListenable: _filterStatus,
                       builder: (context, filterValue, _) {
-                        return _buildSummaryCards(bookings, filterValue);
+                        final filteredBookings = filterValue == 'All'
+                            ? bookings
+                            : bookings
+                                .where((b) => b.status.name == filterValue)
+                                .toList();
+
+                        if (filteredBookings.isEmpty) {
+                          return SliverFillRemaining(
+                            child: _buildEmptyState(filterValue),
+                          );
+                        }
+
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _buildBookingCard(filteredBookings[index]),
+                            ),
+                            childCount: filteredBookings.length,
+                          ),
+                        );
                       },
                     );
                   },
                 ),
               ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              sliver: FutureBuilder<List<Booking>>(
-                future: _bookingsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SliverFillRemaining(
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  if (snapshot.hasError || snapshot.data == null) {
-                    return SliverFillRemaining(
-                      child: _buildErrorState(),
-                    );
-                  }
-
-                  final bookings = snapshot.data!;
-                  return ValueListenableBuilder<String>(
-                    valueListenable: _filterStatus,
-                    builder: (context, filterValue, _) {
-                      final filteredBookings = filterValue == 'All'
-                          ? bookings
-                          : bookings
-                              .where((b) => b.status.name == filterValue)
-                              .toList();
-
-                      if (filteredBookings.isEmpty) {
-                        return SliverFillRemaining(
-                          child: _buildEmptyState(filterValue),
-                        );
-                      }
-
-                      return SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _buildBookingCard(filteredBookings[index]),
-                          ),
-                          childCount: filteredBookings.length,
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSummaryCards(List<Booking> bookings, String filterValue) {
-    final filteredBookings = filterValue == 'All'
-        ? bookings
-        : bookings.where((b) => b.status.name == filterValue).toList();
+    // final filteredBookings = filterValue == 'All'
+    //     ? bookings
+    //     : bookings.where((b) => b.status.name == filterValue).toList();
 
     return Column(
       children: [
@@ -172,7 +193,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                 title: 'Total',
                 value: bookings.length,
                 icon: Iconsax.book,
-                color: Colors.blue,
+                color: ThemeColors.primary,
               ),
               const SizedBox(width: 12),
               _buildSummaryCard(
@@ -181,7 +202,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                     .where((b) => b.status == BookingStatus.pending)
                     .length,
                 icon: Iconsax.clock,
-                color: Colors.orange,
+                color: ThemeColors.warning,
               ),
               const SizedBox(width: 12),
               _buildSummaryCard(
@@ -190,14 +211,14 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                     .where((b) => b.status == BookingStatus.completed)
                     .length,
                 icon: Iconsax.tick_circle,
-                color: Colors.green,
+                color: ThemeColors.success,
               ),
               const SizedBox(width: 12),
               _buildSummaryCard(
                 title: 'Revenue',
                 value: bookings.fold(0.0, (sum, b) => sum + b.totalPrice),
                 icon: Iconsax.dollar_circle,
-                color: Colors.purple,
+                color: ThemeColors.accentPurple,
                 isCurrency: true,
               ),
             ],
@@ -230,8 +251,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: Colors.grey.shade200,
+            side: const BorderSide(
+              color: ThemeColors.border,
               width: 1,
             ),
           ),
@@ -267,6 +288,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                               room?.name ?? 'Unknown Room',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
+                                color: ThemeColors.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -274,8 +296,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                               visitor != null
                                   ? '${visitor.firstName} ${visitor.lastName}'
                                   : 'Unknown Visitor',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
+                              style: const TextStyle(
+                                color: ThemeColors.textSecondary,
                               ),
                             ),
                           ],
@@ -307,13 +329,14 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
+                              color: ThemeColors.textPrimary,
                             ),
                           ),
                           Text(
                             '$nights ${nights == 1 ? 'night' : 'nights'}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.grey.shade600,
+                              color: ThemeColors.textSecondary,
                             ),
                           ),
                         ],
@@ -335,8 +358,13 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
+                              side:
+                                  const BorderSide(color: ThemeColors.primary),
                             ),
-                            child: const Text('Complete'),
+                            child: const Text(
+                              'Complete',
+                              style: TextStyle(color: ThemeColors.primary),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -351,11 +379,11 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              side: BorderSide(color: Colors.red.shade400),
+                              side: const BorderSide(color: ThemeColors.error),
                             ),
-                            child: Text(
+                            child: const Text(
                               'Cancel',
-                              style: TextStyle(color: Colors.red.shade400),
+                              style: TextStyle(color: ThemeColors.error),
                             ),
                           ),
                         ),
@@ -375,8 +403,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
     return Container(
       width: 60,
       height: 60,
-      color: Colors.grey.shade200,
-      child: const Icon(Iconsax.image, color: Colors.grey),
+      color: ThemeColors.surface,
+      child: const Icon(Iconsax.image, color: ThemeColors.textSecondary),
     );
   }
 
@@ -385,8 +413,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.grey.shade200,
+        side: const BorderSide(
+          color: ThemeColors.border,
           width: 1,
         ),
       ),
@@ -394,7 +422,11 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
         padding: EdgeInsets.all(16),
         child: SizedBox(
           height: 100,
-          child: Center(child: CircularProgressIndicator()),
+          child: Center(
+            child: CircularProgressIndicator(
+              color: ThemeColors.primary,
+            ),
+          ),
         ),
       ),
     );
@@ -405,8 +437,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.grey.shade200,
+        side: const BorderSide(
+          color: ThemeColors.border,
           width: 1,
         ),
       ),
@@ -424,6 +456,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                     'Error loading booking details',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
+                      color: ThemeColors.textPrimary,
                     ),
                   ),
                 ),
@@ -438,9 +471,15 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   Widget _buildStatusBadge(BookingStatus status) {
     final statusInfo = {
-      BookingStatus.pending: {'color': Colors.orange, 'label': 'Pending'},
-      BookingStatus.completed: {'color': Colors.green, 'label': 'Completed'},
-      BookingStatus.cancelled: {'color': Colors.red, 'label': 'Cancelled'},
+      BookingStatus.pending: {'color': ThemeColors.warning, 'label': 'Pending'},
+      BookingStatus.completed: {
+        'color': ThemeColors.success,
+        'label': 'Completed'
+      },
+      BookingStatus.cancelled: {
+        'color': ThemeColors.error,
+        'label': 'Cancelled'
+      },
     };
 
     final color = statusInfo[status]!['color'] as Color;
@@ -479,7 +518,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Status updated to ${newStatus.name}'),
-          backgroundColor: Colors.green,
+          backgroundColor: ThemeColors.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -491,7 +530,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result.message),
-          backgroundColor: Colors.red,
+          backgroundColor: ThemeColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -530,9 +569,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
           const Spacer(),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey.shade700,
+              color: ThemeColors.textSecondary,
             ),
           ),
           const SizedBox(height: 4),
@@ -558,16 +597,16 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: Colors.grey.shade600),
+        Icon(icon, size: 18, color: ThemeColors.textSecondary),
         const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: ThemeColors.textSecondary,
               ),
             ),
             Text(
@@ -575,6 +614,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                color: ThemeColors.textPrimary,
               ),
             ),
           ],
@@ -587,18 +627,18 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
     return Column(
       children: [
         const SizedBox(height: 40),
-        Icon(
+        const Icon(
           Iconsax.note_remove,
           size: 60,
-          color: Colors.grey.shade300,
+          color: ThemeColors.border,
         ),
         const SizedBox(height: 16),
-        Text(
+        const Text(
           "No Bookings Found",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.grey.shade600,
+            color: ThemeColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -606,9 +646,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
           filterValue == 'All'
               ? "You don't have any bookings yet"
               : "No $filterValue bookings found",
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade500,
+            color: ThemeColors.textSecondary,
           ),
         ),
       ],
@@ -622,7 +662,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
         const Icon(
           Icons.error_outline,
           size: 48,
-          color: Colors.red,
+          color: ThemeColors.error,
         ),
         const SizedBox(height: 16),
         const Text(
@@ -630,12 +670,19 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
+            color: ThemeColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: ThemeColors.primary,
+          ),
           onPressed: _refreshBookings,
-          child: const Text("Retry"),
+          child: const Text(
+            "Retry",
+            style: TextStyle(color: ThemeColors.textOnPrimary),
+          ),
         ),
       ],
     );
@@ -645,7 +692,11 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Filter Bookings'),
+        backgroundColor: ThemeColors.card,
+        title: const Text(
+          'Filter Bookings',
+          style: TextStyle(color: ThemeColors.textPrimary),
+        ),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -654,9 +705,13 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             itemBuilder: (context, index) {
               final status = _statusFilters[index];
               return RadioListTile(
-                title: Text(status),
+                title: Text(
+                  status,
+                  style: const TextStyle(color: ThemeColors.textPrimary),
+                ),
                 value: status,
                 groupValue: _filterStatus.value,
+                activeColor: ThemeColors.primary,
                 onChanged: (value) {
                   _filterStatus.value = value.toString();
                   Navigator.pop(context);
@@ -676,12 +731,12 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: const BoxDecoration(
+          color: ThemeColors.card,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: ThemeColors.shadowDark,
               blurRadius: 20,
               spreadRadius: 5,
             ),
@@ -697,18 +752,20 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: ThemeColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             Row(
               children: [
-                Text(
+                const Text(
                   'Booking Details',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: ThemeColors.textPrimary,
+                  ),
                 ),
                 const Spacer(),
                 _buildStatusBadge(booking.status),
@@ -716,10 +773,10 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             ),
             const SizedBox(height: 24),
             if (room != null) ...[
-              Text('Room Information',
+              const Text('Room Information',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
+                    color: ThemeColors.textSecondary,
                   )),
               const SizedBox(height: 8),
               ListTile(
@@ -737,17 +794,22 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                         ),
                       )
                     : _buildPlaceholderImage(),
-                title: Text(room.name),
+                title: Text(
+                  room.name,
+                  style: const TextStyle(color: ThemeColors.textPrimary),
+                ),
                 subtitle: Text(
-                    '\$${room.pricePerNight.toStringAsFixed(2)} per night'),
+                  '\$${room.pricePerNight.toStringAsFixed(2)} per night',
+                  style: const TextStyle(color: ThemeColors.textSecondary),
+                ),
               ),
               const SizedBox(height: 16),
             ],
             if (visitor != null) ...[
-              Text('Guest Information',
+              const Text('Guest Information',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600,
+                    color: ThemeColors.textSecondary,
                   )),
               const SizedBox(height: 8),
               ListTile(
@@ -756,7 +818,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade100,
+                    color: ThemeColors.primary.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: visitor.avatarURL != null
@@ -771,7 +833,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
+                                  color: ThemeColors.primary,
                                 ),
                               ),
                             ),
@@ -783,20 +845,26 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                              color: ThemeColors.primary,
                             ),
                           ),
                         ),
                 ),
-                title: Text('${visitor.firstName} ${visitor.lastName}'),
-                subtitle: Text(visitor.email),
+                title: Text(
+                  '${visitor.firstName} ${visitor.lastName}',
+                  style: const TextStyle(color: ThemeColors.textPrimary),
+                ),
+                subtitle: Text(
+                  visitor.email,
+                  style: const TextStyle(color: ThemeColors.textSecondary),
+                ),
               ),
               const SizedBox(height: 16),
             ],
-            Text('Booking Dates',
+            const Text('Booking Dates',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
+                  color: ThemeColors.textSecondary,
                 )),
             const SizedBox(height: 8),
             Row(
@@ -818,20 +886,24 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
               ],
             ),
             const SizedBox(height: 16),
-            Text('Payment Information',
+            const Text('Payment Information',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
+                  color: ThemeColors.textSecondary,
                 )),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Total Amount'),
+                const Text(
+                  'Total Amount',
+                  style: TextStyle(color: ThemeColors.textPrimary),
+                ),
                 Text(
                   '\$${booking.totalPrice.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
+                    color: ThemeColors.textPrimary,
                   ),
                 ),
               ],
@@ -840,21 +912,21 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Payment Status',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                    )),
+                const Text(
+                  'Payment Status',
+                  style: TextStyle(color: ThemeColors.textSecondary),
+                ),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: ThemeColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
                     'Paid',
                     style: TextStyle(
-                      color: Colors.green,
+                      color: ThemeColors.success,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -866,34 +938,26 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ThemeColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     _updateBookingStatus(booking, BookingStatus.completed);
                     Navigator.pop(context);
                   },
-                  child: const Text('Mark as Completed'),
+                  child: const Text(
+                    'Mark as Completed',
+                    style: TextStyle(color: ThemeColors.textOnPrimary),
+                  ),
                 ),
               ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const HeadlineText(text: "Bookings"),
-        IconButton(
-          icon: const Icon(Iconsax.filter),
-          onPressed: _showFilterDialog,
-          style: IconButton.styleFrom(
-            backgroundColor: Colors.grey[100],
-            padding: const EdgeInsets.all(12),
-          ),
-        ),
-      ],
     );
   }
 }

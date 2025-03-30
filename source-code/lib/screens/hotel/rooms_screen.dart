@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/room.dart';
-import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
 import 'package:fatiel/utils/value_listenable_builder2.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
@@ -63,31 +63,30 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddEditRoomDialog(),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child:
-            Icon(Iconsax.add, color: Theme.of(context).colorScheme.onPrimary),
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refreshRooms,
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              title: HeadlineText(text: "Bookings"),
-              floating: true,
-              snap: true,
-              elevation: 2,
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              sliver: _buildRoomList(),
-            ),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        appBar: const CustomBackAppBar(
+          title: 'Rooms',
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showAddEditRoomDialog(),
+          backgroundColor: ThemeColors.primary,
+          child: const Icon(Iconsax.add, color: ThemeColors.textOnPrimary),
+        ),
+        body: RefreshIndicator(
+          color: ThemeColors.primary,
+          onRefresh: _refreshRooms,
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                sliver: _buildRoomList(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -99,7 +98,11 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SliverFillRemaining(
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: ThemeColors.primary,
+              ),
+            ),
           );
         }
 
@@ -136,26 +139,26 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
   }
 
   Widget _buildEmptyState() {
-    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.house,
-              size: 64, color: colorScheme.onSurface.withOpacity(0.5)),
+              size: 64, color: ThemeColors.textSecondary.withOpacity(0.5)),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'No rooms available',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface.withOpacity(0.7),
-                ),
+            style: TextStyle(
+              fontSize: 18,
+              color: ThemeColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => _showAddEditRoomDialog(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
+              backgroundColor: ThemeColors.primary,
+              foregroundColor: ThemeColors.textOnPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -169,25 +172,27 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
   }
 
   Widget _buildErrorState(String error) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Iconsax.warning_2, size: 64, color: colorScheme.error),
+          const Icon(Iconsax.warning_2, size: 64, color: ThemeColors.error),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Failed to load rooms',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                ),
+            style: TextStyle(
+              fontSize: 18,
+              color: ThemeColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               error,
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+              style: const TextStyle(
+                color: ThemeColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -195,8 +200,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
           ElevatedButton(
             onPressed: _refreshRooms,
             style: ElevatedButton.styleFrom(
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
+              backgroundColor: ThemeColors.primary,
+              foregroundColor: ThemeColors.textOnPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -228,7 +233,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: ThemeColors.primary,
         ),
       );
       await _refreshRooms();
@@ -238,7 +243,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         SnackBar(
           content: Text('Failed to update room: $e'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: ThemeColors.error,
         ),
       );
     }
@@ -248,21 +253,31 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Room'),
-        content: const Text('This action cannot be undone. Are you sure?'),
+        backgroundColor: ThemeColors.card,
+        title: const Text(
+          'Delete Room',
+          style: TextStyle(color: ThemeColors.textPrimary),
+        ),
+        content: const Text(
+          'This action cannot be undone. Are you sure?',
+          style: TextStyle(color: ThemeColors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: ThemeColors.primary),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await _deleteRoom(room);
             },
-            child: Text(
+            child: const Text(
               'Delete',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: TextStyle(color: ThemeColors.error),
             ),
           ),
         ],
@@ -279,10 +294,10 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Room deleted successfully'),
+        const SnackBar(
+          content: Text('Room deleted successfully'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: ThemeColors.primary,
         ),
       );
       await _refreshRooms();
@@ -292,7 +307,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         SnackBar(
           content: Text('Failed to delete room: $e'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: ThemeColors.error,
         ),
       );
     }
@@ -301,7 +316,6 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
   void _showAddEditRoomDialog({Room? room}) {
     final isEditing = room != null;
     final formKey = GlobalKey<FormState>();
-    final colorScheme = Theme.of(context).colorScheme;
 
     final nameController = TextEditingController(text: room?.name ?? '');
     final descController = TextEditingController(text: room?.description ?? '');
@@ -334,10 +348,10 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Image uploaded successfully'),
+          const SnackBar(
+            content: Text('Image uploaded successfully'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: colorScheme.primary,
+            backgroundColor: ThemeColors.primary,
           ),
         );
       } catch (e) {
@@ -346,7 +360,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
           SnackBar(
             content: Text('Error uploading image: $e'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: colorScheme.error,
+            backgroundColor: ThemeColors.error,
           ),
         );
       } finally {
@@ -370,10 +384,10 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Image removed successfully'),
+          const SnackBar(
+            content: Text('Image removed successfully'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: colorScheme.primary,
+            backgroundColor: ThemeColors.primary,
           ),
         );
       } catch (e) {
@@ -382,7 +396,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
           SnackBar(
             content: Text('Error removing image: $e'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: colorScheme.error,
+            backgroundColor: ThemeColors.error,
           ),
         );
       } finally {
@@ -393,13 +407,13 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
     Widget _buildSectionHeader(IconData icon, String title) {
       return Row(
         children: [
-          Icon(icon, size: 20, color: colorScheme.primary),
+          Icon(icon, size: 20, color: ThemeColors.primary),
           const SizedBox(width: 8),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
+              color: ThemeColors.primary,
               fontSize: 16,
             ),
           ),
@@ -417,7 +431,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
               height: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: colorScheme.surfaceVariant,
+                color: ThemeColors.surface,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -426,10 +440,10 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Center(
+                  errorBuilder: (_, __, ___) => const Center(
                     child: Icon(
                       Iconsax.gallery_slash,
-                      color: colorScheme.onSurfaceVariant,
+                      color: ThemeColors.textSecondary,
                     ),
                   ),
                 ),
@@ -442,14 +456,14 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                 onTap: () => _removeImage(index),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.errorContainer,
+                  decoration: const BoxDecoration(
+                    color: ThemeColors.error,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Iconsax.trash,
                     size: 16,
-                    color: colorScheme.onErrorContainer,
+                    color: ThemeColors.textOnPrimary,
                   ),
                 ),
               ),
@@ -468,23 +482,23 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: colorScheme.surfaceVariant.withOpacity(0.5),
+              color: ThemeColors.surface.withOpacity(0.5),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: colorScheme.primary.withOpacity(0.3),
+                color: ThemeColors.primary.withOpacity(0.3),
                 width: 1,
               ),
             ),
-            child: Column(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Iconsax.add, color: colorScheme.primary, size: 24),
-                const SizedBox(height: 4),
+                Icon(Iconsax.add, color: ThemeColors.primary, size: 24),
+                SizedBox(height: 4),
                 Text(
                   'Add Photo',
                   style: TextStyle(
                     fontSize: 12,
-                    color: colorScheme.primary,
+                    color: ThemeColors.primary,
                   ),
                 ),
               ],
@@ -504,7 +518,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            color: colorScheme.surfaceVariant,
+            color: ThemeColors.card,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -515,32 +529,23 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                   SizedBox(
                     height: 120,
                     child: isLoading
-                        ? Center(
+                        ? const Center(
                             child: CircularProgressIndicator(
-                              color: colorScheme.primary,
+                              color: ThemeColors.primary,
                             ),
                           )
-                        : images.isEmpty
-                            ? Center(
-                                child: Text(
-                                  'No photos added yet',
-                                  style: TextStyle(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              _buildAddPhotoButton(),
+                              ...images.map(
+                                (url) => _buildImageThumbnail(
+                                  url,
+                                  images.indexOf(url),
                                 ),
-                              )
-                            : ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  _buildAddPhotoButton(),
-                                  ...images.map(
-                                    (url) => _buildImageThumbnail(
-                                      url,
-                                      images.indexOf(url),
-                                    ),
-                                  ),
-                                ],
                               ),
+                            ],
+                          ),
                   ),
                 ],
               ),
@@ -556,7 +561,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        color: colorScheme.surfaceVariant,
+        color: ThemeColors.card,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -574,16 +579,16 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                       label: Text(entry.value.label),
                       labelStyle: TextStyle(
                         color: isSelected
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurface,
+                            ? ThemeColors.textOnPrimary
+                            : ThemeColors.textPrimary,
                       ),
                       selected: isSelected,
                       avatar: Icon(
                         entry.value.icon,
                         size: 18,
                         color: isSelected
-                            ? colorScheme.onPrimary
-                            : colorScheme.primary,
+                            ? ThemeColors.textOnPrimary
+                            : ThemeColors.primary,
                       ),
                       onSelected: (selected) {
                         setState(() {
@@ -594,8 +599,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                           }
                         });
                       },
-                      selectedColor: colorScheme.primary,
-                      backgroundColor: colorScheme.surfaceVariant,
+                      selectedColor: ThemeColors.primary,
+                      backgroundColor: ThemeColors.surface,
                       showCheckmark: false,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -614,266 +619,336 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 16,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurface.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Text(
-                    isEditing ? 'Edit Room' : 'Add New Room',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
+      builder: (context) => SafeArea(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: ThemeColors.card,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            boxShadow: [
+              BoxShadow(
+                color: ThemeColors.shadowDark,
+                blurRadius: 16,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: ThemeColors.border,
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Basic Info Section
-                  Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          _buildSectionHeader(
-                              Iconsax.info_circle, 'Basic Information'),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Room Name',
-                              prefixIcon: const Icon(Iconsax.house),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            validator: (value) =>
-                                value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: descController,
-                            decoration: InputDecoration(
-                              labelText: 'Description',
-                              prefixIcon: const Icon(Iconsax.note),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            maxLines: 3,
-                            validator: (value) =>
-                                value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Pricing & Availability Section
-                  Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    Text(
+                      isEditing ? 'Edit Room' : 'Add New Room',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: ThemeColors.textPrimary,
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          _buildSectionHeader(
-                              Iconsax.dollar_circle, 'Pricing & Availability'),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: priceController,
-                            decoration: InputDecoration(
-                              labelText: 'Price per night',
-                              prefixIcon: const Icon(Iconsax.dollar_circle),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) return 'Required';
-                              if (double.tryParse(value!) == null)
-                                return 'Invalid number';
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          DropdownButtonFormField<int>(
-                            value: capacity,
-                            decoration: InputDecoration(
-                              labelText: 'Capacity',
-                              prefixIcon: const Icon(Iconsax.profile_2user),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            items: List.generate(10, (i) => i + 1)
-                                .map((e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Text(
-                                          '$e ${e == 1 ? 'guest' : 'guests'}'),
-                                    ))
-                                .toList(),
-                            onChanged: (value) => capacity = value ?? 1,
-                          ),
-                          const SizedBox(height: 16),
-                          StatefulBuilder(builder: (context, setState) {
-                            return SwitchListTile(
-                              title: Text(
-                                'Available for booking',
-                                style: TextStyle(
-                                  color: colorScheme.onSurface,
+                    const SizedBox(height: 24),
+      
+                    // Basic Info Section
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: ThemeColors.card,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            _buildSectionHeader(
+                                Iconsax.info_circle, 'Basic Information'),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: nameController,
+                              style:
+                                  const TextStyle(color: ThemeColors.textPrimary),
+                              decoration: InputDecoration(
+                                labelText: 'Room Name',
+                                labelStyle: const TextStyle(
+                                    color: ThemeColors.textSecondary),
+                                prefixIcon: const Icon(Iconsax.house,
+                                    color: ThemeColors.primary),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.primary),
                                 ),
                               ),
-                              value: isAvailable,
-                              onChanged: (value) => setState(() {
-                                isAvailable = value;
-                              }),
-                              contentPadding: EdgeInsets.zero,
-                              activeColor: colorScheme.primary,
-                            );
-                          }),
-                        ],
+                              validator: (value) =>
+                                  value?.isEmpty ?? true ? 'Required' : null,
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: descController,
+                              style:
+                                  const TextStyle(color: ThemeColors.textPrimary),
+                              decoration: InputDecoration(
+                                labelText: 'Description',
+                                labelStyle: const TextStyle(
+                                    color: ThemeColors.textSecondary),
+                                prefixIcon: const Icon(Iconsax.note,
+                                    color: ThemeColors.primary),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.primary),
+                                ),
+                              ),
+                              maxLines: 3,
+                              validator: (value) =>
+                                  value?.isEmpty ?? true ? 'Required' : null,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Photos Section
-                  buildImageSection(),
-
-                  const SizedBox(height: 16),
-
-                  // Amenities Section
-                  _buildAmenitiesSection(),
-
-                  const SizedBox(height: 24),
-
-                  // Submit Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (formKey.currentState?.validate() ?? false) {
-                          final roomData = {
-                            'hotelId': _hotelId,
-                            'name': nameController.text.trim(),
-                            'description': descController.text.trim(),
-                            'pricePerNight': double.parse(priceController.text),
-                            'capacity': capacity,
-                            'amenities': amenities,
-                            'images': tempImages.value,
-                            'availability': {
-                              'isAvailable': isAvailable,
-                              'nextAvailableDate': null,
-                            },
-                          };
-
-                          try {
-                            if (isEditing) {
-                              await FirebaseFirestore.instance
-                                  .collection('rooms')
-                                  .doc(room.id)
-                                  .update(roomData);
-                            } else {
-                              await FirebaseFirestore.instance
-                                  .collection('rooms')
-                                  .add(roomData);
+      
+                    const SizedBox(height: 16),
+      
+                    // Pricing & Availability Section
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: ThemeColors.card,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            _buildSectionHeader(
+                                Iconsax.dollar_circle, 'Pricing & Availability'),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: priceController,
+                              style:
+                                  const TextStyle(color: ThemeColors.textPrimary),
+                              decoration: InputDecoration(
+                                labelText: 'Price per night',
+                                labelStyle: const TextStyle(
+                                    color: ThemeColors.textSecondary),
+                                prefixIcon: const Icon(Iconsax.dollar_circle,
+                                    color: ThemeColors.primary),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.primary),
+                                ),
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value?.isEmpty ?? true) return 'Required';
+                                if (double.tryParse(value!) == null)
+                                  return 'Invalid number';
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<int>(
+                              value: capacity,
+                              dropdownColor: ThemeColors.card,
+                              style:
+                                  const TextStyle(color: ThemeColors.textPrimary),
+                              decoration: InputDecoration(
+                                labelText: 'Capacity',
+                                labelStyle: const TextStyle(
+                                    color: ThemeColors.textSecondary),
+                                prefixIcon: const Icon(Iconsax.profile_2user,
+                                    color: ThemeColors.primary),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      const BorderSide(color: ThemeColors.border),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.primary),
+                                ),
+                              ),
+                              items: List.generate(10, (i) => i + 1)
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(
+                                            '$e ${e == 1 ? 'guest' : 'guests'}'),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) => capacity = value ?? 1,
+                            ),
+                            const SizedBox(height: 16),
+                            StatefulBuilder(builder: (context, setState) {
+                              return SwitchListTile(
+                                title: const Text(
+                                  'Available for booking',
+                                  style: TextStyle(
+                                    color: ThemeColors.textPrimary,
+                                  ),
+                                ),
+                                value: isAvailable,
+                                onChanged: (value) => setState(() {
+                                  isAvailable = value;
+                                }),
+                                contentPadding: EdgeInsets.zero,
+                                activeColor: ThemeColors.primary,
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ),
+      
+                    const SizedBox(height: 16),
+      
+                    // Photos Section
+                    buildImageSection(),
+      
+                    const SizedBox(height: 16),
+      
+                    // Amenities Section
+                    _buildAmenitiesSection(),
+      
+                    const SizedBox(height: 24),
+      
+                    // Submit Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (formKey.currentState?.validate() ?? false) {
+                            final roomData = {
+                              'hotelId': _hotelId,
+                              'name': nameController.text.trim(),
+                              'description': descController.text.trim(),
+                              'pricePerNight': double.parse(priceController.text),
+                              'capacity': capacity,
+                              'amenities': amenities,
+                              'images': tempImages.value,
+                              'availability': {
+                                'isAvailable': isAvailable,
+                                'nextAvailableDate': null,
+                              },
+                            };
+      
+                            try {
+                              if (isEditing) {
+                                await FirebaseFirestore.instance
+                                    .collection('rooms')
+                                    .doc(room.id)
+                                    .update(roomData);
+                              } else {
+                                await FirebaseFirestore.instance
+                                    .collection('rooms')
+                                    .add(roomData);
+                              }
+      
+                              if (!mounted) return;
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isEditing
+                                        ? 'Room updated successfully'
+                                        : 'Room added successfully',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: ThemeColors.primary,
+                                ),
+                              );
+                              await _refreshRooms();
+                            } catch (e) {
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Failed to ${isEditing ? 'update' : 'add'} room: $e',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: ThemeColors.error,
+                                ),
+                              );
                             }
-
-                            if (!mounted) return;
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isEditing
-                                      ? 'Room updated successfully'
-                                      : 'Room added successfully',
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: colorScheme.primary,
-                              ),
-                            );
-                            await _refreshRooms();
-                          } catch (e) {
-                            if (!mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Failed to ${isEditing ? 'update' : 'add'} room: $e',
-                                ),
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: colorScheme.error,
-                              ),
-                            );
                           }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ThemeColors.primary,
+                          foregroundColor: ThemeColors.textOnPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        isEditing ? 'Update Room' : 'Add Room',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+                        child: Text(
+                          isEditing ? 'Update Room' : 'Add Room',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
-  }
-
-  void _showFilterOptions() {
-    // Implement filter options as needed
   }
 }
 
@@ -892,14 +967,12 @@ class _RoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: colorScheme.outline.withOpacity(0.2),
+        side: const BorderSide(
+          color: ThemeColors.border,
           width: 1,
         ),
       ),
@@ -914,7 +987,7 @@ class _RoomCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRoomImage(context: context),
+                  _buildRoomImage(),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -922,16 +995,17 @@ class _RoomCard extends StatelessWidget {
                       children: [
                         Text(
                           room.name,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: ThemeColors.textPrimary,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '\$${room.pricePerNight.toStringAsFixed(2)} per night',
-                          style: TextStyle(
-                            color: colorScheme.onSurface.withOpacity(0.7),
+                          style: const TextStyle(
+                            color: ThemeColors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -942,38 +1016,35 @@ class _RoomCard extends StatelessWidget {
                             _buildInfoChip(
                                 icon: Iconsax.profile_2user,
                                 text:
-                                    '${room.capacity} ${room.capacity == 1 ? 'guest' : 'guests'}',
-                                context: context),
+                                    '${room.capacity} ${room.capacity == 1 ? 'guest' : 'guests'}'),
                             _buildInfoChip(
                                 icon: Iconsax.calendar,
                                 text: room.availability.isAvailable
                                     ? 'Available'
                                     : 'Unavailable',
                                 color: room.availability.isAvailable
-                                    ? colorScheme.primary
-                                    : colorScheme.error,
-                                context: context),
+                                    ? ThemeColors.primary
+                                    : ThemeColors.error),
                             if (room.images.isNotEmpty)
                               _buildInfoChip(
                                   icon: Iconsax.gallery,
                                   text:
-                                      '${room.images.length} photo${room.images.length > 1 ? 's' : ''}',
-                                  context: context),
+                                      '${room.images.length} photo${room.images.length > 1 ? 's' : ''}'),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  _buildMoreOptionsButton(context: context),
+                  _buildMoreOptionsButton(),
                 ],
               ),
               if (room.amenities.isNotEmpty) ...[
                 const Divider(height: 24),
-                Text(
+                const Text(
                   'Amenities',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface.withOpacity(0.8),
+                    color: ThemeColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -990,9 +1061,13 @@ class _RoomCard extends StatelessWidget {
                         .value
                         .icon;
                     return Chip(
-                      label: Text(amenity),
-                      avatar: Icon(iconData, size: 16),
-                      backgroundColor: colorScheme.surfaceVariant,
+                      label: Text(
+                        amenity,
+                        style: const TextStyle(color: ThemeColors.textPrimary),
+                      ),
+                      avatar:
+                          Icon(iconData, size: 16, color: ThemeColors.primary),
+                      backgroundColor: ThemeColors.surface,
                       visualDensity: VisualDensity.compact,
                     );
                   }).toList(),
@@ -1002,8 +1077,8 @@ class _RoomCard extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       '+${room.amenities.length - 3} more',
-                      style: TextStyle(
-                        color: colorScheme.onSurface.withOpacity(0.6),
+                      style: const TextStyle(
+                        color: ThemeColors.textSecondary,
                       ),
                     ),
                   ),
@@ -1015,46 +1090,48 @@ class _RoomCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRoomImage({required BuildContext context}) {
-    final colorScheme = Theme.of(context).colorScheme;
+  Widget _buildRoomImage() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
         width: 100,
         height: 100,
-        color: colorScheme.surfaceVariant,
+        color: ThemeColors.surface,
         child: room.images.isNotEmpty
             ? Image.network(
                 room.images.first,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Center(
+                errorBuilder: (_, __, ___) => const Center(
                   child: Icon(
                     Iconsax.image,
-                    color: colorScheme.onSurfaceVariant,
+                    color: ThemeColors.textSecondary,
                   ),
                 ),
               )
-            : Center(
+            : const Center(
                 child: Icon(
                   Iconsax.image,
-                  color: colorScheme.onSurfaceVariant,
+                  color: ThemeColors.textSecondary,
                 ),
               ),
       ),
     );
   }
 
-  Widget _buildMoreOptionsButton({required BuildContext context}) {
+  Widget _buildMoreOptionsButton() {
     return PopupMenuButton(
-      icon: Icon(
+      icon: const Icon(
         Iconsax.more,
-        color: Theme.of(context).colorScheme.onSurface,
+        color: ThemeColors.textPrimary,
       ),
       itemBuilder: (context) => [
         PopupMenuItem(
-          child: const Text('Edit'),
+          child: const Text(
+            'Edit',
+            style: TextStyle(color: ThemeColors.textPrimary),
+          ),
           onTap: onEdit,
         ),
         PopupMenuItem(
@@ -1062,14 +1139,15 @@ class _RoomCard extends StatelessWidget {
             room.availability.isAvailable
                 ? 'Mark Unavailable'
                 : 'Mark Available',
+            style: const TextStyle(color: ThemeColors.textPrimary),
           ),
           onTap: onToggleAvailability,
         ),
         PopupMenuItem(
-          child: Text(
+          child: const Text(
             'Delete',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.error,
+              color: ThemeColors.error,
             ),
           ),
           onTap: onDelete,
@@ -1081,19 +1159,17 @@ class _RoomCard extends StatelessWidget {
   Widget _buildInfoChip({
     required IconData icon,
     required String text,
-    required BuildContext context,
     Color? color,
   }) {
-    final theme = Theme.of(context);
     return Chip(
       labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-      avatar: Icon(icon, size: 14, color: color ?? theme.colorScheme.primary),
+      avatar: Icon(icon, size: 14, color: color ?? ThemeColors.primary),
       label: Text(
         text,
-        style: TextStyle(color: color ?? theme.colorScheme.onSurface),
+        style: TextStyle(color: color ?? ThemeColors.textPrimary),
       ),
       backgroundColor:
-          color?.withOpacity(0.1) ?? theme.colorScheme.surfaceVariant,
+          color?.withOpacity(0.1) ?? ThemeColors.primary.withOpacity(0.1),
       visualDensity: VisualDensity.compact,
       side: BorderSide.none,
     );

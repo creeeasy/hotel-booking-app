@@ -1,5 +1,5 @@
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SectionHeader extends StatelessWidget {
@@ -22,7 +22,7 @@ class SectionHeader extends StatelessWidget {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: VisitorThemeColors.blackColor,
+            color: ThemeColors.textPrimary,
           ),
         ),
         TextButton(
@@ -39,14 +39,14 @@ class SectionHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: VisitorThemeColors.primaryColor,
+                  color: ThemeColors.primary,
                 ),
               ),
               SizedBox(width: 4),
               Icon(
                 Iconsax.arrow_right_3,
                 size: 16,
-                color: VisitorThemeColors.primaryColor,
+                color: ThemeColors.primary,
               ),
             ],
           ),

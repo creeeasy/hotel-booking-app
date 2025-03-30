@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
@@ -14,15 +14,17 @@ class FeaturedHotelCard extends StatelessWidget {
   final double borderRadius;
   final double aspectRatio;
   final bool showFavoriteButton;
+  final double elevation;
 
   const FeaturedHotelCard({
     super.key,
     required this.hotel,
     this.onPressed,
     this.showPremiumBadge = true,
-    this.borderRadius = 20,
+    this.borderRadius = 16,
     this.aspectRatio = 16 / 9,
     this.showFavoriteButton = true,
+    this.elevation = 4,
   });
 
   @override
@@ -45,9 +47,9 @@ class FeaturedHotelCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              color: ThemeColors.grey800.withOpacity(0.1),
+              blurRadius: elevation * 3,
+              offset: Offset(0, elevation),
             ),
           ],
         ),
@@ -86,9 +88,9 @@ class FeaturedHotelCard extends StatelessWidget {
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: Container(
-        color: Colors.grey[200], // Fallback background color
+        color: ThemeColors.grey200, // Fallback background color
         child: Stack(
-          fit: StackFit.expand, // Ensure the stack fills the container
+          fit: StackFit.expand,
           children: [
             // Main Image
             if (images.isNotEmpty)
@@ -105,7 +107,7 @@ class FeaturedHotelCard extends StatelessWidget {
                           ? loadingProgress.cumulativeBytesLoaded /
                               loadingProgress.expectedTotalBytes!
                           : null,
-                      color: VisitorThemeColors.deepBlueAccent,
+                      color: ThemeColors.primary,
                     ),
                   );
                 },
@@ -115,7 +117,7 @@ class FeaturedHotelCard extends StatelessWidget {
             else
               _buildImageErrorWidget(),
 
-            // Gradient Overlay - more pronounced at the bottom
+            // Gradient Overlay
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -123,8 +125,8 @@ class FeaturedHotelCard extends StatelessWidget {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withOpacity(0.8), // Darker at bottom
-                      Colors.black.withOpacity(0.3),
+                      ThemeColors.black.withOpacity(0.8),
+                      ThemeColors.black.withOpacity(0.3),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.5, 0.8],
@@ -143,12 +145,16 @@ class FeaturedHotelCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Iconsax.gallery_slash, size: 40, color: Colors.grey[500]),
+          Icon(
+            Iconsax.gallery_slash,
+            size: 40,
+            color: ThemeColors.grey400,
+          ),
           const SizedBox(height: 8),
           Text(
             'Image not available',
             style: TextStyle(
-              color: Colors.grey[600],
+              color: ThemeColors.grey600,
               fontSize: 14,
             ),
           ),
@@ -169,97 +175,101 @@ class FeaturedHotelCard extends StatelessWidget {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Colors.black.withOpacity(0.7),
+              ThemeColors.black.withOpacity(0.7),
               Colors.transparent,
             ],
           ),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Hotel Name
-          Text(
-            hotel.hotelName,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  color: Colors.black54,
-                  blurRadius: 6,
-                  offset: Offset(1, 1),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Hotel Name
+            Text(
+              hotel.hotelName,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: ThemeColors.white,
+                shadows: [
+                  // <-- Fixed closing square bracket
+                  Shadow(
+                    color: ThemeColors.black.withOpacity(0.6),
+                    blurRadius: 6,
+                    offset: const Offset(1, 1),
+                  ),
+                ],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            const SizedBox(height: 12),
+
+            // Location and Rating Row
+            Row(
+              children: [
+                // Location
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Iconsax.location,
+                        size: 16,
+                        color: ThemeColors.accentPink,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          locationName ?? 'Location not specified',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: ThemeColors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                // Rating
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: ThemeColors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RatingBarWidget(
+                        rating: hotel.ratings.rating,
+                        size: 14,
+                        activeColor: ThemeColors.star,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        hotel.ratings.totalRating.toString(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: ThemeColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-
-          const SizedBox(height: 12),
-
-          // Location and Rating Row
-          Row(
-            children: [
-              // Location
-              Expanded(
-                child: Row(
-                  children: [
-                    const Icon(
-                      Iconsax.location,
-                      size: 16,
-                      color: VisitorThemeColors.vibrantOrange,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        locationName ?? 'Location not specified',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Rating
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RatingBarWidget(
-                      rating: hotel.ratings.rating,
-                      size: 14,
-                      activeColor: VisitorThemeColors.secondaryColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      hotel.ratings.totalRating.toString(),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -271,31 +281,31 @@ class FeaturedHotelCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: VisitorThemeColors.vibrantOrange,
+          color: ThemeColors.accentPink,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: ThemeColors.black.withOpacity(0.2),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Iconsax.crown_1,
               size: 14,
-              color: Colors.white,
+              color: ThemeColors.white,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               'PREMIUM',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: ThemeColors.white,
                 letterSpacing: 0.5,
               ),
             ),

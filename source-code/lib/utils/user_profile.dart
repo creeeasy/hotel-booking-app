@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,7 @@ class UserProfile extends StatelessWidget {
                         height: 30,
                         width: 30,
                         child: CircularProgressIndicator(
-                          color: VisitorThemeColors.primaryColor,
+                          color: ThemeColors.primary,
                           value: loadingProgress.expectedTotalBytes != null
                               ? loadingProgress.cumulativeBytesLoaded /
                                   (loadingProgress.expectedTotalBytes ?? 1)

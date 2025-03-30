@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 
 class CustomBottomNavigationBar<T> extends StatelessWidget {
   final T selectedTab;
   final List<T> tabs;
-  final Function(T) onTabClick;
-  final Icon Function(T) getTabIcon;
+  final ValueChanged<T> onTabClick;
+  final IconData Function(T) getTabIcon;
   final String Function(T) getTabLabel;
+  final double? elevation;
 
   const CustomBottomNavigationBar({
     Key? key,
@@ -15,35 +16,62 @@ class CustomBottomNavigationBar<T> extends StatelessWidget {
     required this.onTabClick,
     required this.getTabIcon,
     required this.getTabLabel,
+    this.elevation = 8.0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: VisitorThemeColors.whiteColor,
-      currentIndex: tabs.indexOf(selectedTab),
-      onTap: (index) => onTabClick(tabs[index]),
-      items: tabs.map((tab) {
-        return BottomNavigationBarItem(
-          icon: getTabIcon(tab),
-          label: getTabLabel(tab),
-        );
-      }).toList(),
-      selectedItemColor: VisitorThemeColors.primaryColor,
-      unselectedItemColor: VisitorThemeColors.textGreyColor,
-      showUnselectedLabels: true,
-      type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: const TextStyle(
-        fontFamily: "Poppins",
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 1.0,
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.grey400.withOpacity(0.1),
+            blurRadius: 16,
+            spreadRadius: 2,
+          ),
+        ],
       ),
-      unselectedLabelStyle: const TextStyle(
-        fontFamily: "Poppins",
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        letterSpacing: 0.5,
+      child: BottomNavigationBar(
+        backgroundColor: ThemeColors.white,
+        currentIndex: tabs.indexOf(selectedTab),
+        onTap: (index) => onTabClick(tabs[index]),
+        elevation: elevation,
+        items: tabs.map((tab) {
+          final isSelected = tab == selectedTab;
+          return BottomNavigationBarItem(
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? ThemeColors.primary.withOpacity(0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                getTabIcon(tab),
+                size: 24,
+                color: isSelected
+                    ? ThemeColors.primary
+                    : ThemeColors.textSecondary,
+              ),
+            ),
+            label: getTabLabel(tab),
+          );
+        }).toList(),
+        selectedItemColor: ThemeColors.primary,
+        unselectedItemColor: ThemeColors.textSecondary,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: ThemeColors.primary,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.normal,
+          color: ThemeColors.textSecondary,
+        ),
       ),
     );
   }

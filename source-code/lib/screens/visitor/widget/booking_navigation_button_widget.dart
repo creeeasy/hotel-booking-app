@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/visitor.dart';
@@ -8,15 +8,21 @@ import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
 
 class BookingNavigationButtonWidget extends StatefulWidget {
   final Room room;
+  final VoidCallback? onBookingSuccess;
 
-  const BookingNavigationButtonWidget({Key? key, required this.room})
-      : super(key: key);
+  const BookingNavigationButtonWidget({
+    Key? key,
+    required this.room,
+    this.onBookingSuccess,
+  }) : super(key: key);
 
   @override
-  _BookingNavigationButtonWidgetState createState() =>
+  State<BookingNavigationButtonWidget> createState() =>
       _BookingNavigationButtonWidgetState();
 }
 
@@ -36,18 +42,15 @@ class _BookingNavigationButtonWidgetState
     pricePerNight = room.pricePerNight;
   }
 
-  Future<bool> showTotalPriceDialog({
-    required BuildContext context,
-  }) async {
+  Future<bool> _showTotalPriceDialog() async {
     return await showGenericDialog<bool>(
       context: context,
       title: 'Confirm Booking',
       content: '''
-Departure Date: ${_startDate!.toLocal().toString().split(' ')[0]}
-Destination Date: ${_endDate!.toLocal().toString().split(' ')[0]}
-Total Price: \$${_totalPrice.toStringAsFixed(2)}
-
-Do you want to proceed with the payment?''',
+      Check-in Date: ${DateFormat('MMM d, y').format(_startDate!)}
+      Check-out Date: ${DateFormat('MMM d, y').format(_endDate!)}
+      Total Nights: ${_endDate!.difference(_startDate!).inDays}
+      Total Price: \$${_totalPrice.toStringAsFixed(2)}''',
       optionBuilder: () => {
         'Cancel': false,
         'Confirm & Pay': true,
@@ -55,14 +58,14 @@ Do you want to proceed with the payment?''',
     ).then((value) => value ?? false);
   }
 
-  Future<void> _bookNow() async {
-    DateTime today = DateTime.now();
-    DateTime initialDate = room.availability.nextAvailableDate != null &&
+  Future<void> _selectDates() async {
+    final today = DateTime.now();
+    final initialDate = room.availability.nextAvailableDate != null &&
             room.availability.nextAvailableDate!.isAfter(today)
         ? room.availability.nextAvailableDate!
         : today;
 
-    DateTime? pickedStartDate = await showDatePicker(
+    final pickedStartDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
       firstDate: initialDate,
@@ -70,13 +73,27 @@ Do you want to proceed with the payment?''',
       helpText: "Select Check-in Date",
       cancelText: "Cancel",
       confirmText: "Next",
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: ThemeColors.primary,
+              onPrimary: ThemeColors.white,
+              surface: ThemeColors.white,
+              onSurface: ThemeColors.textPrimary,
+            ),
+            dialogBackgroundColor: ThemeColors.white,
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedStartDate == null || !mounted) return;
 
-    DateTime minEndDate = pickedStartDate.add(const Duration(days: 1));
+    final minEndDate = pickedStartDate.add(const Duration(days: 1));
 
-    DateTime? pickedEndDate = await showDatePicker(
+    final pickedEndDate = await showDatePicker(
       context: context,
       initialDate: minEndDate,
       firstDate: minEndDate,
@@ -84,6 +101,20 @@ Do you want to proceed with the payment?''',
       helpText: "Select Check-out Date",
       cancelText: "Cancel",
       confirmText: "Confirm",
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: ThemeColors.primary,
+              onPrimary: ThemeColors.white,
+              surface: ThemeColors.white,
+              onSurface: ThemeColors.textPrimary,
+            ),
+            dialogBackgroundColor: ThemeColors.white,
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedEndDate != null && mounted) {
@@ -97,45 +128,57 @@ Do you want to proceed with the payment?''',
     }
   }
 
-  void _confirmBooking({required String visitorId}) async {
-    if (_startDate != null && _endDate != null) {
-      final confirmBooking = await showTotalPriceDialog(context: context);
+  Future<void> _confirmBooking({required String visitorId}) async {
+    if (_startDate == null || _endDate == null) return;
 
-      if (confirmBooking) {
-        final result = await Booking.createBooking(
-          hotelId: room.hotelId,
-          roomId: room.id,
-          visitorId: visitorId,
-          checkInDate: _startDate!,
-          checkOutDate: _endDate!,
-          totalPrice: _totalPrice,
-        );
+    final confirmBooking = await _showTotalPriceDialog();
 
-        if (result is BookingSuccess) {
-          log("Booking confirmed: ${result.booking}");
+    if (confirmBooking) {
+      final result = await Booking.createBooking(
+        hotelId: room.hotelId,
+        roomId: room.id,
+        visitorId: visitorId,
+        checkInDate: _startDate!,
+        checkOutDate: _endDate!,
+        totalPrice: _totalPrice,
+      );
 
-          setState(() {
-            _startDate = null;
-            _endDate = null;
-            _isConfirming = false;
-            _totalPrice = 0.0;
-          });
+      if (result is BookingSuccess) {
+        log("Booking confirmed: ${result.booking}");
 
-          // Show success message
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Booking confirmed successfully!"),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text("Booking confirmed successfully!"),
+              backgroundColor: ThemeColors.success,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           );
-        } else if (result is BookingFailure) {
-          log("Booking failed: ${result.message}");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result.message)),
-          );
+
+          widget.onBookingSuccess?.call();
         }
-      } else {
-        setState(() {});
+
+        setState(() {
+          _startDate = null;
+          _endDate = null;
+          _isConfirming = false;
+          _totalPrice = 0.0;
+        });
+      } else if (result is BookingFailure && mounted) {
+        log("Booking failed: ${result.message}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.message),
+            backgroundColor: ThemeColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
       }
     }
   }
@@ -144,19 +187,20 @@ Do you want to proceed with the payment?''',
   Widget build(BuildContext context) {
     final isAvailable = room.availability.isAvailable &&
         room.availability.nextAvailableDate != null;
+
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final currentVisitorId = (state.currentUser as Visitor).id;
 
         return Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: ThemeColors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
+                color: ThemeColors.grey400.withOpacity(0.1),
+                blurRadius: 16,
                 spreadRadius: 2,
               ),
             ],
@@ -164,39 +208,65 @@ Do you want to proceed with the payment?''',
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "\$${room.pricePerNight.toStringAsFixed(2)} / night",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "From \$${room.pricePerNight.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: ThemeColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    "\$${room.pricePerNight.toStringAsFixed(2)} / night",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: ThemeColors.primary,
+                    ),
+                  ),
+                ],
               ),
               ElevatedButton(
                 onPressed: isAvailable
                     ? (_isConfirming
                         ? () => _confirmBooking(visitorId: currentVisitorId)
-                        : _bookNow)
+                        : _selectDates)
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isAvailable ? VisitorThemeColors.softPinkAccent : Colors.grey,
+                  backgroundColor: isAvailable
+                      ? _isConfirming
+                          ? ThemeColors.accentPink
+                          : ThemeColors.primary
+                      : ThemeColors.grey400,
+                  foregroundColor: ThemeColors.white,
                   minimumSize: const Size(140, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                child: Text(
-                  isAvailable
-                      ? (_isConfirming ? "Confirm" : "Book Now")
-                      : "Unavailable",
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _isConfirming ? Iconsax.tick_circle : Iconsax.calendar,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      isAvailable
+                          ? (_isConfirming ? "Confirm" : "Book Now")
+                          : "Unavailable",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

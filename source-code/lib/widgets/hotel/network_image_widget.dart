@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/widgets/image_error_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +42,7 @@ class NetworkImageWithLoader extends StatelessWidget {
                     height: height,
                     width: width,
                     child: CircularProgressIndicator(
-                      color: VisitorThemeColors.primaryColor,
+                      color: ThemeColors.primary,
                       value: loadingProgress.expectedTotalBytes != null
                           ? loadingProgress.cumulativeBytesLoaded /
                               (loadingProgress.expectedTotalBytes ?? 1)
@@ -50,9 +50,9 @@ class NetworkImageWithLoader extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Loading image...',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: ThemeColors.textSecondary),
                   ),
                 ],
               ),

@@ -114,8 +114,11 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: ThemeColors.darkBackground,
+        content: Text(
+          message,
+          style: TextStyle(color: ThemeColors.textOnDark),
+        ),
+        backgroundColor: ThemeColors.primaryDark,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -131,23 +134,28 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ThemeColors.background,
-      appBar: CustomBackAppBar(
-        title: "Profile Settings",
-        onBack: () => Navigator.of(context).pop(),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            _buildProfileSection(),
-            const SizedBox(height: 32),
-            _buildAccountSettingsSection(),
-            const SizedBox(height: 32),
-            _buildLogoutButton(),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        appBar: CustomBackAppBar(
+          title: "Profile Settings",
+          titleColor: ThemeColors.primary,
+          iconColor: ThemeColors.primary,
+          backgroundColor: ThemeColors.background,
+          onBack: () => Navigator.of(context).pop(),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              const SizedBox(height: 24),
+              _buildProfileSection(),
+              const SizedBox(height: 32),
+              _buildAccountSettingsSection(),
+              const SizedBox(height: 32),
+              _buildLogoutButton(),
+            ],
+          ),
         ),
       ),
     );
@@ -176,7 +184,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
             color: ThemeColors.grey200,
             image: _buildProfileImage(),
             border: Border.all(
-              color: ThemeColors.primary.withOpacity(0.2),
+              color: ThemeColors.primary.withOpacity(0.3),
               width: 2,
             ),
           ),
@@ -208,7 +216,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: ThemeColors.primary,
+          gradient: ThemeColors.primaryGradient,
           border: Border.all(color: ThemeColors.white, width: 2),
           boxShadow: [
             BoxShadow(
@@ -265,10 +273,13 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        icon: const Icon(Iconsax.trash, size: 18),
-        label: const Text(
+        icon: Icon(Iconsax.trash, size: 18, color: ThemeColors.error),
+        label: Text(
           "Remove Photo",
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: ThemeColors.error,
+          ),
         ),
       ),
     );

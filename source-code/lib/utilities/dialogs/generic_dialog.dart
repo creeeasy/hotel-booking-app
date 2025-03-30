@@ -1,6 +1,5 @@
 import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:iconsax/iconsax.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();

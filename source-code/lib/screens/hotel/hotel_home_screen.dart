@@ -1,3 +1,4 @@
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/enum/hotel_nav_bar.dart';
 import 'package:fatiel/screens/hotel/bookings_screen.dart';
 import 'package:fatiel/screens/hotel/home_screen.dart';
@@ -6,7 +7,6 @@ import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
 import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/visitor/widget/bottom_navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HotelHomeView extends StatefulWidget {
@@ -44,7 +44,7 @@ class _HotelHomeViewState extends State<HotelHomeView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: VisitorThemeColors.whiteColor,
+        backgroundColor: ThemeColors.background,
         body: getCurrentPage(),
         bottomNavigationBar: CustomBottomNavigationBar<HotelNavBar>(
           selectedTab: selectedTab,
@@ -57,15 +57,15 @@ class _HotelHomeViewState extends State<HotelHomeView> {
           getTabIcon: (tab) {
             switch (tab) {
               case HotelNavBar.home:
-                return const Icon(Iconsax.home, size: 24);
+                return Iconsax.home;
               case HotelNavBar.rooms:
-                return const Icon(Iconsax.building_3, size: 24);
+                return Iconsax.building_3;
               case HotelNavBar.bookings:
-                return const Icon(Iconsax.calendar, size: 24);
+                return Iconsax.calendar;
               case HotelNavBar.reviews:
-                return const Icon(Iconsax.star, size: 24);
+                return Iconsax.star;
               case HotelNavBar.profile:
-                return const Icon(Iconsax.profile_circle, size: 24);
+                return Iconsax.profile_circle;
             }
           },
           getTabLabel: (tab) {
@@ -82,6 +82,7 @@ class _HotelHomeViewState extends State<HotelHomeView> {
                 return 'Profile';
             }
           },
+          elevation: 12.0,
         ),
       ),
     );

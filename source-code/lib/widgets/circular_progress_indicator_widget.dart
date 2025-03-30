@@ -1,15 +1,11 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
 
 class CircularProgressIndicatorWidget extends StatelessWidget {
-  final Color? indicatorColor;
-  final Color? containerColor;
   final double strockWidth;
   final double size;
   const CircularProgressIndicatorWidget({
     super.key,
-    this.indicatorColor,
-    this.containerColor,
     this.size = 40,
     this.strockWidth = 4.0,
   });
@@ -17,18 +13,15 @@ class CircularProgressIndicatorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: containerColor ??
-            VisitorThemeColors.whiteColor, // Updated background color
-      ),
+      decoration: const BoxDecoration(color: ThemeColors.background),
       child: Center(
         child: SizedBox(
           width: size,
           height: size,
           child: CircularProgressIndicator(
             strokeWidth: strockWidth,
-            valueColor: AlwaysStoppedAnimation<Color>(indicatorColor ??
-                VisitorThemeColors.playfulLime), // Updated indicator color
+            valueColor: const AlwaysStoppedAnimation<Color>(
+                ThemeColors.primary), // Updated indicator color
           ),
         ),
       ),

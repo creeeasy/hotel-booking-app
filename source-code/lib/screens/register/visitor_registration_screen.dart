@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -25,6 +26,7 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
 
   bool notVisiblePassword = true;
   bool notVisibleConfirmPassword = true;
+  bool _isLoading = false;
 
   void passwordVisibility() {
     setState(() {
@@ -51,9 +53,10 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
           content: const Text("Please enter your first and last name."),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
           backgroundColor: ThemeColors.error,
+          elevation: 4,
         ),
       );
       return;
@@ -65,9 +68,10 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
           content: const Text("Please enter a valid email address."),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
           backgroundColor: ThemeColors.error,
+          elevation: 4,
         ),
       );
       return;
@@ -79,9 +83,10 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
           content: const Text("Password must be at least 6 characters long."),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
           backgroundColor: ThemeColors.error,
+          elevation: 4,
         ),
       );
       return;
@@ -93,14 +98,16 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
           content: const Text("Passwords do not match."),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
           backgroundColor: ThemeColors.error,
+          elevation: 4,
         ),
       );
       return;
     }
 
+    setState(() => _isLoading = true);
     context.read<AuthBloc>().add(AuthEventVisitorRegistering(
           fname,
           lname,
@@ -111,216 +118,142 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) async {
-        if (state is AuthStateVisitorRegistering) {
-          if (state.exception is WeakPasswordException) {
-            await showErrorDialog(context, 'Weak password');
-          } else if (state.exception is MissingPasswordException) {
-            await showErrorDialog(context, 'Missing password');
-          } else if (state.exception is EmailAlreadyInUseException) {
-            await showErrorDialog(context, 'Email is already in use');
-          } else if (state.exception is GenericException) {
-            await showErrorDialog(context, 'Failed to register');
-          } else if (state.exception is InvalidEmailException) {
-            await showErrorDialog(context, 'Invalid email');
+    return SafeArea(
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) async {
+          if (state is AuthStateVisitorRegistering) {
+            setState(() => _isLoading = false);
+            if (state.exception is WeakPasswordException) {
+              await showErrorDialog(context, 'Weak password');
+            } else if (state.exception is MissingPasswordException) {
+              await showErrorDialog(context, 'Missing password');
+            } else if (state.exception is EmailAlreadyInUseException) {
+              await showErrorDialog(context, 'Email is already in use');
+            } else if (state.exception is GenericException) {
+              await showErrorDialog(context, 'Failed to register');
+            } else if (state.exception is InvalidEmailException) {
+              await showErrorDialog(context, 'Invalid email');
+            }
           }
-        }
-      },
-      child: Scaffold(
-        backgroundColor: ThemeColors.background,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Iconsax.arrow_left_2, size: 24),
-            onPressed: () {
-              context.read<AuthBloc>().add(const AuthEventShouldRegister());
-            },
+        },
+        child: Scaffold(
+          backgroundColor: ThemeColors.background,
+          appBar: CustomBackAppBar(
+            title: 'Create Account',
+            onBack: () =>
+                context.read<AuthBloc>().add(const AuthEventShouldRegister()),
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          title: const Text(
-            'Create Account',
-            style: TextStyle(
-              fontSize: 22,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w700,
-              color: ThemeColors.primaryDark,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              // Header with decorative element
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Join Fatiel",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: ThemeColors.primaryDark,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: 60,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: ThemeColors.primaryLight,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Form Fields
-              _buildInputField(
-                controller: _firstNameController,
-                icon: Iconsax.user,
-                label: 'First Name',
-              ),
-              const SizedBox(height: 20),
-              _buildInputField(
-                controller: _lastNameController,
-                icon: Iconsax.user,
-                label: 'Last Name',
-              ),
-              const SizedBox(height: 20),
-              _buildInputField(
-                controller: _emailController,
-                icon: Iconsax.sms,
-                label: 'Email',
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordField(
-                controller: _passwordController,
-                label: 'Password',
-                isVisible: notVisiblePassword,
-                onVisibilityChanged: passwordVisibility,
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordField(
-                controller: _confirmPasswordController,
-                label: 'Confirm Password',
-                isVisible: notVisibleConfirmPassword,
-                onVisibilityChanged: confirmPasswordVisibility,
-              ),
-              const SizedBox(height: 40),
-
-              // Register Button
-              ElevatedButton(
-                onPressed: createVisitorAccount,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ThemeColors.primary,
-                  foregroundColor: ThemeColors.textOnPrimary,
-                  minimumSize: const Size.fromHeight(56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                ),
-                child: const Text(
-                  "Create Account",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Divider
-              Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      color: ThemeColors.border.withOpacity(0.5),
-                      thickness: 1,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'or continue with',
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                // Header with decorative element
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Join Fatiel",
                       style: TextStyle(
-                        color: ThemeColors.textSecondary.withOpacity(0.8),
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: ThemeColors.primaryDark,
+                        letterSpacing: 0.8,
+                        height: 1.2,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      color: ThemeColors.border.withOpacity(0.5),
-                      thickness: 1,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Social Login Options
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSocialButton(
-                    icon: Icons.local_bar, // Example: Using a different icon
-                    color: ThemeColors.accentPink,
-                  ),
-                  const SizedBox(width: 20),
-                  _buildSocialButton(
-                    icon: Icons.apple, // Material Icons has an apple icon
-                    color: ThemeColors.accentDeep,
-                  ),
-                  const SizedBox(width: 20),
-                  _buildSocialButton(
-                    icon: Icons.g_mobiledata, // Alternative for Google
-                    color: ThemeColors.error,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Terms and Privacy
-              Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TextStyle(
-                      color: ThemeColors.textSecondary.withOpacity(0.8),
-                      fontSize: 14,
-                    ),
-                    children: [
-                      const TextSpan(text: 'By signing up, you agree to our '),
-                      const TextSpan(
-                        text: 'Terms',
-                        style: TextStyle(
-                          color: ThemeColors.primary,
-                          fontWeight: FontWeight.w600,
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 60,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            ThemeColors.primaryLight,
+                            ThemeColors.primary,
+                          ],
                         ),
+                        borderRadius: BorderRadius.circular(2),
                       ),
-                      const TextSpan(text: ' and '),
-                      const TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(
-                          color: ThemeColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // Form Fields
+                _buildInputField(
+                  controller: _firstNameController,
+                  icon: Iconsax.user,
+                  label: 'First Name',
+                ),
+                const SizedBox(height: 20),
+                _buildInputField(
+                  controller: _lastNameController,
+                  icon: Iconsax.user,
+                  label: 'Last Name',
+                ),
+                const SizedBox(height: 20),
+                _buildInputField(
+                  controller: _emailController,
+                  icon: Iconsax.sms,
+                  label: 'Email',
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  isVisible: notVisiblePassword,
+                  onVisibilityChanged: passwordVisibility,
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordField(
+                  controller: _confirmPasswordController,
+                  label: 'Confirm Password',
+                  isVisible: notVisibleConfirmPassword,
+                  onVisibilityChanged: confirmPasswordVisibility,
+                ),
+                const SizedBox(height: 40),
+
+                // Register Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : createVisitorAccount,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ThemeColors.primary,
+                      foregroundColor: ThemeColors.textOnPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ],
+                      elevation: 3,
+                      shadowColor: ThemeColors.shadowDark,
+                      disabledBackgroundColor:
+                          ThemeColors.primary.withOpacity(0.6),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            "Create Account",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -333,37 +266,72 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
     required String label,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      style: const TextStyle(
-        color: ThemeColors.textPrimary,
-        fontSize: 16,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.primary.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: ThemeColors.textSecondary,
-          fontSize: 14,
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        style: TextStyle(
+          color: ThemeColors.textPrimary,
+          fontSize: 16,
           fontWeight: FontWeight.w500,
         ),
-        prefixIcon: Icon(
-          icon,
-          size: 20,
-          color: ThemeColors.primaryLight,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: ThemeColors.textSecondary.withOpacity(0.8),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          floatingLabelStyle: TextStyle(
+            color: ThemeColors.primary,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          prefixIcon: Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: ThemeColors.primary.withOpacity(0.08),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: ThemeColors.primary,
+            ),
+          ),
+          filled: true,
+          fillColor: ThemeColors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: ThemeColors.primary.withOpacity(0.4),
+              width: 1.5,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 16,
+          ),
         ),
-        filled: true,
-        fillColor: ThemeColors.surface.withOpacity(0.6),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
+        cursorColor: ThemeColors.primary,
       ),
-      cursorColor: ThemeColors.primary,
     );
   }
 
@@ -373,45 +341,83 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
     required bool isVisible,
     required VoidCallback onVisibilityChanged,
   }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isVisible,
-      style: const TextStyle(
-        color: ThemeColors.textPrimary,
-        fontSize: 16,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.primary.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: ThemeColors.textSecondary,
-          fontSize: 14,
+      child: TextFormField(
+        controller: controller,
+        obscureText: isVisible,
+        style: TextStyle(
+          color: ThemeColors.textPrimary,
+          fontSize: 16,
           fontWeight: FontWeight.w500,
         ),
-        prefixIcon: const Icon(
-          Iconsax.lock,
-          size: 20,
-          color: ThemeColors.primaryLight,
-        ),
-        suffixIcon: IconButton(
-          onPressed: onVisibilityChanged,
-          icon: Icon(
-            isVisible ? Iconsax.eye_slash : Iconsax.eye,
-            size: 20,
-            color: ThemeColors.primaryLight,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: ThemeColors.textSecondary.withOpacity(0.8),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          floatingLabelStyle: TextStyle(
+            color: ThemeColors.primary,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          prefixIcon: Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: ThemeColors.primary.withOpacity(0.08),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
+            ),
+            child: Icon(
+              Iconsax.lock_1,
+              size: 20,
+              color: ThemeColors.primary,
+            ),
+          ),
+          suffixIcon: Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: IconButton(
+              onPressed: onVisibilityChanged,
+              icon: Icon(
+                isVisible ? Iconsax.eye_slash : Iconsax.eye,
+                size: 20,
+                color: ThemeColors.textSecondary.withOpacity(0.6),
+              ),
+            ),
+          ),
+          filled: true,
+          fillColor: ThemeColors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: ThemeColors.primary.withOpacity(0.4),
+              width: 1.5,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 16,
           ),
         ),
-        filled: true,
-        fillColor: ThemeColors.surface.withOpacity(0.6),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
+        cursorColor: ThemeColors.primary,
       ),
-      cursorColor: ThemeColors.primary,
     );
   }
 
@@ -420,12 +426,12 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
       width: 56,
       height: 56,
       decoration: BoxDecoration(
-        color: ThemeColors.surface,
+        color: ThemeColors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: ThemeColors.shadow.withOpacity(0.1),
-            blurRadius: 8,
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],

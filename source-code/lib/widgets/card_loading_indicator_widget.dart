@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
 
 class CardLoadingIndicator extends StatelessWidget {
@@ -8,12 +8,12 @@ class CardLoadingIndicator extends StatelessWidget {
   final EdgeInsets padding;
 
   const CardLoadingIndicator({
-    Key? key,
-    this.height = 250,
-    this.backgroundColor = VisitorThemeColors.whiteColor,
-    this.indicatorColor = VisitorThemeColors.radiantPink,
-    this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-  }) : super(key: key);
+    super.key,
+    required this.height,
+    required this.backgroundColor,
+    required this.indicatorColor,
+    required this.padding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +25,13 @@ class CardLoadingIndicator extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: backgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: ThemeColors.shadow.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         alignment: Alignment.center,
         child: CircularProgressIndicator(

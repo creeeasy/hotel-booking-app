@@ -26,14 +26,14 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomBackAppBar(
-        title: "All Wilayas",
-        onBack: () => Navigator.of(context).pop(),
-      ),
-      backgroundColor: ThemeColors.background,
-      body: SafeArea(
-        child: Column(
+    return SafeArea(
+      child: Scaffold(
+        appBar: CustomBackAppBar(
+          title: "All Wilayas",
+          onBack: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: ThemeColors.background,
+        body: Column(
           children: [
             Expanded(
               child: FutureBuilder<Map<int, int>>(

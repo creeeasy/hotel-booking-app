@@ -1,7 +1,7 @@
-import 'package:fatiel/constants/colors/hotel_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
-import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
@@ -123,24 +123,22 @@ class _HotelProfileViewState extends State<HotelProfileView> {
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: isError ? Colors.red : Colors.green,
+        backgroundColor: isError ? ThemeColors.error : ThemeColors.success,
       ),
     );
   }
 
   void _showSettingsBottomSheet() {
-    final colorScheme = Theme.of(context).colorScheme;
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        decoration: const BoxDecoration(
+          color: ThemeColors.card,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: ThemeColors.shadowDark,
               blurRadius: 16,
               spreadRadius: 0,
             ),
@@ -156,30 +154,37 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: colorScheme.onSurface.withOpacity(0.2),
+                  color: ThemeColors.textSecondary.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             ListTile(
-              leading: Icon(Iconsax.setting_2, color: colorScheme.primary),
-              title: const Text('Settings'),
+              leading:
+                  const Icon(Iconsax.setting_2, color: ThemeColors.primary),
+              title: const Text('Settings',
+                  style: TextStyle(color: ThemeColors.textPrimary)),
               onTap: () {
                 Navigator.pop(context);
                 // Navigate to settings page if you have one
               },
             ),
             ListTile(
-              leading: Icon(Iconsax.logout, color: colorScheme.error),
-              title: const Text('Log Out'),
+              leading: const Icon(Iconsax.logout, color: ThemeColors.error),
+              title: const Text('Log Out',
+                  style: TextStyle(color: ThemeColors.error)),
               onTap: _confirmLogout,
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: ThemeColors.primary),
+                ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
+                child: const Text('Cancel',
+                    style: TextStyle(color: ThemeColors.primary)),
               ),
             ),
           ],
@@ -192,12 +197,16 @@ class _HotelProfileViewState extends State<HotelProfileView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log Out'),
-        content: const Text('Are you sure you want to log out?'),
+        backgroundColor: ThemeColors.card,
+        title: const Text('Log Out',
+            style: TextStyle(color: ThemeColors.textPrimary)),
+        content: const Text('Are you sure you want to log out?',
+            style: TextStyle(color: ThemeColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel',
+                style: TextStyle(color: ThemeColors.primary)),
           ),
           TextButton(
             onPressed: () {
@@ -205,7 +214,8 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               Navigator.pop(context); // Close settings sheet
               context.read<AuthBloc>().add(const AuthEventLogOut());
             },
-            child: const Text('Log Out', style: TextStyle(color: Colors.red)),
+            child: const Text('Log Out',
+                style: TextStyle(color: ThemeColors.error)),
           ),
         ],
       ),
@@ -214,78 +224,82 @@ class _HotelProfileViewState extends State<HotelProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const HeadlineText(text: "Profile"),
-        actions: [
-          IconButton(
-            icon: const Icon(Iconsax.setting_2),
-            onPressed: _showSettingsBottomSheet,
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isEditing,
-            builder: (context, isEditing, _) {
-              return isEditing
-                  ? ValueListenableBuilder<bool>(
-                      valueListenable: _isLoading,
-                      builder: (context, isLoading, _) {
-                        return isLoading
-                            ? const Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
-                                ),
-                              )
-                            : IconButton(
-                                icon: const Icon(Iconsax.tick_circle),
-                                onPressed: _updateHotelProfile,
-                              );
-                      },
-                    )
-                  : IconButton(
-                      icon: const Icon(Iconsax.edit_2),
-                      onPressed: () => _isEditing.value = true,
-                    );
-            },
-          ),
-        ],
-      ),
-      body: ValueListenableBuilder<bool>(
-        valueListenable: _isLoading,
-        builder: (context, isLoading, _) {
-          return isLoading
-              ? const CircularProgressIndicatorWidget(
-                  indicatorColor: BoutiqueHotelTheme.primaryBlue)
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildImageSection(colorScheme),
-                        const SizedBox(height: 24),
-                        _buildBasicInfoSection(colorScheme),
-                        const SizedBox(height: 24),
-                        _buildContactInfoSection(colorScheme),
-                        const SizedBox(height: 24),
-                        _buildLocationSection(colorScheme),
-                      ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        appBar: CustomBackAppBar(
+          title: 'Profile',
+          actions: [
+            IconButton(
+              icon:
+                  const Icon(Iconsax.setting_2, color: ThemeColors.primaryDark),
+              onPressed: _showSettingsBottomSheet,
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isEditing,
+              builder: (context, isEditing, _) {
+                return isEditing
+                    ? ValueListenableBuilder<bool>(
+                        valueListenable: _isLoading,
+                        builder: (context, isLoading, _) {
+                          return isLoading
+                              ? const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: ThemeColors.primaryDark,
+                                    ),
+                                  ),
+                                )
+                              : IconButton(
+                                  icon: const Icon(Iconsax.tick_circle,
+                                      color: ThemeColors.primaryDark),
+                                  onPressed: _updateHotelProfile,
+                                );
+                        },
+                      )
+                    : IconButton(
+                        icon: const Icon(Iconsax.edit_2,
+                            color: ThemeColors.primaryDark),
+                        onPressed: () => _isEditing.value = true,
+                      );
+              },
+            ),
+          ],
+        ),
+        body: ValueListenableBuilder<bool>(
+          valueListenable: _isLoading,
+          builder: (context, isLoading, _) {
+            return isLoading
+                ? const CircularProgressIndicatorWidget()
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildImageSection(),
+                          const SizedBox(height: 24),
+                          _buildBasicInfoSection(),
+                          const SizedBox(height: 24),
+                          _buildContactInfoSection(),
+                          const SizedBox(height: 24),
+                          _buildLocationSection(),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-        },
+                  );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildImageSection(ColorScheme colorScheme) {
+  Widget _buildImageSection() {
     return MultiValueListenableBuilder<List<String>, bool, bool>(
       valueListenable1: _tempImages,
       valueListenable2: _isEditing,
@@ -296,7 +310,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          color: colorScheme.surfaceVariant,
+          color: ThemeColors.card,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -305,36 +319,33 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                 _buildSectionHeader(
                   icon: Iconsax.gallery,
                   title: 'Hotel Photos',
-                  colorScheme: colorScheme,
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 120,
                   child: isImageLoading
-                      ? Center(
+                      ? const Center(
                           child: CircularProgressIndicator(
-                            color: colorScheme.primary,
+                            color: ThemeColors.primary,
                           ),
                         )
                       : images.isEmpty && !isEditing
-                          ? Center(
+                          ? const Center(
                               child: Text(
                                 'No photos added',
                                 style: TextStyle(
-                                  color: colorScheme.onSurface.withOpacity(0.6),
+                                  color: ThemeColors.textSecondary,
                                 ),
                               ),
                             )
                           : ListView(
                               scrollDirection: Axis.horizontal,
                               children: [
-                                if (isEditing)
-                                  _buildAddPhotoButton(colorScheme),
+                                if (isEditing) _buildAddPhotoButton(),
                                 ...images.map(
                                   (url) => _buildImageThumbnail(
                                     url,
                                     images.indexOf(url),
-                                    colorScheme,
                                   ),
                                 ),
                               ],
@@ -351,48 +362,47 @@ class _HotelProfileViewState extends State<HotelProfileView> {
   Widget _buildSectionHeader({
     required IconData icon,
     required String title,
-    required ColorScheme colorScheme,
   }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: colorScheme.primary),
+        Icon(icon, size: 20, color: ThemeColors.primary),
         const SizedBox(width: 8),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
+            color: ThemeColors.textPrimary,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAddPhotoButton(ColorScheme colorScheme) {
+  Widget _buildAddPhotoButton() {
     return GestureDetector(
       onTap: _uploadImage,
       child: Container(
         width: 120,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: colorScheme.primary.withOpacity(0.1),
+          color: ThemeColors.primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colorScheme.primary.withOpacity(0.3)),
+          border: Border.all(color: ThemeColors.primary.withOpacity(0.3)),
         ),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.add, size: 24, color: colorScheme.primary),
-            const SizedBox(height: 8),
-            Text('Add Photo', style: TextStyle(color: colorScheme.primary)),
+            Icon(Iconsax.add, size: 24, color: ThemeColors.primary),
+            SizedBox(height: 8),
+            Text('Add Photo', style: TextStyle(color: ThemeColors.primary)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildImageThumbnail(String url, int index, ColorScheme colorScheme) {
+  Widget _buildImageThumbnail(String url, int index) {
     return ValueListenableBuilder<bool>(
       valueListenable: _isEditing,
       builder: (context, isEditing, _) {
@@ -414,11 +424,11 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                         : Container(
                             width: 120,
                             height: 120,
-                            color: colorScheme.surfaceVariant,
-                            child: Center(
+                            color: ThemeColors.surface,
+                            child: const Center(
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: colorScheme.primary,
+                                color: ThemeColors.primary,
                               ),
                             ),
                           );
@@ -433,12 +443,12 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                     onTap: () => _removeImage(index),
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
+                      decoration: const BoxDecoration(
+                        color: ThemeColors.error,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.close,
-                          size: 16, color: Colors.white),
+                          size: 16, color: ThemeColors.textOnPrimary),
                     ),
                   ),
                 ),
@@ -449,12 +459,11 @@ class _HotelProfileViewState extends State<HotelProfileView> {
     );
   }
 
-  Widget _buildBasicInfoSection(ColorScheme colorScheme) {
+  Widget _buildBasicInfoSection() {
     return ValueListenableBuilder<bool>(
       valueListenable: _isEditing,
       builder: (context, isEditing, _) {
         return _buildSectionCard(
-          colorScheme: colorScheme,
           icon: Iconsax.info_circle,
           title: 'Basic Information',
           children: [
@@ -463,12 +472,12 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               decoration: _buildInputDecoration(
                 label: 'Hotel Name',
                 icon: Iconsax.building,
-                colorScheme: colorScheme,
               ),
               enabled: isEditing,
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
               onSaved: (value) => _currentHotel =
                   _currentHotel.copyWith(hotelName: value ?? ''),
+              style: const TextStyle(color: ThemeColors.textPrimary),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -476,12 +485,12 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               decoration: _buildInputDecoration(
                 label: 'Description',
                 icon: Iconsax.note_text,
-                colorScheme: colorScheme,
               ),
               enabled: isEditing,
               maxLines: 3,
               onSaved: (value) =>
                   _currentHotel = _currentHotel.copyWith(description: value),
+              style: const TextStyle(color: ThemeColors.textPrimary),
             ),
           ],
         );
@@ -489,12 +498,11 @@ class _HotelProfileViewState extends State<HotelProfileView> {
     );
   }
 
-  Widget _buildContactInfoSection(ColorScheme colorScheme) {
+  Widget _buildContactInfoSection() {
     return ValueListenableBuilder<bool>(
       valueListenable: _isEditing,
       builder: (context, isEditing, _) {
         return _buildSectionCard(
-          colorScheme: colorScheme,
           icon: Iconsax.call,
           title: 'Contact Information',
           children: [
@@ -503,13 +511,13 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               decoration: _buildInputDecoration(
                 label: 'Phone Number',
                 icon: Iconsax.call,
-                colorScheme: colorScheme,
               ),
               enabled: isEditing,
               keyboardType: TextInputType.phone,
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
               onSaved: (value) => _currentHotel =
                   _currentHotel.copyWith(contactInfo: value ?? ''),
+              style: const TextStyle(color: ThemeColors.textPrimary),
             ),
           ],
         );
@@ -517,7 +525,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
     );
   }
 
-  Widget _buildLocationSection(ColorScheme colorScheme) {
+  Widget _buildLocationSection() {
     return ValueListenableBuilder<int?>(
       valueListenable: _selectedWilayaIndex,
       builder: (context, selectedWilaya, _) {
@@ -525,7 +533,6 @@ class _HotelProfileViewState extends State<HotelProfileView> {
           valueListenable: _isEditing,
           builder: (context, isEditing, _) {
             return _buildSectionCard(
-              colorScheme: colorScheme,
               icon: Iconsax.location,
               title: 'Location',
               children: [
@@ -534,15 +541,15 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                   decoration: _buildInputDecoration(
                     label: 'Wilaya',
                     icon: Iconsax.map,
-                    colorScheme: colorScheme,
                   ),
-                  dropdownColor: colorScheme.surface,
+                  dropdownColor: ThemeColors.card,
+                  style: const TextStyle(color: ThemeColors.textPrimary),
                   items: Wilaya.values.map((wilaya) {
                     return DropdownMenuItem<int>(
                       value: wilaya.ind,
                       child: Text(
                         wilaya.name,
-                        style: TextStyle(color: colorScheme.onSurface),
+                        style: const TextStyle(color: ThemeColors.textPrimary),
                       ),
                     );
                   }).toList(),
@@ -556,11 +563,11 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                   decoration: _buildInputDecoration(
                     label: 'Map Link',
                     icon: Iconsax.link,
-                    colorScheme: colorScheme,
                   ),
                   enabled: isEditing,
                   onSaved: (value) =>
                       _currentHotel = _currentHotel.copyWith(mapLink: value),
+                  style: const TextStyle(color: ThemeColors.textPrimary),
                 ),
               ],
             );
@@ -571,7 +578,6 @@ class _HotelProfileViewState extends State<HotelProfileView> {
   }
 
   Widget _buildSectionCard({
-    required ColorScheme colorScheme,
     required IconData icon,
     required String title,
     required List<Widget> children,
@@ -579,14 +585,13 @@ class _HotelProfileViewState extends State<HotelProfileView> {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: colorScheme.surfaceVariant,
+      color: ThemeColors.card,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader(
-                icon: icon, title: title, colorScheme: colorScheme),
+            _buildSectionHeader(icon: icon, title: title),
             const SizedBox(height: 16),
             ...children,
           ],
@@ -598,13 +603,29 @@ class _HotelProfileViewState extends State<HotelProfileView> {
   InputDecoration _buildInputDecoration({
     required String label,
     required IconData icon,
-    required ColorScheme colorScheme,
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: colorScheme.primary),
+      labelStyle: const TextStyle(color: ThemeColors.textSecondary),
+      prefixIcon: Icon(icon, color: ThemeColors.primary),
       filled: true,
-      fillColor: colorScheme.surface,
+      fillColor: ThemeColors.surface,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ThemeColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ThemeColors.primary),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ThemeColors.error),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ThemeColors.error),
+      ),
     );
   }
 }

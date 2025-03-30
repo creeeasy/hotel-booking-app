@@ -29,17 +29,14 @@ class _HotelDetailsViewState extends State<HotelDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: ThemeColors.background,
-      child: SafeArea(
+    return SafeArea(
+      child: Container(
+        color: ThemeColors.background,
         child: FutureBuilder<Hotel>(
           future: _initializeHotelData(context),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicatorWidget(
-                indicatorColor: ThemeColors.primary,
-                containerColor: ThemeColors.background,
-              );
+              return const CircularProgressIndicatorWidget();
             }
 
             if (snapshot.hasError) {

@@ -1,6 +1,6 @@
+import 'package:fatiel/screens/auth_flow.dart';
 import 'package:fatiel/screens/hotel/bookings_screen.dart';
 import 'package:fatiel/screens/hotel/home_screen.dart';
-import 'package:fatiel/screens/hotel/hotel_details_completion_view.dart';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_profile_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
@@ -9,6 +9,7 @@ import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
 import 'package:fatiel/screens/register/visitor_registration_screen.dart';
+import 'package:fatiel/screens/splash_screen.dart';
 import 'package:fatiel/screens/visitor/reviews_screen.dart';
 import 'package:fatiel/screens/visitor/all_wilayas_screen.dart';
 import 'package:fatiel/screens/visitor/booking_details_screen.dart';
@@ -23,19 +24,15 @@ import 'package:fatiel/screens/visitor/update_password_sceen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/screens/visitor/visitor_profile_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
-import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fatiel/loading/loading_screen.dart';
 import 'package:fatiel/screens/forgot_password_screen.dart';
 import 'package:fatiel/screens/login_screen.dart';
 import 'package:fatiel/screens/register_screen.dart';
 import 'package:fatiel/screens/reset_password_screen.dart';
 import 'package:fatiel/screens/verify_email_screen.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_event.dart';
-import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/services/auth/firebase_auth_provider.dart';
 import "package:fatiel/constants/routes/routes.dart";
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -83,7 +80,7 @@ class MyApp extends StatelessWidget {
           visitorHomePageViewRoute: (context) => const VisitorHomeScreen(),
           verificationEmailViewRoute: (context) => const VerifyEmailView(),
           visitorRegistrationRoute: (context) =>
-              const VisitorRegistrationView(), // Add the visitor registration route
+              const VisitorRegistrationView(),
           hotelRegistrationRoute: (context) => const HotelRegistrationView(),
           hotelDetailsRoute: (context) => const HotelDetailsView(),
           favoritesViewRoute: (context) => const FavoritePage(),
@@ -106,55 +103,8 @@ class MyApp extends StatelessWidget {
           hotelReviewsRoute: (context) => const HotelReviewsScreen(),
           hotelProfileRoute: (context) => const HotelProfileView(),
           hotelSettingsRoute: (context) => const HotelSettingsView(),
+          authFlowRoute: (context) => const AuthFlow(),
         },
-        home: const Traffic());
-  }
-}
-
-class Traffic extends StatefulWidget {
-  const Traffic({super.key});
-
-  @override
-  State<Traffic> createState() => _TrafficState();
-}
-
-class _TrafficState extends State<Traffic> {
-  @override
-  Widget build(BuildContext context) {
-    context.read<AuthBloc>().add(const AuthEventInitialize());
-    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-      if (state.isLoading) {
-        LoadingScreen().show(
-          context: context,
-          text: state.loadingText ?? 'Please wait a moment',
-        );
-      } else {
-        LoadingScreen().hide();
-      }
-    }, builder: ((context, state) {
-      if (state is AuthStateHotelLoggedIn) {
-        return const HotelHomeView();
-      } else if (state is AuthStateVisitorLoggedIn) {
-        return const VisitorHomeScreen();
-      } else if (state is AuthStateNeedsVerification) {
-        return const VerifyEmailView();
-      } else if (state is AuthStateLoggedOut) {
-        return const LoginView();
-      } else if (state is AuthStateForgotPassword) {
-        return const ForgotPasswordView();
-      } else if (state is AuthStateRegistering) {
-        return RegisterView();
-      } else if (state is AuthStateHotelRegistering) {
-        return const HotelRegistrationView();
-      } else if (state is AuthStateHotelDetailsCompletion) {
-        return const HotelDetailsCompletion();
-      } else if (state is AuthStateVisitorRegistering) {
-        return const VisitorRegistrationView();
-      } else {
-        return const Scaffold(
-          body: CircularProgressIndicatorWidget(),
-        );
-      }
-    }));
+        home: const SplashScreen());
   }
 }

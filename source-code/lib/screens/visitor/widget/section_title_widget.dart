@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -14,10 +14,10 @@ class SectionTitle extends StatelessWidget {
   const SectionTitle({
     Key? key,
     required this.title,
-    this.titleColor = VisitorThemeColors.deepBlueAccent,
+    this.titleColor = ThemeColors.accentDeep,
     this.icon,
     this.iconSize = 20,
-    this.iconColor = VisitorThemeColors.primaryColor,
+    this.iconColor = ThemeColors.primary,
     this.spacing = 8,
     this.textStyle,
     this.alignment = CrossAxisAlignment.center,

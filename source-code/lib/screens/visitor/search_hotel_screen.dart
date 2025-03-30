@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -6,7 +7,6 @@ import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_list_widget.dart';
 import 'package:fatiel/screens/empty_states/no_hotels_found_screen.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 
 class SearchHotelView extends StatefulWidget {
   const SearchHotelView({super.key});
@@ -35,7 +35,6 @@ class _SearchHotelViewState extends State<SearchHotelView> {
   }
 
   void _onSearchChanged() {
-    // Debounce search to avoid too many requests
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (_searchController.text.isNotEmpty) {
@@ -59,24 +58,24 @@ class _SearchHotelViewState extends State<SearchHotelView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: VisitorThemeColors.whiteColor,
-      appBar: CustomBackAppBar(
-        title: "Search Hotels",
-        iconColor: VisitorThemeColors.cancelTextColor,
-        titleColor: VisitorThemeColors.cancelTextColor,
-        onBack: () => Navigator.of(context).pop(),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          children: [
-            // Search Bar
-            _buildSearchBar(),
-            const SizedBox(height: 16),
-            // Search Results
-            _buildSearchResults(),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        appBar: CustomBackAppBar(
+          title: "Search Hotels",
+          onBack: () => Navigator.of(context).pop(),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            children: [
+              // Search Bar
+              _buildSearchBar(),
+              const SizedBox(height: 16),
+              // Search Results
+              _buildSearchResults(),
+            ],
+          ),
         ),
       ),
     );
@@ -85,42 +84,62 @@ class _SearchHotelViewState extends State<SearchHotelView> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: VisitorThemeColors.lightGrayColor.withOpacity(0.2),
+        color: ThemeColors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.shadow.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TextField(
         controller: _searchController,
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: VisitorThemeColors.blackColor,
+          color: ThemeColors.textPrimary,
         ),
         decoration: InputDecoration(
+          filled: true,
+          fillColor: ThemeColors.white,
           hintText: "Search hotels, locations...",
           hintStyle: TextStyle(
             fontSize: 14,
-            color: VisitorThemeColors.textGreyColor.withOpacity(0.7),
+            color: ThemeColors.textSecondary,
           ),
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Iconsax.search_normal,
-            color: VisitorThemeColors.cancelTextColor,
+            color: ThemeColors.primary,
             size: 20,
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Iconsax.close_circle,
-                    color: VisitorThemeColors.cancelTextColor,
+                    color: ThemeColors.primary,
                     size: 20,
                   ),
                   onPressed: _clearSearch,
                 )
               : null,
-          border: InputBorder.none,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: ThemeColors.primary, width: 1.5),
+          ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         ),
-        cursorColor: VisitorThemeColors.primaryColor,
+        cursorColor: ThemeColors.primary,
       ),
     );
   }
@@ -135,10 +154,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicatorWidget(
-                indicatorColor: VisitorThemeColors.primaryColor,
-              ),
+            return Center(
+              child: CircularProgressIndicatorWidget(),
             );
           }
 
@@ -163,24 +180,28 @@ class _SearchHotelViewState extends State<SearchHotelView> {
         children: [
           Icon(
             Iconsax.search_normal_1,
-            size: 48,
-            color: VisitorThemeColors.lightGrayColor,
+            size: 64,
+            color: ThemeColors.primary.withOpacity(0.5),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             "Search for hotels",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: VisitorThemeColors.textGreyColor,
+              color: ThemeColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            "Enter hotel name, location or amenities",
-            style: TextStyle(
-              fontSize: 14,
-              color: VisitorThemeColors.textGreyColor.withOpacity(0.7),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              "Enter hotel name, location or amenities to find your perfect stay",
+              style: TextStyle(
+                fontSize: 14,
+                color: ThemeColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -193,10 +214,10 @@ class _SearchHotelViewState extends State<SearchHotelView> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Iconsax.warning_2,
             size: 48,
-            color: Colors.redAccent,
+            color: ThemeColors.error,
           ),
           const SizedBox(height: 16),
           Text(
@@ -204,7 +225,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: VisitorThemeColors.textGreyColor,
+              color: ThemeColors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
@@ -212,7 +233,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
             error,
             style: TextStyle(
               fontSize: 14,
-              color: VisitorThemeColors.textGreyColor.withOpacity(0.7),
+              color: ThemeColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -225,15 +246,19 @@ class _SearchHotelViewState extends State<SearchHotelView> {
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: VisitorThemeColors.primaryColor,
+              backgroundColor: ThemeColors.primary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              elevation: 2,
             ),
-            child: const Text(
+            child: Text(
               "Try Again",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: ThemeColors.textOnPrimary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

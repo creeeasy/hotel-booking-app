@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'package:fatiel/constants/colors/hotel_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/ratings.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/rating.dart';
 import 'package:fatiel/models/review.dart';
 import 'package:fatiel/models/visitor.dart';
-import 'package:fatiel/screens/hotel/widget/headline_text_widget.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:fatiel/widgets/no_reviews_ui.dart';
@@ -62,41 +62,46 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: BoutiqueHotelTheme.background,
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: _reviewsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicatorWidget(
-              indicatorColor: BoutiqueHotelTheme.primaryBlue,
+    return SafeArea(
+      child: Scaffold(
+        appBar: const CustomBackAppBar(
+          title: 'Guest Reviews',
+        ),
+        backgroundColor: ThemeColors.background,
+        body: FutureBuilder<Map<String, dynamic>>(
+          future: _reviewsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicatorWidget();
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}',
+                    style: const TextStyle(color: ThemeColors.error)),
+              );
+            } else {}
+            final reviews = snapshot.data!["reviews"] as List<Review>;
+            final ratings = (snapshot.data!["ratings"] as Rating);
+            final itemCount = reviews.length;
+            final totalPages =
+                itemCount == 0 ? 1 : ((itemCount - 1) ~/ selectedLimit) + 1;
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildRatingSummary(ratings),
+                  const SizedBox(height: 20),
+                  _buildRatingFilters(),
+                  const SizedBox(height: 20),
+                  _buildReviewsHeader(reviews.length),
+                  const SizedBox(height: 10),
+                  _buildReviewsList(reviews, totalPages),
+                  _buildPageIndicator(totalPages),
+                ],
+              ),
             );
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {}
-          final reviews = snapshot.data!["reviews"] as List<Review>;
-          final ratings = (snapshot.data!["ratings"] as Rating);
-          final itemCount = reviews.length;
-          final totalPages =
-              itemCount == 0 ? 1 : ((itemCount - 1) ~/ selectedLimit) + 1;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const HeadlineText(text: 'Guest Reviews'),
-                _buildRatingSummary(ratings),
-                const SizedBox(height: 20),
-                _buildRatingFilters(),
-                const SizedBox(height: 20),
-                _buildReviewsHeader(reviews.length),
-                const SizedBox(height: 10),
-                _buildReviewsList(reviews, totalPages),
-                _buildPageIndicator(totalPages),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -142,13 +147,13 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? BoutiqueHotelTheme.primaryBlue.withOpacity(0.15)
-              : BoutiqueHotelTheme.primaryBlue.withOpacity(0.05),
+              ? ThemeColors.primary.withOpacity(0.15)
+              : ThemeColors.primary.withOpacity(0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? BoutiqueHotelTheme.primaryBlue
-                : BoutiqueHotelTheme.primaryBlue.withOpacity(0.2),
+                ? ThemeColors.primary
+                : ThemeColors.primary.withOpacity(0.2),
             width: 1.6,
           ),
         ),
@@ -158,7 +163,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
             if (value != null)
               const Icon(
                 Icons.star,
-                color: BoutiqueHotelTheme.primaryBlue,
+                color: ThemeColors.primary,
                 size: 24,
               ),
             const SizedBox(height: 8),
@@ -166,7 +171,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
               label,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: BoutiqueHotelTheme.primaryBlue,
+                color: ThemeColors.primary,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
@@ -187,7 +192,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
             const Text(
               'Reviews',
               style: TextStyle(
-                color: BoutiqueHotelTheme.headlineText,
+                color: ThemeColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.2,
@@ -197,19 +202,18 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: BoutiqueHotelTheme.primaryBlue.withOpacity(0.08),
+                color: ThemeColors.primary.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: BoutiqueHotelTheme.primaryBlue.withOpacity(0.2),
+                  color: ThemeColors.primary.withOpacity(0.2),
                   width: 1.2,
                 ),
               ),
               child: Center(
-                // Ensure text inside is fully centered
                 child: Text(
                   totalReviews.toString(),
                   style: const TextStyle(
-                    color: BoutiqueHotelTheme.primaryBlue,
+                    color: ThemeColors.primary,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     height: 1.2,
@@ -223,7 +227,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
-              color: BoutiqueHotelTheme.primary.withOpacity(0.15),
+              color: ThemeColors.primary.withOpacity(0.15),
               width: 1.2,
             ),
           ),
@@ -234,33 +238,30 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<int>(
                   value: selectedLimit,
-                  dropdownColor: BoutiqueHotelTheme.background,
+                  dropdownColor: ThemeColors.background,
                   icon: const Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    color: BoutiqueHotelTheme.primary,
+                    color: ThemeColors.primary,
                     size: 20,
                   ),
                   iconSize: 24,
                   elevation: 1,
                   style: const TextStyle(
-                    color: BoutiqueHotelTheme.textColor,
+                    color: ThemeColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    fontFamily: 'Poppins',
                   ),
                   items: const [5, 10, 20].map((value) {
                     return DropdownMenuItem<int>(
                       value: value,
                       child: Center(
-                        // Center text properly inside dropdown
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           child: Text(
                             '$value per page',
                             style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              color: BoutiqueHotelTheme.textColor,
+                              color: ThemeColors.textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
@@ -288,12 +289,10 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         child: Center(
-                          // Ensures selected text is centered
                           child: Text(
                             '$value per page',
                             style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              color: BoutiqueHotelTheme.textColor,
+                              color: ThemeColors.textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
@@ -340,16 +339,13 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 24.0),
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 24.0),
                                   child: Center(
                                     child: SizedBox(
                                       width: 40,
                                       height: 40,
                                       child: CircularProgressIndicatorWidget(
-                                        indicatorColor:
-                                            BoutiqueHotelTheme.mutedText,
                                         size: 20,
                                         strockWidth: 1.9,
                                       ),
@@ -395,8 +391,8 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
               effect: const WormEffect(
                 dotHeight: 12,
                 dotWidth: 12,
-                activeDotColor: Colors.black87,
-                dotColor: Colors.grey,
+                activeDotColor: ThemeColors.primary,
+                dotColor: ThemeColors.border,
               ),
             ),
           )
@@ -414,14 +410,14 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
         children: [
           const Icon(
             Icons.star,
-            color: Colors.black,
+            color: ThemeColors.star,
             size: 22,
           ),
           const SizedBox(width: 6),
           Text(
             averageScore,
             style: const TextStyle(
-              color: Colors.black,
+              color: ThemeColors.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
@@ -430,7 +426,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
           Text(
             '$totalRatings Reviews',
             style: const TextStyle(
-              color: Color(0xFF9E9E9E),
+              color: ThemeColors.textSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -460,7 +456,7 @@ class _ReviewCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: const BorderSide(
-          color: Colors.black26,
+          color: ThemeColors.border,
           width: 1,
         ),
       ),
@@ -482,7 +478,7 @@ class _ReviewCard extends StatelessWidget {
                       Text(
                         review.validatedRating.toStringAsFixed(1),
                         style: const TextStyle(
-                          color: Colors.black,
+                          color: ThemeColors.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -490,7 +486,7 @@ class _ReviewCard extends StatelessWidget {
                       Text(
                         review.formattedDate,
                         style: const TextStyle(
-                          color: Colors.black54,
+                          color: ThemeColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -506,7 +502,7 @@ class _ReviewCard extends StatelessWidget {
                           const TextSpan(
                             text: 'Reviewed by: ',
                             style: TextStyle(
-                              color: Colors.black54,
+                              color: ThemeColors.textSecondary,
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                             ),
@@ -514,7 +510,7 @@ class _ReviewCard extends StatelessWidget {
                           TextSpan(
                             text: fullName,
                             style: const TextStyle(
-                              color: Colors.black,
+                              color: ThemeColors.textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.3,
@@ -538,14 +534,14 @@ class _ReviewCard extends StatelessWidget {
       return CircleAvatar(
         radius: 24,
         backgroundImage: NetworkImage(avatarUrl!),
-        backgroundColor: Colors.black12,
+        backgroundColor: ThemeColors.surface,
       );
     }
     return Container(
       width: 48,
       height: 48,
       decoration: const BoxDecoration(
-        color: Colors.black87,
+        color: ThemeColors.primary,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
@@ -567,8 +563,8 @@ class _ReviewCard extends StatelessWidget {
         (index) => Icon(
           Icons.star,
           color: index < review.validatedRating.floor()
-              ? Colors.black87
-              : Colors.grey.shade400,
+              ? ThemeColors.star
+              : ThemeColors.border,
           size: 18,
         ),
       ),
@@ -579,7 +575,7 @@ class _ReviewCard extends StatelessWidget {
     return Text(
       review.comment.isNotEmpty ? review.comment : 'No comment provided',
       style: const TextStyle(
-        color: Colors.black87,
+        color: ThemeColors.textPrimary,
         fontSize: 14,
         height: 1.4,
       ),
@@ -598,7 +594,7 @@ class _ReviewErrorWidget extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: Text(
           'Failed to load reviewer details',
-          style: TextStyle(color: Colors.red),
+          style: TextStyle(color: ThemeColors.error),
         ),
       ),
     );

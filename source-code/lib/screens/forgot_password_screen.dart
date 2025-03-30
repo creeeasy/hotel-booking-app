@@ -20,6 +20,7 @@ class ForgotPasswordView extends StatefulWidget {
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -35,225 +36,307 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) async {
-        if (state is AuthStateForgotPassword) {
-          if (state.hasSentEmail) {
-            _emailController.clear();
-            await showPasswordResetSentDialog(context);
-          } else if (state.exception is InvalidEmailException) {
-            await showErrorDialog(context, 'Invalid email');
-          } else if (state.exception is UserNotFoundException) {
-            await showErrorDialog(context, 'User Not found exception');
-          } else if (state.exception is GenericException) {
-            await showErrorDialog(
-              context,
-              'We could not process your request. Please make sure that you are a registered user, or if not, register a user now by going back one step.',
-            );
+    return SafeArea(
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) async {
+          if (state is AuthStateForgotPassword) {
+            setState(() => _isLoading = false);
+            if (state.hasSentEmail) {
+              _emailController.clear();
+              await showPasswordResetSentDialog(context);
+            } else if (state.exception is InvalidEmailException) {
+              await showErrorDialog(context, 'Invalid email');
+            } else if (state.exception is UserNotFoundException) {
+              await showErrorDialog(context, 'User Not found exception');
+            } else if (state.exception is GenericException) {
+              await showErrorDialog(
+                context,
+                'We could not process your request. Please make sure that you are a registered user, or if not, register a user now by going back one step.',
+              );
+            }
           }
-        }
-      },
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Background with Parallax Effect
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/hotel.jpg'),
-                    fit: BoxFit.cover,
-                    alignment: Alignment.bottomCenter,
-                  ),
-                ),
+        },
+        child: Scaffold(
+          body: Stack(
+            children: [
+              // Enhanced Background with Parallax Effect
+              Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        ThemeColors.primary.withOpacity(0.4),
-                        ThemeColors.primaryDark.withOpacity(0.8),
-                      ],
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/hotel.jpg'),
+                      fit: BoxFit.cover,
+                      alignment: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          ThemeColors.primary.withOpacity(0.5),
+                          ThemeColors.primaryDark.withOpacity(0.9),
+                        ],
+                        stops: const [0.2, 0.8],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-
-            // Frosted Glass Content Panel
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  color: Colors.transparent,
-                  padding: const EdgeInsets.all(32),
-                  child: Center(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Back Button and Title
-                          Row(
-                            children: [
-                              IconButton(
+    
+              // Frosted Glass Content Panel with improved styling
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.2),
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Back Button with better spacing
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.1),
+                              ),
+                              child: IconButton(
                                 icon: Icon(
-                                  Iconsax.arrow_left,
+                                  Iconsax.arrow_left_2,
                                   color: ThemeColors.textOnPrimary,
-                                  size: 28,
+                                  size: 24,
                                 ),
                                 onPressed: () {
                                   context
                                       .read<AuthBloc>()
                                       .add(const AuthEventLogOut());
                                 },
+                                splashRadius: 24,
                               ),
-                              const SizedBox(width: 16),
-                              Text(
-                                'Forgot Password',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w800,
-                                  color: ThemeColors.textOnPrimary,
-                                  letterSpacing: 0.8,
-                                  fontFamily: 'Poppins',
+                            ),
+                            const SizedBox(height: 32),
+    
+                            // Title with improved typography
+                            Text(
+                              'Reset Password',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w800,
+                                color: ThemeColors.textOnPrimary,
+                                letterSpacing: 0.5,
+                                fontFamily: 'Poppins',
+                                height: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+    
+                            // Instruction Text with better readability
+                            Text(
+                              'Enter your registered email address to receive a password reset link',
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.5,
+                                color: ThemeColors.textOnPrimary.withOpacity(0.9),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 48),
+    
+                            // Email Input Field with enhanced styling
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1.5,
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Instruction Text
-                          Text(
-                            'Enter your email address and we\'ll send you a link to reset your password',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: ThemeColors.textOnPrimary.withOpacity(0.9),
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 40),
-
-                          // Email Input Field
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.3),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: TextFormField(
                                 controller: _emailController,
                                 style: TextStyle(
                                   color: ThemeColors.textOnPrimary,
                                   fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                                 decoration: InputDecoration(
-                                  icon: Icon(
-                                    Iconsax.sms,
-                                    color: ThemeColors.textOnPrimary
-                                        .withOpacity(0.8),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 18),
+                                  prefixIcon: Container(
+                                    margin: const EdgeInsets.only(right: 12),
+                                    child: Icon(
+                                      Iconsax.sms,
+                                      color: ThemeColors.textOnPrimary
+                                          .withOpacity(0.8),
+                                      size: 22,
+                                    ),
                                   ),
                                   hintText: 'your@email.com',
                                   hintStyle: TextStyle(
                                     color: ThemeColors.textOnPrimary
                                         .withOpacity(0.6),
+                                    fontSize: 15,
                                   ),
                                   border: InputBorder.none,
                                   labelText: 'Email Address',
                                   labelStyle: TextStyle(
                                     color: ThemeColors.textOnPrimary
                                         .withOpacity(0.8),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  floatingLabelStyle: TextStyle(
+                                    color: ThemeColors.textOnPrimary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                                 cursorColor: ThemeColors.textOnPrimary,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your email';
+                                  }
+                                  if (!_isValidEmail(value)) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // Reset Password Button
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(24),
-                              onTap: () => context.read<AuthBloc>().add(
-                                    AuthEventForgotPassword(
-                                        email: _emailController.text),
+                            const SizedBox(height: 40),
+    
+                            // Reset Password Button with improved feedback
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton(
+                                onPressed: _isLoading
+                                    ? null
+                                    : () {
+                                        if (_isValidEmail(
+                                            _emailController.text)) {
+                                          setState(() => _isLoading = true);
+                                          context.read<AuthBloc>().add(
+                                                AuthEventForgotPassword(
+                                                    email: _emailController.text),
+                                              );
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: ThemeColors.textOnPrimary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      ThemeColors.primaryLight.withOpacity(0.9),
-                                      ThemeColors.primary.withOpacity(0.9),
+                                  elevation: 0,
+                                  shadowColor: Colors.transparent,
+                                  padding: EdgeInsets.zero,
+                                  disabledBackgroundColor:
+                                      ThemeColors.primary.withOpacity(0.5),
+                                ),
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        ThemeColors.primaryLight.withOpacity(0.9),
+                                        ThemeColors.primary.withOpacity(0.9),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
                                     ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
                                   ),
-                                  borderRadius: BorderRadius.circular(24),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 15,
-                                      spreadRadius: 2,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    'Send Reset Link',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                      letterSpacing: 0.5,
-                                    ),
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: _isLoading
+                                        ? const SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              const Icon(Iconsax.send_2,
+                                                  size: 20),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                'Send Reset Link',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w700,
+                                                  letterSpacing: 0.5,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Back to Login
-                          TextButton(
-                            onPressed: () {
-                              context
-                                  .read<AuthBloc>()
-                                  .add(const AuthEventLogOut());
-                            },
-                            child: Text(
-                              'Back to Login',
-                              style: TextStyle(
-                                color:
-                                    ThemeColors.textOnPrimary.withOpacity(0.8),
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                                decorationColor:
-                                    ThemeColors.textOnPrimary.withOpacity(0.4),
+                            const SizedBox(height: 32),
+    
+                            // Back to Login with better alignment
+                            Center(
+                              child: TextButton(
+                                onPressed: () {
+                                  context
+                                      .read<AuthBloc>()
+                                      .add(const AuthEventLogOut());
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Back to Login',
+                                  style: TextStyle(
+                                    color: ThemeColors.textOnPrimary
+                                        .withOpacity(0.9),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: ThemeColors.textOnPrimary
+                                        .withOpacity(0.4),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

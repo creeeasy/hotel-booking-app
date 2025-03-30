@@ -1,3 +1,4 @@
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/helper/timestamp_formatter.dart';
 import 'package:fatiel/models/activity_item.dart';
@@ -24,6 +25,7 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
   late final Future<int> _fetchAvailableRoomsCountFuture;
   late final Future<int> _fetchReviewStatisticsFuture;
   late Future<List<ActivityItem>> _recentActivitiesFuture;
+
   @override
   void initState() {
     super.initState();
@@ -44,21 +46,23 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWelcomeSection(),
-            const SizedBox(height: 24),
-            _buildMetricsSection(),
-            const SizedBox(height: 28),
-            _buildQuickAccessSection(),
-            const SizedBox(height: 28),
-            _buildRecentActivitySection(),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildWelcomeSection(),
+              const SizedBox(height: 24),
+              _buildMetricsSection(),
+              const SizedBox(height: 28),
+              _buildQuickAccessSection(),
+              const SizedBox(height: 28),
+              _buildRecentActivitySection(),
+            ],
+          ),
         ),
       ),
     );
@@ -72,13 +76,14 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
           'Welcome Back, ${hotel.hotelName}!',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: ThemeColors.textPrimary,
               ),
         ),
         const SizedBox(height: 8),
         Text(
           'Here\'s what\'s happening today',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
+                color: ThemeColors.textSecondary,
               ),
         ),
       ],
@@ -94,14 +99,14 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
               future: _fetchMonthlyBookingsFuture,
               title: 'Active Bookings',
               icon: Iconsax.book,
-              color: Colors.blue,
+              color: ThemeColors.primary,
             ),
             const SizedBox(width: 12),
             _buildMetricCard(
               future: _fetchAvailableRoomsCountFuture,
               title: 'Rooms Available',
               icon: Iconsax.home,
-              color: Colors.green,
+              color: ThemeColors.success,
             ),
           ],
         ),
@@ -112,7 +117,7 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
               future: _fetchReviewStatisticsFuture,
               title: 'Total Reviews',
               icon: Iconsax.star,
-              color: Colors.amber,
+              color: ThemeColors.star,
               isRating: true,
             ),
             const SizedBox(width: 12),
@@ -120,7 +125,7 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
               future: _fetchPendingBookingsFuture,
               title: 'Pending Bookings',
               icon: Iconsax.calendar_add,
-              color: Colors.purple,
+              color: ThemeColors.accentPink,
             ),
           ],
         ),
@@ -160,6 +165,7 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
           'Quick Access',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: ThemeColors.textPrimary,
               ),
         ),
         const SizedBox(height: 12),
@@ -209,6 +215,7 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
           'Recent Activity',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: ThemeColors.textPrimary,
               ),
         ),
         const SizedBox(height: 12),
@@ -216,11 +223,18 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
           future: _recentActivitiesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: ThemeColors.primary,
+                ),
+              );
             }
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Text('No recent activity');
+              return Text(
+                'No recent activity',
+                style: TextStyle(color: ThemeColors.textSecondary),
+              );
             }
 
             return Column(
@@ -247,16 +261,18 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Iconsax.profile_circle),
-              title: const Text('View Profile'),
+              leading: Icon(Iconsax.profile_circle, color: ThemeColors.primary),
+              title: Text('View Profile',
+                  style: TextStyle(color: ThemeColors.textPrimary)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).pushNamed(hotelProfileRoute);
               },
             ),
             ListTile(
-              leading: const Icon(Iconsax.setting),
-              title: const Text('Settings'),
+              leading: Icon(Iconsax.setting, color: ThemeColors.primary),
+              title: Text('Settings',
+                  style: TextStyle(color: ThemeColors.textPrimary)),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.of(context).pushNamed(hotelSettingsRoute);
@@ -264,8 +280,8 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Iconsax.logout),
-              title: const Text('Logout'),
+              leading: Icon(Iconsax.logout, color: ThemeColors.error),
+              title: Text('Logout', style: TextStyle(color: ThemeColors.error)),
               onTap: () {
                 Navigator.pop(context);
                 context.read<AuthBloc>().add(const AuthEventLogOut());
@@ -301,11 +317,11 @@ class MetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ThemeColors.card,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: ThemeColors.shadow,
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -320,7 +336,7 @@ class MetricCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: ThemeColors.textSecondary,
                     ),
               ),
               Icon(icon, color: color),
@@ -330,10 +346,13 @@ class MetricCard extends StatelessWidget {
           Row(
             children: [
               if (isLoading)
-                const SizedBox(
+                SizedBox(
                   width: 24,
                   height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: ThemeColors.primary,
+                  ),
                 )
               else
                 Text(
@@ -345,7 +364,7 @@ class MetricCard extends StatelessWidget {
                 ),
               if (isRating && !isLoading) ...[
                 const SizedBox(width: 4),
-                const Icon(Iconsax.star1, size: 16, color: Colors.amber),
+                Icon(Iconsax.star1, size: 16, color: ThemeColors.star),
               ],
             ],
           ),
@@ -376,11 +395,11 @@ class NavigationTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ThemeColors.card,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: ThemeColors.shadow,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -390,19 +409,20 @@ class NavigationTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 28, color: Colors.blue),
+            Icon(icon, size: 28, color: ThemeColors.primary),
             const SizedBox(height: 12),
             Text(
               title,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: ThemeColors.textPrimary,
                   ),
             ),
             const SizedBox(height: 4),
             Text(
               description,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: ThemeColors.textSecondary,
                   ),
             ),
           ],
@@ -432,7 +452,7 @@ class ActivityItemWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ThemeColors.card,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -440,10 +460,10 @@ class ActivityItemWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: ThemeColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, size: 20, color: Colors.blue),
+            child: Icon(icon, size: 20, color: ThemeColors.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -454,12 +474,13 @@ class ActivityItemWidget extends StatelessWidget {
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: ThemeColors.textPrimary,
                       ),
                 ),
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: ThemeColors.textSecondary,
                       ),
                 ),
               ],
@@ -468,7 +489,7 @@ class ActivityItemWidget extends StatelessWidget {
           Text(
             time,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[500],
+                  color: ThemeColors.textSecondary,
                 ),
           ),
         ],

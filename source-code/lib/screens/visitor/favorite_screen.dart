@@ -23,14 +23,16 @@ class _FavoritePageState extends State<FavoritePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ThemeColors.background,
-      appBar: const CustomBackAppBar(
-        title: "Favorites",
-        titleColor: ThemeColors.primary,
-        iconColor: ThemeColors.primary,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        appBar: const CustomBackAppBar(
+          title: "Favorites",
+          titleColor: ThemeColors.primary,
+          iconColor: ThemeColors.primary,
+        ),
+        body: _buildFavoriteContent(),
       ),
-      body: _buildFavoriteContent(),
     );
   }
 
@@ -64,9 +66,7 @@ class _FavoritePageState extends State<FavoritePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicatorWidget(
-            indicatorColor: ThemeColors.primary,
-          ),
+          CircularProgressIndicatorWidget(),
           SizedBox(height: 16),
           Text(
             'Loading your favorites',

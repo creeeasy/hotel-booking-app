@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/enum/hotel_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -8,13 +8,14 @@ class PopularDestinationRowWidget extends StatelessWidget {
   final AnimationController? animationController;
   final Animation? animation;
 
-  const PopularDestinationRowWidget(
-      {Key? key,
-      this.popularList,
-      this.animationController,
-      this.animation,
-      this.callback})
-      : super(key: key);
+  const PopularDestinationRowWidget({
+    Key? key,
+    this.popularList,
+    this.animationController,
+    this.animation,
+    this.callback,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -61,10 +62,8 @@ class PopularDestinationRowWidget extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        VisitorThemeColors.primaryColor
-                                            .withOpacity(0.4),
-                                        VisitorThemeColors.primaryColor
-                                            .withOpacity(0.0),
+                                        ThemeColors.primary.withOpacity(0.4),
+                                        ThemeColors.primary.withOpacity(0.0),
                                       ],
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
@@ -75,11 +74,10 @@ class PopularDestinationRowWidget extends StatelessWidget {
                                         left: 8, bottom: 32, top: 8),
                                     child: Text(
                                       popularList!.titleTxt,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 24,
-                                        color:
-                                            VisitorThemeColors.lightGrayColor,
+                                        color: ThemeColors.textOnPrimary,
                                       ),
                                     ),
                                   ),

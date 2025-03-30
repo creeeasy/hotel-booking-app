@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
 
 class TabWidget<T> extends StatelessWidget {
@@ -51,17 +51,15 @@ class TabWidget<T> extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color:
-              isSelected ? VisitorThemeColors.primaryColor : Colors.transparent,
+          color: isSelected ? ThemeColors.primary : Colors.transparent,
+          border: isSelected ? null : Border.all(color: ThemeColors.border, width: 1),
         ),
         child: Text(
           title,
           style: TextStyle(
             fontFamily: "Poppins",
             fontSize: 14.0,
-            color: isSelected
-                ? VisitorThemeColors.whiteColor
-                : VisitorThemeColors.blackColor,
+            color: isSelected ? ThemeColors.textOnPrimary : ThemeColors.textPrimary,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           ),
         ),

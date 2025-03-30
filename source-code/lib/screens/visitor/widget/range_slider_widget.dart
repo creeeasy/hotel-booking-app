@@ -1,7 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 
 class RangeSliderWidget<T extends num> extends StatefulWidget {
   final RangeValues rangeValues;
@@ -9,6 +7,7 @@ class RangeSliderWidget<T extends num> extends StatefulWidget {
   final ValueChanged<RangeValues>? onChanged;
   final String label;
   final RangeValues defaultValues;
+  final Color? activeColor;
 
   const RangeSliderWidget({
     super.key,
@@ -16,6 +15,7 @@ class RangeSliderWidget<T extends num> extends StatefulWidget {
     required this.label,
     this.divisions,
     this.onChanged,
+    this.activeColor,
     RangeValues? defaultValues,
   }) : defaultValues = defaultValues ?? rangeValues;
 
@@ -36,29 +36,57 @@ class _RangeSliderWidgetState<T extends num>
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "${widget.label}: ${_formattedValue(currentRangeValues.start)} - ${_formattedValue(currentRangeValues.end)}",
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        RangeSlider(
-          values: currentRangeValues,
-          min: widget.rangeValues.start,
-          max: widget.rangeValues.end,
-          divisions: widget.divisions,
-          labels: RangeLabels(
-            _formattedValue(currentRangeValues.start),
-            _formattedValue(currentRangeValues.end),
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: Text(
+            widget.label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: ThemeColors.textSecondary,
+            ),
           ),
-          activeColor: VisitorThemeColors.primaryColor,
-          inactiveColor: VisitorThemeColors.greyColor,
-          onChanged: (RangeValues newValues) {
-            setState(() {
-              currentRangeValues = newValues;
-            });
-            widget.onChanged?.call(newValues);
-          },
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: ThemeColors.surface,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Text(
+                "${_formattedValue(currentRangeValues.start)} - ${_formattedValue(currentRangeValues.end)}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: ThemeColors.primary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              RangeSlider(
+                values: currentRangeValues,
+                min: widget.rangeValues.start,
+                max: widget.rangeValues.end,
+                divisions: widget.divisions,
+                labels: RangeLabels(
+                  _formattedValue(currentRangeValues.start),
+                  _formattedValue(currentRangeValues.end),
+                ),
+                activeColor: widget.activeColor ?? ThemeColors.primary,
+                inactiveColor: ThemeColors.grey300,
+                onChanged: (RangeValues newValues) {
+                  setState(() {
+                    currentRangeValues = newValues;
+                  });
+                  widget.onChanged?.call(newValues);
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );

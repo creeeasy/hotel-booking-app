@@ -12,18 +12,20 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double titleSize;
   final bool showDivider;
   final VoidCallback? onBack;
+  final List<Widget>? actions;
 
-  const CustomBackAppBar({
-    Key? key,
-    required this.title,
-    this.backgroundColor = ThemeColors.background,
-    this.iconColor = ThemeColors.primary,
-    this.titleColor = ThemeColors.primary,
-    this.icon = Iconsax.arrow_left_2,
-    this.titleSize = 20,
-    this.showDivider = true,
-    this.onBack,
-  }) : super(key: key);
+  const CustomBackAppBar(
+      {Key? key,
+      required this.title,
+      this.backgroundColor = ThemeColors.background,
+      this.iconColor = ThemeColors.primaryDark,
+      this.titleColor = ThemeColors.primaryDark,
+      this.icon = Iconsax.arrow_left_2,
+      this.titleSize = 20,
+      this.showDivider = true,
+      this.onBack,
+      this.actions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,7 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       centerTitle: true,
+      actions: actions ?? [],
       automaticallyImplyLeading: false,
       bottom: showDivider
           ? PreferredSize(

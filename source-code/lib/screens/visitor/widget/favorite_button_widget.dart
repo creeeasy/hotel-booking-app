@@ -1,5 +1,4 @@
 import 'package:fatiel/constants/colors/ThemeColorss.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/hotel_list_type.dart';
 import 'package:fatiel/models/hotel.dart';
@@ -12,8 +12,7 @@ import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utils/user_profile.dart';
-import 'package:fatiel/widgets/card_loading_indocator_widget.dart';
-import 'package:fatiel/widgets/hotel/explore_city_item_widget.dart';
+import 'package:fatiel/widgets/card_loading_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,30 +34,34 @@ class _ExploreViewState extends State<ExploreView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        final currentVisitor = state.currentUser as Visitor;
-        return Scaffold(
-          backgroundColor: VisitorThemeColors.whiteColor,
-          body: RefreshIndicator(
-            onRefresh: () async => setState(() {}),
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                _buildAppBarSection(currentVisitor),
-                _buildMainContentSection(currentVisitor.location),
-                _buildCitiesSection(),
-              ],
+    return SafeArea(
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final currentVisitor = state.currentUser as Visitor;
+          return Scaffold(
+            backgroundColor: ThemeColors.background,
+            body: RefreshIndicator(
+              onRefresh: () async => setState(() {}),
+              color: ThemeColors.primary,
+              backgroundColor: ThemeColors.surface,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  _buildAppBarSection(currentVisitor),
+                  _buildMainContentSection(currentVisitor.location),
+                  _buildCitiesSection(),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
   SliverPadding _buildAppBarSection(Visitor visitor) {
     return SliverPadding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
       sliver: SliverToBoxAdapter(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,23 +72,36 @@ class _ExploreViewState extends State<ExploreView> {
                   onTap: () =>
                       Navigator.pushNamed(context, visitorProfileRoute),
                   borderRadius: BorderRadius.circular(24),
-                  child: const UserProfile(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border:
+                          Border.all(color: ThemeColors.primaryLight, width: 2),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: const UserProfile(),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   "${visitor.firstName} ${visitor.lastName}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: ThemeColors.textPrimary,
+                      ),
                 ),
               ],
             ),
-            IconButton(
-              icon: const Icon(Iconsax.search_normal,
-                  color: VisitorThemeColors.primaryColor, size: 24),
-              onPressed: () =>
-                  Navigator.pushNamed(context, searchHotelViewRoute),
+            Container(
+              decoration: BoxDecoration(
+                color: ThemeColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(Iconsax.search_normal,
+                    color: ThemeColors.primary, size: 24),
+                onPressed: () =>
+                    Navigator.pushNamed(context, searchHotelViewRoute),
+              ),
             ),
           ],
         ),
@@ -101,16 +117,14 @@ class _ExploreViewState extends State<ExploreView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTabSelector(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             FutureBuilder<List<Hotel>>(
               future: _getHotelsBasedOnTab(location),
               builder: (context, snapshot) {
                 final hotelsCount = snapshot.data?.length ?? 0;
                 return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _sectionHeader(
+                    SectionHeader(
                       title: _getSectionTitle(hotelsCount),
                       onSeeAllTap: _navigateToHotelBrowse,
                     ),
@@ -129,8 +143,9 @@ class _ExploreViewState extends State<ExploreView> {
   Widget _buildTabSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: VisitorThemeColors.lightGrayColor.withOpacity(0.1),
+        color: ThemeColors.grey100,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ThemeColors.border, width: 1),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
@@ -140,13 +155,21 @@ class _ExploreViewState extends State<ExploreView> {
             child: InkWell(
               onTap: () => setState(() => _selectedTab = tab),
               borderRadius: BorderRadius.circular(8),
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? VisitorThemeColors.primaryColor
-                      : Colors.transparent,
+                  gradient: isSelected ? ThemeColors.primaryGradient : null,
                   borderRadius: BorderRadius.circular(8),
+                  boxShadow: isSelected
+                      ? [
+                          const BoxShadow(
+                            color: ThemeColors.shadow,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          )
+                        ]
+                      : null,
                 ),
                 child: Center(
                   child: Text(
@@ -155,8 +178,8 @@ class _ExploreViewState extends State<ExploreView> {
                         : 'Near Me',
                     style: TextStyle(
                       color: isSelected
-                          ? Colors.white
-                          : VisitorThemeColors.textGreyColor,
+                          ? ThemeColors.textOnPrimary
+                          : ThemeColors.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -198,12 +221,17 @@ class _ExploreViewState extends State<ExploreView> {
   Widget _buildHotelContent(AsyncSnapshot<List<Hotel>> snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const CardLoadingIndicator(
-        backgroundColor: VisitorThemeColors.whiteColor,
+        height: 280,
+        backgroundColor: ThemeColors.surface,
+        indicatorColor: ThemeColors.primary,
+        padding: EdgeInsets.zero,
       );
     } else if (snapshot.hasError) {
       return ErrorWidgetWithRetry(
         errorMessage: 'Failed to load hotels',
         onRetry: () => setState(() {}),
+        // backgroundColor: ThemeColors.error.withOpacity(0.1),
+        // textColor: ThemeColors.error,
       );
     } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
       return _buildHotelsCarousel(snapshot.data!);
@@ -240,32 +268,34 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Widget _buildNoHotelsFound() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32),
+    return Container(
+      decoration: BoxDecoration(
+        color: ThemeColors.grey50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
       child: Column(
         children: [
-          Icon(
+          const Icon(
             Iconsax.house,
             size: 72,
-            color: VisitorThemeColors.greyColor.withOpacity(0.4),
+            color: ThemeColors.grey400,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             "No Hotels Available",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: VisitorThemeColors.blackColor,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: ThemeColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             "We couldn't find any hotels matching your criteria.",
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: VisitorThemeColors.textGreyColor,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: ThemeColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -279,7 +309,7 @@ class _ExploreViewState extends State<ExploreView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _sectionHeader(
+            SectionHeader(
               title: "Find hotels in cities",
               onSeeAllTap: () =>
                   Navigator.pushNamed(context, allWilayaViewRoute),
@@ -290,18 +320,25 @@ class _ExploreViewState extends State<ExploreView> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CardLoadingIndicator(
-                    backgroundColor: VisitorThemeColors.whiteColor,
+                    height: 140,
+                    backgroundColor: ThemeColors.surface,
+                    indicatorColor: ThemeColors.primary,
+                    padding: EdgeInsets.zero,
                   );
                 } else if (snapshot.hasError) {
                   return ErrorWidgetWithRetry(
                     errorMessage: 'Failed to load city data',
                     onRetry: () => setState(() {}),
+                    // backgroundColor: ThemeColors.error.withOpacity(0.1),
+                    // textColor: ThemeColors.error,
                   );
                 } else if (snapshot.hasData) {
                   return _buildCitiesCarousel(snapshot.data!);
                 } else {
                   return const NoDataWidget(
                     message: "No hotels are currently listed in these cities.",
+                    // backgroundColor: ThemeColors.grey50,
+                    // textColor: ThemeColors.textSecondary,
                   );
                 }
               },
@@ -339,11 +376,11 @@ class _ExploreViewState extends State<ExploreView> {
   }
 }
 
-class _sectionHeader extends StatelessWidget {
+class SectionHeader extends StatelessWidget {
   final VoidCallback onSeeAllTap;
   final String title;
 
-  const _sectionHeader({
+  const SectionHeader({
     super.key,
     required this.onSeeAllTap,
     required this.title,
@@ -356,11 +393,10 @@ class _sectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: VisitorThemeColors.blackColor,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: ThemeColors.textPrimary,
+              ),
         ),
         TextButton(
           onPressed: onSeeAllTap,
@@ -376,19 +412,166 @@ class _sectionHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: VisitorThemeColors.primaryColor,
+                  color: ThemeColors.primary,
                 ),
               ),
               SizedBox(width: 4),
               Icon(
                 Iconsax.arrow_right_3,
                 size: 16,
-                color: VisitorThemeColors.primaryColor,
+                color: ThemeColors.primary,
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class ExploreCityWidget extends StatefulWidget {
+  final Wilaya wilaya;
+  final VoidCallback? onTap;
+  final int count;
+
+  const ExploreCityWidget({
+    super.key,
+    required this.wilaya,
+    this.onTap,
+    required this.count,
+  });
+
+  @override
+  State<ExploreCityWidget> createState() => _ExploreCityWidgetState();
+}
+
+class _ExploreCityWidgetState extends State<ExploreCityWidget> {
+  late Wilaya wilaya;
+
+  @override
+  void initState() {
+    super.initState();
+    wilaya = Wilaya.fromIndex(widget.wilaya.ind)!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final height = constraints.maxHeight;
+        final width = constraints.maxWidth;
+
+        // Scale elements based on height (Adaptive UI)
+        final titleFontSize = height * 0.16;
+        final hotelCountFontSize = height * 0.12;
+        final padding = height * 0.08;
+        final borderRadius = height * 0.15;
+        final shadowBlur = height * 0.06;
+        final hotelBadgePadding = EdgeInsets.symmetric(
+          vertical: height * 0.03,
+          horizontal: width * 0.04,
+        );
+
+        return GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: ThemeColors.white,
+              borderRadius: BorderRadius.circular(borderRadius),
+              boxShadow: const [
+                BoxShadow(
+                  color: ThemeColors.shadow,
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            margin:
+                EdgeInsets.symmetric(vertical: padding, horizontal: padding),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(borderRadius),
+              child: Stack(
+                children: <Widget>[
+                  // Background Image with adjusted height
+                  SizedBox(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: Image.asset(
+                      wilaya.image,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                  // Gradient Overlay for better text readability
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          ThemeColors.darkBackground.withOpacity(0.7),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                  ),
+
+                  // City Name with shadow and enhanced readability
+                  Positioned(
+                    left: padding,
+                    bottom: padding * 1.2,
+                    child: Text(
+                      wilaya.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: titleFontSize,
+                        color: ThemeColors.white,
+                        shadows: [
+                          Shadow(
+                            blurRadius: shadowBlur,
+                            color: ThemeColors.black.withOpacity(0.5),
+                            offset: const Offset(1.5, 1.5),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Hotel Count Badge (Enhanced UI)
+                  Positioned(
+                    top: padding,
+                    right: padding,
+                    child: Container(
+                      padding: hotelBadgePadding,
+                      decoration: BoxDecoration(
+                        gradient: ThemeColors.accentGradient,
+                        borderRadius: BorderRadius.circular(borderRadius * 0.5),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: ThemeColors.shadowDark,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        '${widget.count} Hotels',
+                        style: TextStyle(
+                          color: ThemeColors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: hotelCountFontSize,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -27,3 +27,4 @@ const hotelBookingsRoute = 'hotel-bookings-screen';
 const hotelReviewsRoute = 'hotel-reviews-screen';
 const hotelProfileRoute = 'hotel-profile-screen';
 const hotelSettingsRoute = 'hotel-settings-screen';
+const authFlowRoute = 'auth-flow';

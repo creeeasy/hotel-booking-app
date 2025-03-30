@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -8,10 +8,12 @@ class DetailsImageWithHero extends StatefulWidget {
     super.key,
     required this.images,
     required this.hotelId,
+    this.onBackPressed,
   });
 
   final List<String> images;
   final String? hotelId;
+  final VoidCallback? onBackPressed;
 
   @override
   State<DetailsImageWithHero> createState() => _DetailsImageWithHeroState();
@@ -40,7 +42,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return SizedBox(
-      height: 400, // Fixed height for the entire widget
+      height: 360,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -59,16 +61,17 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
           if (widget.hotelId != null)
             PositionedFavoriteButton(
               hotelId: widget.hotelId!,
-              top: statusBarHeight + 16, // Pass position as parameters
+              top: statusBarHeight + 16,
               right: 16,
             ),
 
           // Image Indicator
           if (multipleImages)
             Positioned(
-              bottom: 88, // Above thumbnails
-              right: 16,
-              child: _buildImageIndicator(),
+              bottom: 80,
+              left: 0,
+              right: 0,
+              child: _buildDotsIndicator(),
             ),
 
           // Thumbnail List
@@ -77,11 +80,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: ThumbnailList(
-                images: widget.images,
-                currentIndex: currentIndex,
-                onThumbnailTap: _handleThumbnailTap,
-              ),
+              child: _buildThumbnailList(),
             ),
         ],
       ),
@@ -98,12 +97,21 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
           tag: hasImages
               ? 'image_${widget.hotelId}_${widget.images[index]}'
               : 'placeholder_${widget.hotelId}',
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(12),
-              bottomRight: Radius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+              color: ThemeColors.grey100,
             ),
-            child: _buildImageContent(hasImages, index),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+              child: _buildImageContent(hasImages, index),
+            ),
           ),
         );
       },
@@ -112,17 +120,17 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
 
   Widget _buildBackButton() {
     return GestureDetector(
-      onTap: () => Navigator.pop(context),
+      onTap: widget.onBackPressed ?? () => Navigator.pop(context),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.4),
+          color: ThemeColors.black.withOpacity(0.4),
           shape: BoxShape.circle,
         ),
-        child: const Icon(
+        child: Icon(
           Iconsax.arrow_left_2,
-          color: Colors.white,
-          size: 24,
+          color: ThemeColors.white,
+          size: 22,
         ),
       ),
     );
@@ -139,7 +147,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
         return Center(
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            color: VisitorThemeColors.primaryColor,
+            color: ThemeColors.primary,
             value: loadingProgress.expectedTotalBytes != null
                 ? loadingProgress.cumulativeBytesLoaded /
                     loadingProgress.expectedTotalBytes!
@@ -153,7 +161,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
 
   Widget _buildNoImagePlaceholder() {
     return Container(
-      color: VisitorThemeColors.lightGrayColor.withOpacity(0.5),
+      color: ThemeColors.grey200,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -161,14 +169,14 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
             Icon(
               Iconsax.gallery_slash,
               size: 48,
-              color: VisitorThemeColors.textGreyColor.withOpacity(0.5),
+              color: ThemeColors.grey400,
             ),
             const SizedBox(height: 12),
             Text(
               "No Images Available",
               style: TextStyle(
                 fontSize: 16,
-                color: VisitorThemeColors.textGreyColor,
+                color: ThemeColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -178,20 +186,88 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     );
   }
 
-  Widget _buildImageIndicator() {
+  Widget _buildDotsIndicator() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(widget.images.length, (index) {
+        return Container(
+          width: 8,
+          height: 8,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentIndex == index
+                ? ThemeColors.white
+                : ThemeColors.white.withOpacity(0.5),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildThumbnailList() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      height: 72,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        "${currentIndex + 1}/${widget.images.length}",
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+        gradient: LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [
+            ThemeColors.black.withOpacity(0.7),
+            ThemeColors.black.withOpacity(0.1),
+            Colors.transparent,
+          ],
         ),
+      ),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: widget.images.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => _handleThumbnailTap(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: currentIndex == index
+                      ? ThemeColors.primary
+                      : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(
+                  widget.images[index],
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: ThemeColors.primary,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: ThemeColors.grey200,
+                    child: Center(
+                      child: Icon(
+                        Iconsax.gallery_slash,
+                        color: ThemeColors.grey400,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -205,77 +281,5 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
         curve: Curves.easeInOut,
       );
     }
-  }
-}
-
-class ThumbnailList extends StatelessWidget {
-  const ThumbnailList({
-    super.key,
-    required this.images,
-    required this.currentIndex,
-    required this.onThumbnailTap,
-  });
-
-  final List<String> images;
-  final int currentIndex;
-  final ValueChanged<int> onThumbnailTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.black.withOpacity(0.2),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.only(right: index < images.length - 1 ? 12 : 0),
-            child: GestureDetector(
-              onTap: () => onThumbnailTap(index),
-              child: Container(
-                width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: currentIndex == index
-                        ? VisitorThemeColors.primaryColor
-                        : Colors.transparent,
-                    width: 2,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    images[index],
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: VisitorThemeColors.primaryColor,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: VisitorThemeColors.lightGrayColor,
-                      child: const Center(
-                        child: Icon(
-                          Iconsax.gallery_slash,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
   }
 }

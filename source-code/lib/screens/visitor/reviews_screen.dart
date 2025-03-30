@@ -28,60 +28,59 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ThemeColors.background,
-      appBar: CustomBackAppBar(
-        title: "Guest Reviews",
-        onBack: () => Navigator.of(context).pop(),
-      ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: getHotelReviews(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicatorWidget(
-                indicatorColor: ThemeColors.primary,
-                containerColor: ThemeColors.background,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        appBar: CustomBackAppBar(
+          title: "Guest Reviews",
+          onBack: () => Navigator.of(context).pop(),
+        ),
+        body: FutureBuilder<Map<String, dynamic>>(
+          future: getHotelReviews(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicatorWidget(),
+              );
+            } else if (snapshot.hasError) {
+              return ErrorWidgetWithRetry(
+                errorMessage: 'Error: ${snapshot.error}',
+                onRetry: () => setState(() {}),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const NoReviewsUI();
+            }
+
+            final reviews = snapshot.data!["reviews"] as List<Review>;
+            final rating = (snapshot.data!["ratings"] as Rating);
+
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  _buildRatingHeader(rating),
+                  const DividerWidget(verticalPadding: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildReviewsCount(reviews.length),
+                        const DividerWidget(verticalPadding: 16),
+                        ...reviews
+                            .map((review) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _ReviewCard(review: review),
+                                ))
+                            .toList(),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
-          } else if (snapshot.hasError) {
-            return ErrorWidgetWithRetry(
-              errorMessage: 'Error: ${snapshot.error}',
-              onRetry: () => setState(() {}),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const NoReviewsUI();
-          }
-
-          final reviews = snapshot.data!["reviews"] as List<Review>;
-          final rating = (snapshot.data!["ratings"] as Rating);
-
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                _buildRatingHeader(rating),
-                const DividerWidget(verticalPadding: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildReviewsCount(reviews.length),
-                      const DividerWidget(verticalPadding: 16),
-                      ...reviews
-                          .map((review) => Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: _ReviewCard(review: review),
-                              ))
-                          .toList(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -99,8 +98,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
               SvgPicture.asset(
                 "assets/icons/laurel.svg",
                 height: 40,
-                colorFilter:
-                    const ColorFilter.mode(ThemeColors.primary, BlendMode.srcIn),
+                colorFilter: const ColorFilter.mode(
+                    ThemeColors.primary, BlendMode.srcIn),
               ),
               const SizedBox(width: 10),
               Text(
@@ -118,8 +117,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 child: SvgPicture.asset(
                   "assets/icons/laurel.svg",
                   height: 40,
-                  colorFilter:
-                      const ColorFilter.mode(ThemeColors.primary, BlendMode.srcIn),
+                  colorFilter: const ColorFilter.mode(
+                      ThemeColors.primary, BlendMode.srcIn),
                 ),
               ),
             ],

@@ -2,6 +2,7 @@ import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,6 @@ class WilayaDetailsPageView extends StatefulWidget {
 class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _titleAnimation;
   late Animation<Color?> appBarColorAnimation;
 
   @override
@@ -30,13 +30,6 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     )..forward();
-
-    _titleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
 
     appBarColorAnimation = ColorTween(
       begin: ThemeColors.background.withOpacity(0.5),
@@ -59,161 +52,123 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView>
     final wilayaId = ModalRoute.of(context)?.settings.arguments as int;
     final wilaya = Wilaya.fromIndex(wilayaId);
     if (wilaya == null) {
-      return Scaffold(
-        body: Center(
-          child: Text(
-            'Invalid wilaya ID: $wilayaId',
-            style: const TextStyle(
-              color: ThemeColors.error,
-              fontSize: 16,
+      return SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: Text(
+              'Invalid wilaya ID: $wilayaId',
+              style: const TextStyle(
+                color: ThemeColors.error,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: ThemeColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _titleAnimation.value,
-                child: const Icon(
-                  Iconsax.arrow_left_2,
-                  color: ThemeColors.textPrimary,
-                  size: 24,
-                ),
-              );
-            },
-          ),
-          onPressed: () => Navigator.pop(context),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ThemeColors.background,
+        extendBodyBehindAppBar: true,
+        appBar: CustomBackAppBar(
+          title: wilaya.name,
+          onBack: () => Navigator.pop(context),
         ),
-        centerTitle: true,
-        title: AnimatedBuilder(
-          animation: _titleAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _titleAnimation.value,
-              child: Text(
-                wilaya.name,
-                style: TextStyle(
-                  color: ThemeColors.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  shadows: [
-                    Shadow(
-                      color: ThemeColors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-      body: FutureBuilder<List<Hotel>>(
-        future: fetchHotels(context, wilayaId),
-        builder: (context, snapshot) {
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverAppBar(
-                backgroundColor: ThemeColors.primary.withOpacity(0.16),
-                automaticallyImplyLeading: false,
-                expandedHeight: 240,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Hero(
-                    tag: 'wilaya-$wilayaId',
-                    child: CachedNetworkImage(
-                      imageUrl: wilaya.image,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: ThemeColors.grey200,
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: ThemeColors.grey200,
-                        child: const Icon(
-                          Iconsax.gallery_slash,
-                          color: ThemeColors.textSecondary,
+        body: FutureBuilder<List<Hotel>>(
+          future: fetchHotels(context, wilayaId),
+          builder: (context, snapshot) {
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: ThemeColors.primary.withOpacity(0.16),
+                  automaticallyImplyLeading: false,
+                  expandedHeight: 240,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Hero(
+                      tag: 'wilaya-$wilayaId',
+                      child: CachedNetworkImage(
+                        imageUrl: wilaya.image,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: ThemeColors.grey200,
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: ThemeColors.grey200,
+                          child: const Icon(
+                            Iconsax.gallery_slash,
+                            color: ThemeColors.textSecondary,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                  child: Text(
-                    "Hotels in ${wilaya.name}",
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: ThemeColors.textPrimary,
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                    child: Text(
+                      "Hotels in ${wilaya.name}",
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: ThemeColors.textPrimary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              if (snapshot.connectionState == ConnectionState.waiting)
-                const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicatorWidget(
-                      indicatorColor: ThemeColors.primary,
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicatorWidget(),
                     ),
-                  ),
-                )
-              else if (snapshot.hasError)
-                SliverFillRemaining(
-                  child: ErrorWidgetWithRetry(
-                    errorMessage: 'Failed to load hotels',
-                    onRetry: () => setState(() {}),
-                  ),
-                )
-              else if (!snapshot.hasData || snapshot.data!.isEmpty)
-                SliverFillRemaining(
-                  child: NoHotelsWidget(
-                    wilayaName: wilaya.name,
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final hotel = snapshot.data![index];
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 375),
-                          child: SlideAnimation(
-                            verticalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: HotelCard(
-                                  hotel: hotel,
-                                  onTap: () => _navigateToHotelDetails(hotel),
+                  )
+                else if (snapshot.hasError)
+                  SliverFillRemaining(
+                    child: ErrorWidgetWithRetry(
+                      errorMessage: 'Failed to load hotels',
+                      onRetry: () => setState(() {}),
+                    ),
+                  )
+                else if (!snapshot.hasData || snapshot.data!.isEmpty)
+                  SliverFillRemaining(
+                    child: NoHotelsWidget(
+                      wilayaName: wilaya.name,
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final hotel = snapshot.data![index];
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: HotelCard(
+                                    hotel: hotel,
+                                    onTap: () => _navigateToHotelDetails(hotel),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                      childCount: snapshot.data!.length,
+                          );
+                        },
+                        childCount: snapshot.data!.length,
+                      ),
                     ),
                   ),
-                ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

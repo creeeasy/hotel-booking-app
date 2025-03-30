@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -22,6 +23,7 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   void _togglePasswordVisibility() =>
       setState(() => _isPasswordVisible = !_isPasswordVisible);
@@ -49,6 +51,7 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
       return;
     }
 
+    setState(() => _isLoading = true);
     context
         .read<AuthBloc>()
         .add(AuthEventHotelRegistering(hotelName, email, password));
@@ -60,222 +63,158 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
-        backgroundColor: ThemeColors.primaryDark,
+        backgroundColor: ThemeColors.error,
+        elevation: 4,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) async {
-        if (state is AuthStateHotelRegistering) {
-          if (state.exception != null) {
-            final errorMessage = _getErrorMessage(state.exception);
-            if (errorMessage != null)
-              await showErrorDialog(context, errorMessage);
+    return SafeArea(
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) async {
+          if (state is AuthStateHotelRegistering) {
+            setState(() => _isLoading = false);
+            if (state.exception != null) {
+              final errorMessage = _getErrorMessage(state.exception);
+              if (errorMessage != null) {
+                await showErrorDialog(context, errorMessage);
+              }
+            }
           }
-        }
-      },
-      child: Scaffold(
-        backgroundColor: ThemeColors.background,
-        body: Stack(
-          children: [
-            // Background with subtle gradient
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      ThemeColors.primary.withOpacity(0.05),
-                      ThemeColors.primaryLight.withOpacity(0.1),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Content
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 60),
-
-                  // Back button and title
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Iconsax.arrow_left_2,
-                            size: 28, color: ThemeColors.primaryDark),
-                        onPressed: () => context
-                            .read<AuthBloc>()
-                            .add(const AuthEventShouldRegister()),
+        },
+        child: Scaffold(
+          backgroundColor: ThemeColors.background,
+          appBar: CustomBackAppBar(
+            title: 'Hotel Registration',
+            onBack: () =>
+                context.read<AuthBloc>().add(const AuthEventShouldRegister()),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Register Your Hotel",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: ThemeColors.primaryDark,
+                        letterSpacing: 0.8,
+                        height: 1.2,
                       ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'Hotel Registration',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: ThemeColors.primaryDark,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: 60,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: ThemeColors.primaryLight,
-                      borderRadius: BorderRadius.circular(2),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Form
-                  Text(
-                    'Register your hotel',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: ThemeColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Fill in your hotel details to get started',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: ThemeColors.textSecondary.withOpacity(0.8),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  _buildTextField(
-                    _hotelNameController,
-                    'Hotel Name',
-                    Iconsax.building,
-                  ),
-                  const SizedBox(height: 24),
-                  _buildTextField(
-                    _emailController,
-                    'Email',
-                    Iconsax.sms,
-                  ),
-                  const SizedBox(height: 24),
-                  _buildPasswordField(
-                    _passwordController,
-                    'Password',
-                  ),
-                  const SizedBox(height: 24),
-                  _buildPasswordField(
-                    _confirmPasswordController,
-                    'Confirm Password',
-                  ),
-                  const SizedBox(height: 40),
-
-                  // Register Button
-                  Material(
-                    borderRadius: BorderRadius.circular(16),
-                    elevation: 0,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: _createHotelAccount,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              ThemeColors.secondary,
-                              ThemeColors.primary,
-                            ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ThemeColors.primary.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 60,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            ThemeColors.secondaryLight,
+                            ThemeColors.secondary,
                           ],
                         ),
-                        child: const Center(
-                          child: Text(
-                            "Continue",
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                _buildInputField(
+                  controller: _hotelNameController,
+                  icon: Iconsax.building,
+                  label: 'Hotel Name',
+                ),
+                const SizedBox(height: 20),
+                _buildInputField(
+                  controller: _emailController,
+                  icon: Iconsax.sms,
+                  label: 'Email',
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordField(
+                  controller: _passwordController,
+                  label: 'Password',
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordField(
+                  controller: _confirmPasswordController,
+                  label: 'Confirm Password',
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _createHotelAccount,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ThemeColors.secondary,
+                      foregroundColor: ThemeColors.textOnPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 3,
+                      shadowColor: ThemeColors.shadowDark,
+                      disabledBackgroundColor:
+                          ThemeColors.secondary.withOpacity(0.6),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            "Register Hotel",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
                               letterSpacing: 0.5,
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 24),
-
-                  // Terms and conditions
-                  Center(
-                    child: Text.rich(
-                      TextSpan(
-                        style: TextStyle(
-                          color: ThemeColors.textSecondary.withOpacity(0.7),
-                          fontSize: 13,
-                        ),
-                        children: [
-                          const TextSpan(
-                              text: 'By registering, you agree to our '),
-                          TextSpan(
-                            text: 'Terms',
-                            style: TextStyle(
-                              color: ThemeColors.primaryLight,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const TextSpan(text: ' and '),
-                          TextSpan(
-                            text: 'Privacy Policy',
-                            style: TextStyle(
-                              color: ThemeColors.primaryLight,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(
-    TextEditingController controller,
-    String label,
-    IconData icon,
-  ) {
-    return Material(
-      color: Colors.transparent,
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required IconData icon,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.secondary.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         style: TextStyle(
           color: ThemeColors.textPrimary,
           fontSize: 16,
@@ -286,46 +225,66 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
           labelStyle: TextStyle(
             color: ThemeColors.textSecondary.withOpacity(0.8),
             fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
-          prefixIcon: Icon(
-            icon,
-            color: ThemeColors.primaryLight,
-            size: 22,
+          floatingLabelStyle: TextStyle(
+            color: ThemeColors.secondary,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          prefixIcon: Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: ThemeColors.secondary.withOpacity(0.08),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: ThemeColors.secondary,
+            ),
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.9),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          fillColor: ThemeColors.white,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(
-              color: ThemeColors.primaryLight.withOpacity(0.5),
+              color: ThemeColors.secondary.withOpacity(0.4),
               width: 1.5,
             ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: ThemeColors.border.withOpacity(0.5),
-              width: 1,
-            ),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 16,
           ),
         ),
-        cursorColor: ThemeColors.primary,
+        cursorColor: ThemeColors.secondary,
       ),
     );
   }
 
-  Widget _buildPasswordField(
-    TextEditingController controller,
-    String label,
-  ) {
-    return Material(
-      color: Colors.transparent,
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeColors.secondary.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: TextFormField(
         controller: controller,
         obscureText: !_isPasswordVisible,
@@ -339,44 +298,58 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
           labelStyle: TextStyle(
             color: ThemeColors.textSecondary.withOpacity(0.8),
             fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
-          prefixIcon: Icon(
-            Iconsax.lock_1,
-            color: ThemeColors.primaryLight,
-            size: 22,
+          floatingLabelStyle: TextStyle(
+            color: ThemeColors.secondary,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
           ),
-          suffixIcon: IconButton(
-            onPressed: _togglePasswordVisibility,
-            icon: Icon(
-              _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
-              color: ThemeColors.primaryLight.withOpacity(0.6),
+          prefixIcon: Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: ThemeColors.secondary.withOpacity(0.08),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
+            ),
+            child: Icon(
+              Iconsax.lock_1,
               size: 20,
+              color: ThemeColors.secondary,
+            ),
+          ),
+          suffixIcon: Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: IconButton(
+              onPressed: _togglePasswordVisibility,
+              icon: Icon(
+                _isPasswordVisible ? Iconsax.eye_slash : Iconsax.eye,
+                size: 20,
+                color: ThemeColors.textSecondary.withOpacity(0.6),
+              ),
             ),
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.9),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          fillColor: ThemeColors.white,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(
-              color: ThemeColors.primaryLight.withOpacity(0.5),
+              color: ThemeColors.secondary.withOpacity(0.4),
               width: 1.5,
             ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: ThemeColors.border.withOpacity(0.5),
-              width: 1,
-            ),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 16,
           ),
         ),
-        cursorColor: ThemeColors.primary,
+        cursorColor: ThemeColors.secondary,
       ),
     );
   }
@@ -384,8 +357,9 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
   String? _getErrorMessage(Exception? exception) {
     if (exception is WeakPasswordException) return 'Weak password';
     if (exception is MissingPasswordException) return 'Missing password';
-    if (exception is EmailAlreadyInUseException)
+    if (exception is EmailAlreadyInUseException) {
       return 'Email is already in use';
+    }
     if (exception is InvalidEmailException) return 'Invalid email';
     if (exception is GenericException) return 'Failed to register';
     return null;

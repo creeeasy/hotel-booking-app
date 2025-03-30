@@ -1,7 +1,5 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
-import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/loading/loading_screen_controller.dart';
 
@@ -54,18 +52,20 @@ class LoadingScreen {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
-                color: ThemeColors.whiteColor,
+                color: ThemeColors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.cloud_upload,
-                    color: ThemeColors.primaryColor,
-                    size: 28,
+                  const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: ThemeColors.primary,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   StreamBuilder<String>(
@@ -73,11 +73,10 @@ class LoadingScreen {
                     builder: (context, snapshot) {
                       return Text(
                         snapshot.data ?? "",
-                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: ThemeColors.blackColor,
+                          color: ThemeColors.textPrimary,
                         ),
                       );
                     },

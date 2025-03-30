@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
@@ -61,7 +61,6 @@ class _HotelCardState extends State<HotelCard> {
             : null;
 
         return GestureDetector(
-          // Fixed typo from GestureDetector
           onTap: () {
             Navigator.pushNamed(
               context,
@@ -75,7 +74,7 @@ class _HotelCardState extends State<HotelCard> {
               borderRadius: BorderRadius.circular(widget.borderRadius),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: ThemeColors.black.withOpacity(0.15),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),
@@ -120,7 +119,7 @@ class _HotelCardState extends State<HotelCard> {
         borderRadius: BorderRadius.circular(widget.borderRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: ThemeColors.black.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -131,11 +130,11 @@ class _HotelCardState extends State<HotelCard> {
         child: AspectRatio(
           aspectRatio: widget.aspectRatio,
           child: Container(
-            color: Colors.grey[200],
+            color: ThemeColors.grey200,
             child: const Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: VisitorThemeColors.deepBlueAccent,
+                color: ThemeColors.accentDeep,
               ),
             ),
           ),
@@ -148,9 +147,9 @@ class _HotelCardState extends State<HotelCard> {
     return AspectRatio(
       aspectRatio: widget.aspectRatio,
       child: Container(
-        color: Colors.grey[200], // Fallback background
+        color: ThemeColors.grey200, // Fallback background
         child: Stack(
-          fit: StackFit.expand, // Ensure stack fills container
+          fit: StackFit.expand,
           children: [
             // Main Image
             if (images.isNotEmpty)
@@ -167,7 +166,7 @@ class _HotelCardState extends State<HotelCard> {
                           ? loadingProgress.cumulativeBytesLoaded /
                               loadingProgress.expectedTotalBytes!
                           : null,
-                      color: VisitorThemeColors.deepBlueAccent,
+                      color: ThemeColors.accentDeep,
                     ),
                   );
                 },
@@ -185,8 +184,8 @@ class _HotelCardState extends State<HotelCard> {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withOpacity(0.8), // Darker at bottom
-                      Colors.black.withOpacity(0.3),
+                      ThemeColors.black.withOpacity(0.8),
+                      ThemeColors.black.withOpacity(0.3),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.5, 0.8],
@@ -202,17 +201,17 @@ class _HotelCardState extends State<HotelCard> {
 
   Widget _buildImageErrorWidget() {
     return Container(
-      color: Colors.grey[200],
+      color: ThemeColors.grey200,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.gallery_slash, size: 40, color: Colors.grey[500]),
+            Icon(Iconsax.gallery_slash, size: 40, color: ThemeColors.grey500),
             const SizedBox(height: 8),
             Text(
               'Image not available',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: ThemeColors.grey600,
                 fontSize: 14,
               ),
             ),
@@ -234,7 +233,7 @@ class _HotelCardState extends State<HotelCard> {
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Colors.black.withOpacity(0.7),
+              ThemeColors.black.withOpacity(0.7),
               Colors.transparent,
             ],
           ),
@@ -248,7 +247,7 @@ class _HotelCardState extends State<HotelCard> {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: ThemeColors.white,
                 shadows: [
                   Shadow(
                     color: Colors.black54,
@@ -273,7 +272,7 @@ class _HotelCardState extends State<HotelCard> {
                       const Icon(
                         Iconsax.location,
                         size: 16,
-                        color: VisitorThemeColors.vibrantOrange,
+                        color: ThemeColors.accentPink,
                       ),
                       const SizedBox(width: 6),
                       Expanded(
@@ -281,7 +280,7 @@ class _HotelCardState extends State<HotelCard> {
                           locationName ?? 'Location not specified',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.9),
+                            color: ThemeColors.white.withOpacity(0.9),
                             fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
@@ -301,7 +300,7 @@ class _HotelCardState extends State<HotelCard> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: ThemeColors.black.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -310,7 +309,7 @@ class _HotelCardState extends State<HotelCard> {
                       RatingBarWidget(
                         rating: hotel.ratings.rating,
                         size: 14,
-                        activeColor: VisitorThemeColors.secondaryColor,
+                        activeColor: ThemeColors.secondary,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -318,7 +317,7 @@ class _HotelCardState extends State<HotelCard> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: ThemeColors.white,
                         ),
                       ),
                     ],
@@ -334,7 +333,7 @@ class _HotelCardState extends State<HotelCard> {
                 '${hotel.totalRooms} rooms available',
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.white.withOpacity(0.8),
+                  color: ThemeColors.white.withOpacity(0.8),
                 ),
               ),
             ],
@@ -351,11 +350,11 @@ class _HotelCardState extends State<HotelCard> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: VisitorThemeColors.vibrantOrange,
+          color: ThemeColors.accentPink,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: ThemeColors.black.withOpacity(0.2),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -367,7 +366,7 @@ class _HotelCardState extends State<HotelCard> {
             Icon(
               Iconsax.crown_1,
               size: 14,
-              color: Colors.white,
+              color: ThemeColors.white,
             ),
             SizedBox(width: 4),
             Text(
@@ -375,7 +374,7 @@ class _HotelCardState extends State<HotelCard> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: ThemeColors.white,
                 letterSpacing: 0.5,
               ),
             ),

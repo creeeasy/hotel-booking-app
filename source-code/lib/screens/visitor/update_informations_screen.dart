@@ -5,8 +5,9 @@ import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fatiel/constants/colors/visitor_theme_colors.dart';
+import 'package:fatiel/constants/colors/ThemeColorss.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 
 class UpdateUserInformation extends StatefulWidget {
   const UpdateUserInformation({super.key});
@@ -30,13 +31,23 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
     if (input.isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Input can't be empty!")),
+          SnackBar(
+            content: const Text(
+              "Input can't be empty!",
+              style: TextStyle(color: ThemeColors.textOnDark),
+            ),
+            backgroundColor: ThemeColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
       return;
     }
 
-    if (!context.mounted) return; // Prevent unnecessary processing
+    if (!context.mounted) return;
 
     setState(() => isLoading = true);
 
@@ -74,7 +85,17 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("An error occurred: ${e.toString()}")),
+          SnackBar(
+            content: Text(
+              "An error occurred: ${e.toString()}",
+              style: const TextStyle(color: ThemeColors.textOnDark),
+            ),
+            backgroundColor: ThemeColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
         );
       }
     } finally {
@@ -117,11 +138,12 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
           title: "Update Your Information",
-          titleColor: VisitorThemeColors.lavenderPurple,
-          iconColor: VisitorThemeColors.lavenderPurple,
+          titleColor: ThemeColors.primary,
+          iconColor: ThemeColors.primary,
+          backgroundColor: ThemeColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
         body: Padding(
@@ -134,7 +156,7 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: VisitorThemeColors.lavenderPurple,
+                  color: ThemeColors.primary,
                 ),
               ),
               const SizedBox(height: 10),
@@ -148,8 +170,20 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                           value: _locationController.text.isNotEmpty
                               ? int.tryParse(_locationController.text)
                               : null,
-                          hint: const Text("Select a Wilaya"),
+                          hint: const Text(
+                            "Select a Wilaya",
+                            style: TextStyle(color: ThemeColors.textSecondary),
+                          ),
                           isExpanded: true,
+                          dropdownColor: ThemeColors.surface,
+                          style: const TextStyle(
+                            color: ThemeColors.textPrimary,
+                            fontSize: 16,
+                          ),
+                          icon: Icon(
+                            Iconsax.arrow_down_1,
+                            color: ThemeColors.primary,
+                          ),
                           onChanged: (int? newValue) {
                             if (newValue != null) {
                               setState(() {
@@ -161,7 +195,12 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                             final title = "${wilaya.name} ${wilaya.ind}";
                             return DropdownMenuItem<int>(
                               value: wilaya.ind,
-                              child: Text(title),
+                              child: Text(
+                                title,
+                                style: const TextStyle(
+                                  color: ThemeColors.textPrimary,
+                                ),
+                              ),
                             );
                           }).toList(),
                         )
@@ -173,58 +212,54 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                               controller: getStepData()['controller'],
                               decoration: InputDecoration(
                                 labelText: getStepData()['title'],
-                                labelStyle: TextStyle(
-                                  color: VisitorThemeColors.blackColor
-                                      .withOpacity(0.23),
+                                labelStyle: const TextStyle(
+                                  color: ThemeColors.textSecondary,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: VisitorThemeColors.blackColor
-                                        .withOpacity(0.06),
+                                  borderSide: const BorderSide(
+                                    color: ThemeColors.border,
                                     width: 1.5,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: VisitorThemeColors.blackColor
-                                        .withOpacity(0.16),
+                                  borderSide: const BorderSide(
+                                    color: ThemeColors.primary,
                                     width: 2,
                                   ),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                    color: VisitorThemeColors.cancelBorderColor,
+                                    color: ThemeColors.error,
                                     width: 1.5,
                                   ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                    color: VisitorThemeColors.cancelBorderColor,
+                                    color: ThemeColors.error,
                                     width: 2,
                                   ),
                                 ),
                                 filled: true,
-                                fillColor: VisitorThemeColors.whiteColor,
+                                fillColor: ThemeColors.white,
                                 hintText:
                                     "Enter ${getStepData()['title']?.toLowerCase()}...",
-                                hintStyle: TextStyle(
-                                  color: VisitorThemeColors.blackColor
-                                      .withOpacity(0.3),
+                                hintStyle: const TextStyle(
+                                  color: ThemeColors.textSecondary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              cursorColor: VisitorThemeColors.lavenderPurple,
+                              cursorColor: ThemeColors.primary,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                                color: VisitorThemeColors.blackColor,
+                                color: ThemeColors.textPrimary,
                               ),
                             ),
                           ],
@@ -247,16 +282,23 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                                   setState(() => currentIndex--);
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: VisitorThemeColors.greyColor,
+                            backgroundColor: ThemeColors.grey300,
+                            disabledBackgroundColor: ThemeColors.grey200,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
                           ),
                           child: const Text(
                             "Back",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: ThemeColors.textPrimary,
+                            ),
                           ),
                         )
                       : const SizedBox.shrink(),
@@ -264,25 +306,36 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                     onPressed:
                         isLoading ? null : () => updateUserDetails(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: VisitorThemeColors.lavenderPurple,
+                      backgroundColor: ThemeColors.primary,
+                      disabledBackgroundColor: ThemeColors.grey300,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      elevation: 2,
+                      shadowColor: ThemeColors.shadow,
                     ),
                     child: isLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2),
+                              color: ThemeColors.white,
+                              strokeWidth: 2,
+                            ),
                           )
                         : Text(
                             currentIndex == 2 ? "Finish" : "Next",
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: ThemeColors.white,
+                            ),
                           ),
-                  )
+                  ),
                 ],
               ),
             ],
