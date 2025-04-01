@@ -1,0 +1,22 @@
+{
+  "@@locale": "en",
+  "loginTitle": "Login",
+  "welcomeBack": "Welcome Back",
+  "signInToAccount": "Sign in to access your account",
+  "emailAddress": "Email Address",
+  "emailHint": "your@email.com",
+  "emailValidationError": "Please enter your email",
+  "password": "Password",
+  "passwordHint": "••••••••",
+  "passwordValidationError": "Please enter your password",
+  "forgotPassword": "Forgot Password?",
+  "signIn": "Sign In",
+  "orDivider": "OR",
+  "noAccountPrompt": "Don't have an account? ",
+  "register": "Register",
+  "userNotFound": "User not found",
+  "invalidEmail": "Invalid email",
+  "missingPassword": "Missing password",
+  "wrongCredentials": "Wrong credentials",
+  "authError": "Authentication error"
+}

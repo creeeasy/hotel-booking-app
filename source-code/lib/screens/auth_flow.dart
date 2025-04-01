@@ -6,7 +6,7 @@ import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fatiel/loading/loading_screen.dart';
+import 'package:fatiel/helpers/loading/loading_screen.dart';
 import 'package:fatiel/screens/forgot_password_screen.dart';
 import 'package:fatiel/screens/login_screen.dart';
 import 'package:fatiel/screens/register_screen.dart';

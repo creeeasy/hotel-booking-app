@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:fatiel/l10n/l10n.dart';
+import 'package:fatiel/providers/locale_provider.dart';
 import 'package:fatiel/screens/auth_flow.dart';
 import 'package:fatiel/screens/hotel/bookings_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_dashboard_screen.dart';
@@ -35,23 +39,31 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/firebase_auth_provider.dart';
 import "package:fatiel/constants/routes/routes.dart";
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fatiel/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: ".env");
-
+  final localeProvider = LocaleProvider();
+  log(localeProvider.locale.toString());
+  await localeProvider.loadSavedLocale();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
-      ],
-      child: const MyApp(),
+    ChangeNotifierProvider(
+      create: (context) => LocaleProvider(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -61,6 +73,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: L10n.supportedLocales,
+        locale: context.watch<LocaleProvider>().locale,
         debugShowCheckedModeBanner: false,
         theme: ThemeData.light().copyWith(
           textTheme: ThemeData.light().textTheme.apply(

@@ -1,0 +1,22 @@
+{
+  "@@locale": "fr",
+  "loginTitle": "Connexion",
+  "welcomeBack": "Content de te revoir",
+  "signInToAccount": "Connectez-vous pour accéder à votre compte",
+  "emailAddress": "Adresse e-mail",
+  "emailHint": "votre@email.com",
+  "emailValidationError": "Veuillez entrer votre e-mail",
+  "password": "Mot de passe",
+  "passwordHint": "••••••••",
+  "passwordValidationError": "Veuillez entrer votre mot de passe",
+  "forgotPassword": "Mot de passe oublié ?",
+  "signIn": "Se connecter",
+  "orDivider": "OU",
+  "noAccountPrompt": "Vous n'avez pas de compte ? ",
+  "register": "S'inscrire",
+  "userNotFound": "Utilisateur non trouvé",
+  "invalidEmail": "E-mail invalide",
+  "missingPassword": "Mot de passe manquant",
+  "wrongCredentials": "Identifiants incorrects",
+  "authError": "Erreur d'authentification"
+}

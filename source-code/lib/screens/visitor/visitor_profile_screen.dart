@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/avatar_action.dart';
-import 'package:fatiel/helper/auth_helper.dart';
+import 'package:fatiel/helpers/auth_helper.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';

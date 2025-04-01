@@ -1,4 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
+import 'package:fatiel/l10n/language_switcher.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
@@ -48,21 +50,22 @@ class _LoginPage extends State<LoginView> {
           if (state is AuthStateLoggedOut) {
             setState(() => _isLoading = false);
             if (state.exception is UserNotFoundException) {
-              await showErrorDialog(context, 'User not found');
+              await showErrorDialog(context, L10n.of(context).userNotFound);
             } else if (state.exception is InvalidEmailException) {
-              await showErrorDialog(context, 'Invalid email');
+              await showErrorDialog(context, L10n.of(context).invalidEmail);
             } else if (state.exception is MissingPasswordException) {
-              await showErrorDialog(context, 'Missing password');
+              await showErrorDialog(context, L10n.of(context).missingPassword);
             } else if (state.exception is WrongPasswordException) {
-              await showErrorDialog(context, 'Wrong credentials');
+              await showErrorDialog(context, L10n.of(context).wrongCredentials);
             } else if (state.exception is GenericException) {
-              await showErrorDialog(context, 'Authentication error');
+              await showErrorDialog(context, L10n.of(context).authError);
             }
           }
         },
         child: Scaffold(
-          appBar: const CustomBackAppBar(
-            title: 'Login',
+          appBar: CustomBackAppBar(
+            title: L10n.of(context).loginTitle,
+            actions: const [LanguageSwitcher()],
           ),
           backgroundColor: ThemeColors.background,
           body: SingleChildScrollView(
@@ -75,9 +78,9 @@ class _LoginPage extends State<LoginView> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Welcome Back",
-                      style: TextStyle(
+                    Text(
+                      L10n.of(context).welcomeBack,
+                      style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w800,
                         color: ThemeColors.primaryDark,
@@ -88,7 +91,7 @@ class _LoginPage extends State<LoginView> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      "Sign in to access your account",
+                      L10n.of(context).signInToAccount,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -137,7 +140,7 @@ class _LoginPage extends State<LoginView> {
                                 size: 22,
                               ),
                             ),
-                            labelText: 'Email Address',
+                            labelText: L10n.of(context).emailAddress,
                             labelStyle: TextStyle(
                               color: ThemeColors.textSecondary.withOpacity(0.8),
                               fontSize: 15,
@@ -167,7 +170,7 @@ class _LoginPage extends State<LoginView> {
                               vertical: 20,
                               horizontal: 18,
                             ),
-                            hintText: 'your@email.com',
+                            hintText: L10n.of(context).emailHint,
                             hintStyle: const TextStyle(
                               color: ThemeColors.grey400,
                               fontSize: 15,
@@ -178,7 +181,7 @@ class _LoginPage extends State<LoginView> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
+                              return L10n.of(context).emailValidationError;
                             }
                             return null;
                           },
@@ -224,7 +227,7 @@ class _LoginPage extends State<LoginView> {
                                 size: 22,
                               ),
                             ),
-                            labelText: 'Password',
+                            labelText: L10n.of(context).password,
                             labelStyle: TextStyle(
                               color: ThemeColors.textSecondary.withOpacity(0.8),
                               fontSize: 15,
@@ -254,7 +257,7 @@ class _LoginPage extends State<LoginView> {
                               vertical: 20,
                               horizontal: 18,
                             ),
-                            hintText: '••••••••',
+                            hintText: L10n.of(context).passwordHint,
                             hintStyle: const TextStyle(
                               color: ThemeColors.grey400,
                               fontSize: 15,
@@ -306,7 +309,7 @@ class _LoginPage extends State<LoginView> {
                             ),
                           ),
                           child: Text(
-                            'Forgot Password?',
+                            L10n.of(context).forgotPassword,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -347,14 +350,14 @@ class _LoginPage extends State<LoginView> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Row(
+                              : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Iconsax.login_1, size: 22),
-                                    SizedBox(width: 12),
+                                    const Icon(Iconsax.login_1, size: 22),
+                                    const SizedBox(width: 12),
                                     Text(
-                                      "Sign In",
-                                      style: TextStyle(
+                                      L10n.of(context).signIn,
+                                      style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w700,
                                         letterSpacing: 0.8,
@@ -410,9 +413,9 @@ class _LoginPage extends State<LoginView> {
                         height: 1.5,
                       ),
                       children: [
-                        const TextSpan(text: "Don't have an account? "),
+                        TextSpan(text: L10n.of(context).noAccountPrompt),
                         TextSpan(
-                          text: "Register",
+                          text: L10n.of(context).register,
                           style: TextStyle(
                             color: ThemeColors.primary,
                             fontWeight: FontWeight.w700,

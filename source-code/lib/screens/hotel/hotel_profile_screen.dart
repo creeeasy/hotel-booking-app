@@ -1,5 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
-import 'package:fatiel/helper/auth_helper.dart';
+import 'package:fatiel/helpers/auth_helper.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';

@@ -1,6 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
-import 'package:fatiel/helper/format_rating.dart';
+import 'package:fatiel/helpers/format_rating.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';

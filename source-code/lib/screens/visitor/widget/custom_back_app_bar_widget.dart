@@ -9,6 +9,7 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color iconColor;
   final Color titleColor;
   final IconData icon;
+  final Widget? action;
   final double titleSize;
   final bool showDivider;
   final VoidCallback? onBack;
@@ -24,6 +25,7 @@ class CustomBackAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.titleSize = 20,
       this.showDivider = true,
       this.onBack,
+      this.action,
       this.actions})
       : super(key: key);
 

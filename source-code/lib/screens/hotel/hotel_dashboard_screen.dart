@@ -1,6 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/hotel_nav_bar.dart';
-import 'package:fatiel/helper/timestamp_formatter.dart';
+import 'package:fatiel/helpers/timestamp_formatter.dart';
 import 'package:fatiel/models/activity_item.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
