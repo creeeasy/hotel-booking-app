@@ -260,11 +260,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           exception: null,
           isLoading: false,
         ));
+        emit(const AuthStateVisitorRegistering(
+            exception: null, isLoading: false));
       } on Exception catch (exception) {
         emit(AuthStateUpdatePassword(
           exception: exception,
           isLoading: false,
         ));
+        emit(const AuthStateVisitorRegistering(
+            exception: null, isLoading: false));
       }
     });
   }

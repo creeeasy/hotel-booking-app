@@ -1,7 +1,7 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/hotel_nav_bar.dart';
 import 'package:fatiel/screens/hotel/bookings_screen.dart';
-import 'package:fatiel/screens/hotel/home_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_dashboard_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_profile_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
 import 'package:fatiel/screens/hotel/rooms_screen.dart';
@@ -10,25 +10,45 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HotelHomeView extends StatefulWidget {
-  const HotelHomeView({super.key});
+  const HotelHomeView({
+    super.key,
+    this.initialTab = HotelNavBar.home,
+  });
+
+  final HotelNavBar initialTab;
 
   @override
   State<HotelHomeView> createState() => _HotelHomeViewState();
 }
 
 class _HotelHomeViewState extends State<HotelHomeView> {
-  HotelNavBar selectedTab = HotelNavBar.home;
+  late HotelNavBar selectedTab;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedTab = widget.initialTab;
+  }
+
+  // Public method to navigate to specific tab
+  void navigateTo(HotelNavBar tab) {
+    if (mounted) {
+      setState(() {
+        selectedTab = tab;
+      });
+    }
+  }
 
   void onTabClick(HotelNavBar tabType) {
-    setState(() {
-      selectedTab = tabType;
-    });
+    navigateTo(tabType);
   }
 
   Widget getCurrentPage() {
     switch (selectedTab) {
       case HotelNavBar.home:
-        return const HotelHomeScreen();
+        return HotelDashboardScreen(
+          onNavigate: navigateTo,
+        );
       case HotelNavBar.rooms:
         return const HotelRoomsPage();
       case HotelNavBar.bookings:
@@ -49,11 +69,7 @@ class _HotelHomeViewState extends State<HotelHomeView> {
         bottomNavigationBar: CustomBottomNavigationBar<HotelNavBar>(
           selectedTab: selectedTab,
           tabs: HotelNavBar.values,
-          onTabClick: (tab) {
-            setState(() {
-              selectedTab = tab;
-            });
-          },
+          onTabClick: onTabClick,
           getTabIcon: (tab) {
             switch (tab) {
               case HotelNavBar.home:

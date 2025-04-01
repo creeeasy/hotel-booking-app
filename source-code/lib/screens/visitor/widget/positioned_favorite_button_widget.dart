@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:flutter/material.dart';
 

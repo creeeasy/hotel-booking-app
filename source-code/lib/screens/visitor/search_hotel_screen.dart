@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -39,7 +40,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (_searchController.text.isNotEmpty) {
         setState(() {
-          _searchResults = Hotel.findHotelsByKeyword(_searchController.text);
+          _searchResults =
+              HotelService.findHotelsByKeyword(_searchController.text);
         });
       } else {
         setState(() {
@@ -242,7 +244,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
             onPressed: () {
               setState(() {
                 _searchResults =
-                    Hotel.findHotelsByKeyword(_searchController.text);
+                    HotelService.findHotelsByKeyword(_searchController.text);
               });
             },
             style: ElevatedButton.styleFrom(

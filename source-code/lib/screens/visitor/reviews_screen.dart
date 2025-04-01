@@ -1,17 +1,15 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/constants/ratings.dart';
 import 'package:fatiel/models/rating.dart';
 import 'package:fatiel/models/review.dart';
-import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
-import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
+import 'package:fatiel/services/review/review_service.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
-import 'package:fatiel/widgets/no_reviews_ui.dart';
+import 'package:fatiel/widgets/reviews_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'dart:math' as math;
-import 'package:iconsax/iconsax.dart';
 
 class ReviewsScreen extends StatefulWidget {
   const ReviewsScreen({super.key});
@@ -21,9 +19,47 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  Future<Map<String, dynamic>> getHotelReviews(BuildContext context) async {
-    const hotelId = "dHNQ0AKCIrWeqpKR81Q0fbfORZM2";
-    return await Review.getAllHotelReviews(hotelId: hotelId);
+  int selectedLimit = 5;
+  int currentPage = 1;
+  int? selectedRating;
+  late Future<Map<String, dynamic>> _reviewsFuture;
+  final PageController _pageController = PageController();
+  final ValueNotifier<int?> _ratingFilterNotifier = ValueNotifier<int?>(null);
+  final String hotelId = "dHNQ0AKCIrWeqpKR81Q0fbfORZM2";
+
+  @override
+  void initState() {
+    super.initState();
+    _setupRatingListener();
+    _loadReviews();
+  }
+
+  void _setupRatingListener() {
+    _ratingFilterNotifier.addListener(_refreshReviews);
+  }
+
+  Future<void> _loadReviews() async {
+    _reviewsFuture = ReviewService.getAllHotelReviews(
+      hotelId: hotelId,
+      currentRatingStar: _ratingFilterNotifier.value,
+    );
+  }
+
+  Future<void> _refreshReviews() async {
+    setState(() {
+      _loadReviews();
+      currentPage = 1;
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(0);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _ratingFilterNotifier.dispose();
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -36,48 +72,58 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           onBack: () => Navigator.of(context).pop(),
         ),
         body: FutureBuilder<Map<String, dynamic>>(
-          future: getHotelReviews(context),
+          future: _reviewsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicatorWidget(),
               );
-            } else if (snapshot.hasError) {
-              return ErrorWidgetWithRetry(
-                errorMessage: 'Error: ${snapshot.error}',
-                onRetry: () => setState(() {}),
+            }
+
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Error loading reviews: ${snapshot.error}',
+                    style: const TextStyle(color: ThemeColors.error),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const NoReviewsUI();
+            }
+
+            if (!snapshot.hasData) {
+              return const Center(
+                child: Text(
+                  'No reviews data available',
+                  style: TextStyle(color: ThemeColors.textSecondary),
+                ),
+              );
             }
 
             final reviews = snapshot.data!["reviews"] as List<Review>;
-            final rating = (snapshot.data!["ratings"] as Rating);
+            final ratings = snapshot.data!["ratings"] as Rating;
 
-            return SingleChildScrollView(
+            return CustomScrollView(
               physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  _buildRatingHeader(rating),
-                  const DividerWidget(verticalPadding: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildReviewsCount(reviews.length),
-                        const DividerWidget(verticalPadding: 16),
-                        ...reviews
-                            .map((review) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: _ReviewCard(review: review),
-                                ))
-                            .toList(),
+                        _buildRatingHeader(ratings),
+                        const DividerWidget(),
+                        _buildRatingFilters(),
+                        const DividerWidget(),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                // Convert ReviewsSection to be sliver-compatible
+                _buildSliverReviewsSection(reviews),
+              ],
             );
           },
         ),
@@ -85,22 +131,42 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     );
   }
 
+  // New method to make ReviewsSection work with slivers
+  Widget _buildSliverReviewsSection(List<Review> reviews) {
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height:
+            MediaQuery.of(context).size.height * 0.7, // Adjust height as needed
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ReviewsSection(
+            reviews: reviews,
+            itemsPerPage: selectedLimit,
+            onPageChanged: (page) {
+              setState(() => currentPage = page);
+            },
+            onItemsPerPageChanged: (limit) {
+              setState(() => selectedLimit = limit);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRatingHeader(Rating rating) {
     final averageScore = rating.rating.toStringAsFixed(1);
+    final totalRatings = rating.totalRating.toString();
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SvgPicture.asset(
-                "assets/icons/laurel.svg",
-                height: 40,
-                colorFilter: const ColorFilter.mode(
-                    ThemeColors.primary, BlendMode.srcIn),
-              ),
+              _buildLaurelIcon(),
               const SizedBox(width: 10),
               Text(
                 averageScore,
@@ -111,16 +177,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 ),
               ),
               const SizedBox(width: 10),
-              Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.rotationY(math.pi),
-                child: SvgPicture.asset(
-                  "assets/icons/laurel.svg",
-                  height: 40,
-                  colorFilter: const ColorFilter.mode(
-                      ThemeColors.primary, BlendMode.srcIn),
-                ),
-              ),
+              _buildLaurelIcon(flipped: true),
             ],
           ),
           const SizedBox(height: 10),
@@ -134,10 +191,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'This home is a guest favorite based on ratings, reviews, and reliability.',
+          Text(
+            'Based on $totalRatings reviews',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w500,
@@ -150,138 +207,102 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     );
   }
 
-  Widget _buildReviewsCount(int count) {
-    return Row(
-      children: [
-        const Text(
-          'Reviews',
-          style: TextStyle(
-            color: ThemeColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: ThemeColors.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: ThemeColors.primary.withOpacity(0.2),
-              width: 1.2,
+  Widget _buildLaurelIcon({bool flipped = false}) {
+    return flipped
+        ? Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.rotationY(math.pi),
+            child: SvgPicture.asset(
+              "assets/icons/laurel.svg",
+              height: 40,
+              colorFilter:
+                  const ColorFilter.mode(ThemeColors.primary, BlendMode.srcIn),
             ),
+          )
+        : SvgPicture.asset(
+            "assets/icons/laurel.svg",
+            height: 40,
+            colorFilter:
+                const ColorFilter.mode(ThemeColors.primary, BlendMode.srcIn),
+          );
+  }
+
+  Widget _buildRatingFilters() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: [
+          const SizedBox(width: 16),
+          _buildRatingFilterItem(
+            value: null,
+            label: 'All',
+            isSelected: selectedRating == null,
           ),
-          child: Text(
-            count.toString(),
-            style: const TextStyle(
-              color: ThemeColors.primary,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
+          ...ratingFilters.skip(1).map((rating) => _buildRatingFilterItem(
+                value: rating.value,
+                label: rating.isAll ? "All" : "${rating.label} Stars",
+                isSelected: selectedRating == rating.value,
+              )),
+          const SizedBox(width: 16),
+        ],
+      ),
     );
   }
-}
 
-class _ReviewCard extends StatelessWidget {
-  final Review review;
-
-  const _ReviewCard({
-    required this.review,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, String>?>(
-      future: Visitor.fetchVisitorDetails(userId: review.visitorId),
-      builder: (context, snapshot) {
-        final responseData = snapshot.data ?? {};
-        final avatarUrl = responseData["avatarURL"];
-        final fullName =
-            "${responseData["firstName"] ?? ""} ${responseData["lastName"] ?? ""}"
-                .trim();
-
-        return Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: ThemeColors.border.withOpacity(0.2),
-              width: 1,
-            ),
+  Widget _buildRatingFilterItem({
+    required int? value,
+    required String label,
+    required bool isSelected,
+  }) {
+    return GestureDetector(
+      onTap: () => setState(() {
+        selectedRating = value;
+        currentPage = 1;
+        if (_pageController.hasClients) {
+          _pageController.jumpToPage(0);
+        }
+        _ratingFilterNotifier.value = value;
+      }),
+      child: Container(
+        width: 100,
+        height: 100,
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? ThemeColors.primary.withOpacity(0.15)
+              : ThemeColors.primary.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? ThemeColors.primary
+                : ThemeColors.primary.withOpacity(0.2),
+            width: 1.6,
           ),
-          color: ThemeColors.surface,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: ThemeColors.grey200,
-                      backgroundImage: avatarUrl?.isNotEmpty == true
-                          ? NetworkImage(avatarUrl!)
-                          : const AssetImage(
-                                  "assets/images/default-avatar-icon.jpg")
-                              as ImageProvider,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            fullName.isNotEmpty ? fullName : "Anonymous",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: ThemeColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            DateFormat.yMMMMd().format(review.createdAt),
-                            style: const TextStyle(
-                              color: ThemeColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: List.generate(
-                        5,
-                        (index) => Icon(
-                          Iconsax.star1,
-                          color: index < review.validatedRating.floor()
-                              ? ThemeColors.star
-                              : ThemeColors.grey300,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  review.comment,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: ThemeColors.textPrimary,
-                    height: 1.5,
-                  ),
-                ),
-              ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (value != null)
+              const Icon(
+                Icons.star,
+                color: ThemeColors.primary,
+                size: 24,
+              ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: ThemeColors.primary,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

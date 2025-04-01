@@ -1,9 +1,10 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/hotel_price_ranges.dart';
 import 'package:fatiel/models/hotel_filter_parameters.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_list_widget.dart';
 import 'package:fatiel/screens/visitor/widget/range_slider_widget.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/enum/filter_option.dart';
@@ -33,7 +34,7 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
   void initState() {
     fetchFilteredHotels = widget.filterFunction ??
         (HotelFilterParameters params) {
-          return Hotel.filterHotels(params: params);
+          return HotelService.filterHotels(params: params);
         };
     super.initState();
   }

@@ -1,10 +1,10 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
-import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -37,7 +37,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
           children: [
             Expanded(
               child: FutureBuilder<Map<int, int>>(
-                future: Hotel.getHotelStatistics(),
+                future: HotelService.getHotelStatistics(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return _buildLoadingIndicator();
@@ -235,9 +235,5 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
       wilayaDetailsViewRoute,
       arguments: wilayaNumber,
     );
-  }
-
-  void _navigateToSearch() {
-    Navigator.pushNamed(context, hotelBrowseScreenRoute);
   }
 }

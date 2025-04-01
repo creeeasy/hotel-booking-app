@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/models/booking.dart';
@@ -15,7 +15,10 @@ import 'package:fatiel/screens/visitor/widget/hotel_image_widget.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/services/booking/booking_service.dart';
+import 'package:fatiel/services/review/review_service.dart';
 import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
+import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:fatiel/widgets/card_loading_indicator_widget.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
@@ -79,7 +82,8 @@ class _BookingViewState extends State<BookingView>
                 _buildTabView(),
                 Expanded(
                   child: FutureBuilder<List<Booking>>(
-                    future: Booking.getBookingsByUser(visitorId, _selectedTab),
+                    future: BookingService.getBookingsByUser(
+                        visitorId, _selectedTab),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicatorWidget();
@@ -327,7 +331,7 @@ class BookingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>?>(
-      future: Visitor.getBookingAndHotelById(bookingId),
+      future: VisitorService.getBookingAndHotelById(bookingId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CardLoadingIndicator(
@@ -629,7 +633,7 @@ class ActionButton extends StatelessWidget {
           valueListenable: bookingNotifier,
           builder: (context, _, __) {
             return FutureBuilder<Review?>(
-              future: Review.hasVisitorReviewed(
+              future: ReviewService.hasVisitorReviewed(
                 bookingId: bookingId,
                 visitorId: visitorId,
               ),
@@ -759,7 +763,7 @@ class ActionButton extends StatelessWidget {
 
                           try {
                             if (existingReview == null) {
-                              await Review.createReview(
+                              await ReviewService.createReview(
                                 visitorId: visitorId,
                                 hotelId: hotelId,
                                 bookingId: bookingId,
@@ -767,7 +771,7 @@ class ActionButton extends StatelessWidget {
                                 comment: commentController.text.trim(),
                               );
                             } else {
-                              await Review.updateReview(
+                              await ReviewService.updateReview(
                                 visitorId: visitorId,
                                 reviewId: existingReview.id,
                                 newRating: rating,
@@ -815,7 +819,7 @@ class ActionButton extends StatelessWidget {
     );
 
     if (shouldDelete == true) {
-      await Review.deleteReview(
+      await ReviewService.deleteReview(
         visitorId: visitorId,
         reviewId: review.id,
       );

@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/hotel_list_type.dart';
 import 'package:fatiel/models/hotel.dart';
@@ -11,6 +11,7 @@ import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/utils/user_profile.dart';
 import 'package:fatiel/widgets/card_loading_indicator_widget.dart';
 import 'package:flutter/material.dart';
@@ -195,8 +196,8 @@ class _ExploreViewState extends State<ExploreView> {
   Future<List<Hotel>> _getHotelsBasedOnTab(int? location) {
     final params = HotelFilterParameters(location: location);
     return _selectedTab == HotelListType.recommended
-        ? Hotel.getRecommendedHotels(params: params, limit: 5)
-        : Hotel.getNearbyHotels(location, params: params);
+        ? HotelService.getRecommendedHotels(params: params, limit: 5)
+        : HotelService.getNearbyHotels(location, params: params);
   }
 
   String _getSectionTitle(int count) {
@@ -211,8 +212,8 @@ class _ExploreViewState extends State<ExploreView> {
       MaterialPageRoute(
         builder: (context) => HotelBrowseView(
           filterFunction: (params) => _selectedTab == HotelListType.recommended
-              ? Hotel.getRecommendedHotels(params: params)
-              : Hotel.getNearbyHotels(widget.location, params: params),
+              ? HotelService.getRecommendedHotels(params: params)
+              : HotelService.getNearbyHotels(widget.location, params: params),
         ),
       ),
     );
@@ -316,7 +317,7 @@ class _ExploreViewState extends State<ExploreView> {
             ),
             const SizedBox(height: 16),
             FutureBuilder<Map<int, int>>(
-              future: Hotel.getHotelStatistics(),
+              future: HotelService.getHotelStatistics(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CardLoadingIndicator(

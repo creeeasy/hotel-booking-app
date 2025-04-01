@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
@@ -6,6 +6,8 @@ import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
+import 'package:fatiel/services/booking/booking_service.dart';
+import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
@@ -44,7 +46,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   Future<List<Booking>> _fetchBookings() async {
     try {
-      return await Booking.fetchHotelBookingsById(hotelId: _hotel.id);
+      return await BookingService.fetchHotelBookingsById(hotelId: _hotel.id);
     } catch (e) {
       debugPrint('Error fetching bookings: $e');
       return [];
@@ -231,7 +233,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   Widget _buildBookingCard(Booking booking) {
     return FutureBuilder<Map<String, dynamic>?>(
-      future: Visitor.getBookingAndHotelById(booking.id),
+      future: VisitorService.getBookingAndHotelById(booking.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildBookingCardSkeleton();
@@ -507,7 +509,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   Future<void> _updateBookingStatus(
       Booking booking, BookingStatus newStatus) async {
-    final result = await Booking.updateBookingStatus(
+    final result = await BookingService.updateBookingStatus(
       bookingId: booking.id,
       newStatus: newStatus,
     );

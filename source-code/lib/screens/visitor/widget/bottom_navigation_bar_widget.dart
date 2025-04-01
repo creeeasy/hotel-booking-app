@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 
 class CustomBottomNavigationBar<T> extends StatelessWidget {
   final T selectedTab;

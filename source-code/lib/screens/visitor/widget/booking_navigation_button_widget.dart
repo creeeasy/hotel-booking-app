@@ -1,10 +1,10 @@
 import 'dart:developer';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
-import 'package:fatiel/models/booking.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/services/booking/booking_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -134,7 +134,7 @@ class _BookingNavigationButtonWidgetState
     final confirmBooking = await _showTotalPriceDialog();
 
     if (confirmBooking) {
-      final result = await Booking.createBooking(
+      final result = await BookingService.createBooking(
         hotelId: room.hotelId,
         roomId: room.id,
         visitorId: visitorId,

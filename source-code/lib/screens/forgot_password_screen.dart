@@ -5,10 +5,10 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/utilities/dialogs/error_dialog.dart';
-import 'package:fatiel/utilities/dialogs/password_reset_email_sent_dialog.dart';
+import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ForgotPasswordView extends StatefulWidget {
@@ -21,6 +21,15 @@ class ForgotPasswordView extends StatefulWidget {
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
+  Future<void> showPasswordResetSentDialog(BuildContext context) {
+    return showGenericDialog(
+        context: context,
+        title: 'Password reset',
+        content: 'We have now sent you a password reset link.',
+        optionBuilder: () => {
+              'OK': null,
+            });
+  }
 
   @override
   void dispose() {
@@ -62,8 +71,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               // Enhanced Background with Parallax Effect
               Positioned.fill(
                 child: Container(
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
                       image: AssetImage('assets/images/hotel.jpg'),
                       fit: BoxFit.cover,
                       alignment: Alignment.bottomCenter,
@@ -84,7 +93,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   ),
                 ),
               ),
-    
+
               // Frosted Glass Content Panel with improved styling
               Positioned.fill(
                 child: BackdropFilter(
@@ -105,7 +114,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 color: Colors.white.withOpacity(0.1),
                               ),
                               child: IconButton(
-                                icon: Icon(
+                                icon: const Icon(
                                   Iconsax.arrow_left_2,
                                   color: ThemeColors.textOnPrimary,
                                   size: 24,
@@ -119,9 +128,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               ),
                             ),
                             const SizedBox(height: 32),
-    
+
                             // Title with improved typography
-                            Text(
+                            const Text(
                               'Reset Password',
                               style: TextStyle(
                                 fontSize: 32,
@@ -133,19 +142,20 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               ),
                             ),
                             const SizedBox(height: 16),
-    
+
                             // Instruction Text with better readability
                             Text(
                               'Enter your registered email address to receive a password reset link',
                               style: TextStyle(
                                 fontSize: 16,
                                 height: 1.5,
-                                color: ThemeColors.textOnPrimary.withOpacity(0.9),
+                                color:
+                                    ThemeColors.textOnPrimary.withOpacity(0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: 48),
-    
+
                             // Email Input Field with enhanced styling
                             Container(
                               decoration: BoxDecoration(
@@ -165,7 +175,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               ),
                               child: TextFormField(
                                 controller: _emailController,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: ThemeColors.textOnPrimary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -196,7 +206,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,
                                   ),
-                                  floatingLabelStyle: TextStyle(
+                                  floatingLabelStyle: const TextStyle(
                                     color: ThemeColors.textOnPrimary,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -216,7 +226,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               ),
                             ),
                             const SizedBox(height: 40),
-    
+
                             // Reset Password Button with improved feedback
                             SizedBox(
                               width: double.infinity,
@@ -230,7 +240,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                           setState(() => _isLoading = true);
                                           context.read<AuthBloc>().add(
                                                 AuthEventForgotPassword(
-                                                    email: _emailController.text),
+                                                    email:
+                                                        _emailController.text),
                                               );
                                         }
                                       },
@@ -250,7 +261,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        ThemeColors.primaryLight.withOpacity(0.9),
+                                        ThemeColors.primaryLight
+                                            .withOpacity(0.9),
                                         ThemeColors.primary.withOpacity(0.9),
                                       ],
                                       begin: Alignment.topLeft,
@@ -276,13 +288,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                               color: Colors.white,
                                             ),
                                           )
-                                        : Row(
+                                        : const Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              const Icon(Iconsax.send_2,
-                                                  size: 20),
-                                              const SizedBox(width: 12),
+                                              Icon(Iconsax.send_2, size: 20),
+                                              SizedBox(width: 12),
                                               Text(
                                                 'Send Reset Link',
                                                 style: TextStyle(
@@ -298,7 +309,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                               ),
                             ),
                             const SizedBox(height: 32),
-    
+
                             // Back to Login with better alignment
                             Center(
                               child: TextButton(

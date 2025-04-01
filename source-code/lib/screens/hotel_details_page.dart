@@ -1,13 +1,15 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
+import 'package:fatiel/helper/format_rating.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_outlined_button.dart';
-import 'package:fatiel/screens/visitor/widget/details_image_with_hero_widget.dart';
 import 'package:fatiel/screens/visitor/widget/divider_widget.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
+import 'package:fatiel/screens/visitor/widget/image_gallery.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/screens/visitor/widget/section_title_widget.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -23,7 +25,7 @@ class HotelDetailsView extends StatefulWidget {
 class _HotelDetailsViewState extends State<HotelDetailsView> {
   Future<Hotel> _initializeHotelData(BuildContext context) async {
     final hotelId = ModalRoute.of(context)?.settings.arguments as String;
-    final hotel = await Hotel.getHotelById(hotelId);
+    final hotel = await HotelService.getHotelById(hotelId);
     return hotel!;
   }
 
@@ -75,7 +77,7 @@ class HotelDetailsBody extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 400,
             flexibleSpace: FlexibleSpaceBar(
-              background: DetailsImageWithHero(
+              background: ImageGallery(
                 images: hotel.images,
                 hotelId: hotel.id,
               ),
@@ -284,7 +286,7 @@ class HotelDetailsBody extends StatelessWidget {
           Column(
             children: [
               Text(
-                hotel.ratings.rating.toStringAsFixed(1),
+                formatRating(hotel.ratings.rating).toString(),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

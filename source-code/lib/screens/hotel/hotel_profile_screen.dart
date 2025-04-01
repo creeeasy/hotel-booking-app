@@ -1,10 +1,12 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/helper/auth_helper.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/utils/multi_value_listenable_builder.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +65,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
     );
 
     try {
-      await Hotel.updateHotel(hotel: updatedHotel);
+      await HotelService.updateHotel(hotel: updatedHotel);
       if (context.mounted) {
         context.read<AuthBloc>().add(const AuthEventInitialize());
       }
@@ -173,7 +175,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               leading: const Icon(Iconsax.logout, color: ThemeColors.error),
               title: const Text('Log Out',
                   style: TextStyle(color: ThemeColors.error)),
-              onTap: _confirmLogout,
+              onTap: () => handleLogout(context),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -189,35 +191,6 @@ class _HotelProfileViewState extends State<HotelProfileView> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _confirmLogout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: ThemeColors.card,
-        title: const Text('Log Out',
-            style: TextStyle(color: ThemeColors.textPrimary)),
-        content: const Text('Are you sure you want to log out?',
-            style: TextStyle(color: ThemeColors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel',
-                style: TextStyle(color: ThemeColors.primary)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Close settings sheet
-              context.read<AuthBloc>().add(const AuthEventLogOut());
-            },
-            child: const Text('Log Out',
-                style: TextStyle(color: ThemeColors.error)),
-          ),
-        ],
       ),
     );
   }

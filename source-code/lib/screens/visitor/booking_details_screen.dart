@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/booking.dart';
@@ -8,6 +8,7 @@ import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
+import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,7 @@ class BookingDetailsView extends StatefulWidget {
 class _BookingDetailsViewState extends State<BookingDetailsView> {
   Future<Map<String, dynamic>?> _fetchBookingDetails() async {
     final bookingId = ModalRoute.of(context)?.settings.arguments as String;
-    return await Visitor.getBookingAndHotelById(bookingId);
+    return await VisitorService.getBookingAndHotelById(bookingId);
   }
 
   @override
@@ -784,6 +785,7 @@ class _NoBookingDataView extends StatelessWidget {
     );
   }
 }
+
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;

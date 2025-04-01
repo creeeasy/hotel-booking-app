@@ -130,7 +130,7 @@ packages:
     source: hosted
     version: "6.1.0"
   cloud_firestore_web:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: cloud_firestore_web
       sha256: "232e45e95970d3a6baab8f50f9c3a6e2838d145d9d91ec9a7392837c44296397"
@@ -266,7 +266,7 @@ packages:
     source: hosted
     version: "7.0.9"
   firebase_auth_web:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: firebase_auth_web
       sha256: c7b1379ccef7abf4b6816eede67a868c44142198e42350f51c01d8fc03f95a7d
@@ -290,7 +290,7 @@ packages:
     source: hosted
     version: "5.1.0"
   firebase_core_web:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: firebase_core_web
       sha256: d585bdf3c656c3f7821ba1bd44da5f13365d22fcecaf5eb75c4295246aaa83c0
@@ -327,7 +327,7 @@ packages:
     source: hosted
     version: "5.2.1"
   flutter_launcher_icons:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_launcher_icons
       sha256: "526faf84284b86a4cb36d20a5e45147747b7563d921373d4ee0559c54fcdbcea"

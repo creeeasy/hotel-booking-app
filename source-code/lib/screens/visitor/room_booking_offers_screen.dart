@@ -1,32 +1,28 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/room_availability.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
+import 'package:fatiel/screens/visitor/widget/image_gallery.dart';
+import 'package:fatiel/services/room/room_service.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class RoomBookingOffersPage extends StatefulWidget {
-  const RoomBookingOffersPage({
-    super.key,
-  });
+  const RoomBookingOffersPage({super.key});
 
   @override
   State<RoomBookingOffersPage> createState() => _RoomBookingOffersPageState();
 }
 
 class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
-  final String hotelId = "dHNQ0AKCIrWeqpKR81Q0fbfORZM2";
-
   late final ScrollController _scrollController;
-  late Future<List<Room>> _roomsFuture;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _roomsFuture = Room.getHotelRoomsById(hotelId);
   }
 
   @override
@@ -35,97 +31,80 @@ class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
     super.dispose();
   }
 
-  Future<void> _refreshRooms() async {
-    setState(() {
-      _roomsFuture = Room.getHotelRoomsById(hotelId);
-    });
+  Future<List<Room>> _loadRooms() async {
+    final hotelId = ModalRoute.of(context)?.settings.arguments as String?;
+    return await RoomService.getHotelRoomsById(hotelId!);
   }
+
+  Future<void> _refreshRooms() async => setState(() {});
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: CustomBackAppBar(
-          title: 'Room Offers',
-          onBack: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: ThemeColors.background,
-        body: FutureBuilder<List<Room>>(
-          future: _roomsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: ThemeColors.primary,
-                ),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return RoomErrorView(
-                error: snapshot.error.toString(),
-                onRetry: _refreshRooms,
-              );
-            }
-
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const RoomEmptyView();
-            }
-
-            return RoomListView(
-              rooms: snapshot.data!,
-              scrollController: _scrollController,
+    return Scaffold(
+    
+      appBar: CustomBackAppBar(
+        title: 'Explore room offers',
+        onBack: () => Navigator.pop(context),
+      ),
+      backgroundColor: ThemeColors.background,
+      body: FutureBuilder<List<Room>>(
+        future: _loadRooms(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: ThemeColors.primary,
+                strokeWidth: 2,
+              ),
             );
-          },
-        ),
+          }
+
+          if (snapshot.hasError) {
+            return RoomErrorView(
+              error: snapshot.error.toString(),
+              onRetry: _refreshRooms,
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const RoomEmptyView();
+          }
+          final rooms = snapshot.data!;
+          return RoomContent(
+            rooms: rooms,
+            scrollController: _scrollController,
+          );
+        },
       ),
     );
   }
 }
 
-class RoomListView extends StatefulWidget {
+class RoomContent extends StatefulWidget {
   final List<Room> rooms;
   final ScrollController scrollController;
-
-  const RoomListView({
-    super.key,
-    required this.rooms,
-    required this.scrollController,
-  });
+  const RoomContent(
+      {super.key, required this.rooms, required this.scrollController});
 
   @override
-  State<RoomListView> createState() => _RoomListViewState();
+  State<RoomContent> createState() => _RoomContentState();
 }
 
-class _RoomListViewState extends State<RoomListView> {
-  int _selectedRoomIndex = 0;
+class _RoomContentState extends State<RoomContent> {
   late Room _selectedRoom;
+  late ScrollController _scrollController;
+  void _selectRoom(Room room) {
+    setState(() => _selectedRoom = room);
+  }
+
+  late List<Room> rooms;
 
   @override
   void initState() {
+    rooms = widget.rooms;
+    _selectedRoom = rooms.first;
+    _scrollController = widget.scrollController;
     super.initState();
-    _selectedRoom = widget.rooms.first;
-  }
-
-  void _selectRoom(int index) {
-    setState(() {
-      _selectedRoomIndex = index;
-      _selectedRoom = widget.rooms[index];
-    });
-    _scrollToSelectedRoom(index);
-  }
-
-  void _scrollToSelectedRoom(int index) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final scrollPosition = (240 * index - (screenWidth / 2 - 120)).clamp(
-      0.0,
-      widget.scrollController.position.maxScrollExtent,
-    );
-    widget.scrollController.animateTo(
-      scrollPosition,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
   }
 
   Future<void> _bookRoom() async {
@@ -164,124 +143,182 @@ class _RoomListViewState extends State<RoomListView> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'Confirm Booking',
-          style: TextStyle(
-            color: ThemeColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
+      builder: (context) => Dialog(
+        backgroundColor: ThemeColors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Room: ${_selectedRoom.name}'),
-            const SizedBox(height: 8),
-            Text(
-              'Dates: ${DateFormat('MMM d, y').format(dateRange.start)} - '
-              '${DateFormat('MMM d, y').format(dateRange.end)}',
-            ),
-            const SizedBox(height: 8),
-            Text('Duration: $duration night${duration > 1 ? 's' : ''}'),
-            const SizedBox(height: 8),
-            Text(
-              'Total Price: \$${totalPrice.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: ThemeColors.primary,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Confirm Booking',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: ThemeColors.textPrimary,
+                    ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              _buildBookingDetailRow(
+                icon: Iconsax.house_2,
+                label: 'Room Type',
+                value: _selectedRoom.name,
+              ),
+              const SizedBox(height: 12),
+              _buildBookingDetailRow(
+                icon: Iconsax.calendar,
+                label: 'Dates',
+                value: '${DateFormat('MMM d, y').format(dateRange.start)} - '
+                    '${DateFormat('MMM d, y').format(dateRange.end)}',
+              ),
+              const SizedBox(height: 12),
+              _buildBookingDetailRow(
+                icon: Iconsax.moon,
+                label: 'Duration',
+                value: '$duration night${duration > 1 ? 's' : ''}',
+              ),
+              const SizedBox(height: 12),
+              _buildBookingDetailRow(
+                icon: Iconsax.receipt,
+                label: 'Total Price',
+                value: '\$${totalPrice.toStringAsFixed(2)}',
+                valueStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: ThemeColors.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(color: ThemeColors.border),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ThemeColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text(
+                        'Confirm',
+                        style: TextStyle(color: ThemeColors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: ThemeColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ThemeColors.primary,
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Confirm',
-              style: TextStyle(color: ThemeColors.textOnPrimary),
-            ),
-          ),
-        ],
       ),
     );
 
-    if (confirmed == true) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully booked ${_selectedRoom.name}!'),
-            backgroundColor: ThemeColors.success,
+    if (confirmed == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully booked ${_selectedRoom.name}!'),
+          backgroundColor: ThemeColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-        );
-      }
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        RoomCarousel(
-          rooms: widget.rooms,
-          selectedIndex: _selectedRoomIndex,
-          scrollController: widget.scrollController,
-          onRoomSelected: _selectRoom,
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RoomGallery(images: _selectedRoom.images),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _RoomHeader(room: _selectedRoom),
-                      const SizedBox(height: 16),
-                      _RoomDescription(description: _selectedRoom.description),
-                      const SizedBox(height: 24),
-                      const _SectionDivider(icon: Iconsax.category),
-                      const SizedBox(height: 16),
-                      const _SectionTitle(
-                        title: "Facilities",
-                        icon: Iconsax.category,
-                      ),
-                      const SizedBox(height: 12),
-                      RoomAmenities(amenities: _selectedRoom.amenities),
-                      const SizedBox(height: 24),
-                      const _SectionDivider(icon: Iconsax.calendar),
-                      const SizedBox(height: 16),
-                      const _SectionTitle(
-                        title: "Availability",
-                        icon: Iconsax.calendar_tick,
-                      ),
-                      const SizedBox(height: 12),
-                      RoomAvailabilityCard(
-                          availability: _selectedRoom.availability),
-                    ],
-                  ),
-                ),
-              ],
+    return Scaffold(
+      backgroundColor: ThemeColors.background,
+      bottomNavigationBar: BookNowButton(
+        onPressed: _bookRoom,
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: RoomCarousel(
+              rooms: rooms,
+              selectedRoom: _selectedRoom,
+              onRoomSelected: _selectRoom,
+              scrollController: _scrollController,
             ),
           ),
-        ),
-        BookNowButton(
-          onPressed: _bookRoom,
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: 16),
+                ImageGallery(images: _selectedRoom.images),
+                const SizedBox(height: 20),
+                _RoomHeader(room: _selectedRoom),
+                const SizedBox(height: 12),
+                _RoomDescription(description: _selectedRoom.description),
+                const SizedBox(height: 24),
+                const _SectionDivider(icon: Iconsax.category_2),
+                const SizedBox(height: 16),
+                const SectionTitle(
+                    title: "Facilities", icon: Iconsax.category_2),
+                const SizedBox(height: 12),
+                RoomAmenities(amenities: _selectedRoom.amenities),
+                const SizedBox(height: 24),
+                const _SectionDivider(icon: Iconsax.calendar_tick),
+                const SizedBox(height: 16),
+                const SectionTitle(
+                    title: "Availability", icon: Iconsax.calendar_tick),
+                const SizedBox(height: 12),
+                RoomAvailabilityCard(availability: _selectedRoom.availability),
+                const SizedBox(height: 80),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBookingDetailRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    TextStyle? valueStyle,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: ThemeColors.textSecondary),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: ThemeColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: valueStyle ??
+                  const TextStyle(
+                    fontSize: 14,
+                    color: ThemeColors.textPrimary,
+                  ),
+            ),
+          ],
         ),
       ],
     );
@@ -290,35 +327,35 @@ class _RoomListViewState extends State<RoomListView> {
 
 class RoomCarousel extends StatelessWidget {
   final List<Room> rooms;
-  final int selectedIndex;
+  final Room selectedRoom;
+  final ValueChanged<Room> onRoomSelected;
   final ScrollController scrollController;
-  final ValueChanged<int> onRoomSelected;
 
   const RoomCarousel({
     super.key,
     required this.rooms,
-    required this.selectedIndex,
-    required this.scrollController,
+    required this.selectedRoom,
     required this.onRoomSelected,
+    required this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 180,
+      height: 160,
       child: ListView.builder(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: rooms.length,
         itemBuilder: (context, index) {
+          final room = rooms[index];
           return Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 12),
             child: RoomCard(
-              room: rooms[index],
-              isSelected: selectedIndex == index,
-              onTap: () => onRoomSelected(index),
+              room: room,
+              isSelected: room.id == selectedRoom.id,
+              onTap: () => onRoomSelected(room),
             ),
           );
         },
@@ -344,184 +381,73 @@ class RoomCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        width: 240,
+        duration: const Duration(milliseconds: 200),
+        width: 200,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: ThemeColors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: isSelected
+              ? ThemeColors.primary.withOpacity(0.05)
+              : ThemeColors.white,
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? ThemeColors.primary : ThemeColors.border,
-            width: isSelected ? 2 : 1,
+            width: isSelected ? 1.5 : 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: ThemeColors.shadow.withOpacity(isSelected ? 0.2 : 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
+            Text(
+              room.name,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color:
+                    isSelected ? ThemeColors.primary : ThemeColors.textPrimary,
               ),
-              child: RoomThumbnail(images: room.images),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    room.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: ThemeColors.textPrimary,
-                    ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(
+                  Iconsax.profile_2user,
+                  size: 14,
+                  color: ThemeColors.textSecondary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${room.capacity} Guests',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: ThemeColors.textSecondary,
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(
-                        Iconsax.profile_2user,
-                        size: 14,
-                        color: ThemeColors.textSecondary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${room.capacity} Guests",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: ThemeColors.textSecondary,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        "\$${room.pricePerNight.toStringAsFixed(2)}",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: ThemeColors.primary,
-                        ),
-                      ),
-                    ],
+                ),
+              ],
+            ),
+            const Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Per night',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: ThemeColors.textSecondary,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '\$${room.pricePerNight.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: ThemeColors.primary,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class RoomThumbnail extends StatelessWidget {
-  final List<String> images;
-
-  const RoomThumbnail({
-    super.key,
-    required this.images,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      width: double.infinity,
-      color: ThemeColors.grey100,
-      child: images.isEmpty
-          ? const Center(
-              child: Icon(
-                Iconsax.gallery_slash,
-                size: 32,
-                color: ThemeColors.grey400,
-              ),
-            )
-          : Image.network(
-              images.first,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                    strokeWidth: 2,
-                    color: ThemeColors.primary,
-                  ),
-                );
-              },
-              errorBuilder: (_, __, ___) => const Center(
-                child: Icon(
-                  Iconsax.gallery_slash,
-                  size: 32,
-                  color: ThemeColors.grey400,
-                ),
-              ),
-            ),
-    );
-  }
-}
-
-class RoomGallery extends StatelessWidget {
-  final List<String> images;
-
-  const RoomGallery({
-    super.key,
-    required this.images,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (images.isEmpty) {
-      return Container(
-        height: 200,
-        color: ThemeColors.grey100,
-        child: const Center(
-          child: Icon(
-            Iconsax.gallery_slash,
-            size: 48,
-            color: ThemeColors.grey400,
-          ),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 240,
-      child: PageView.builder(
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                images[index],
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: ThemeColors.grey100,
-                  child: const Center(
-                    child: Icon(
-                      Iconsax.gallery_slash,
-                      size: 48,
-                      color: ThemeColors.grey400,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -530,30 +456,38 @@ class RoomGallery extends StatelessWidget {
 class _RoomHeader extends StatelessWidget {
   final Room room;
 
-  const _RoomHeader({
-    required this.room,
-  });
+  const _RoomHeader({required this.room});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Text(
-            room.name,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: ThemeColors.textPrimary,
-                ),
+        Text(
+          room.name,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: ThemeColors.textPrimary,
           ),
         ),
-        Text(
-          '\$${room.pricePerNight.toStringAsFixed(2)}/night',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: ThemeColors.primary,
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(
+              Iconsax.profile_2user,
+              size: 16,
+              color: ThemeColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '${room.capacity} Guests',
+              style: const TextStyle(
+                fontSize: 14,
+                color: ThemeColors.textSecondary,
               ),
+            ),
+          ],
         ),
       ],
     );
@@ -563,18 +497,17 @@ class _RoomHeader extends StatelessWidget {
 class _RoomDescription extends StatelessWidget {
   final String description;
 
-  const _RoomDescription({
-    required this.description,
-  });
+  const _RoomDescription({required this.description});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       description,
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            height: 1.5,
-            color: ThemeColors.textSecondary,
-          ),
+      style: const TextStyle(
+        fontSize: 14,
+        color: ThemeColors.textSecondary,
+        height: 1.5,
+      ),
     );
   }
 }
@@ -582,10 +515,7 @@ class _RoomDescription extends StatelessWidget {
 class RoomAmenities extends StatelessWidget {
   final List<String> amenities;
 
-  const RoomAmenities({
-    super.key,
-    required this.amenities,
-  });
+  const RoomAmenities({super.key, required this.amenities});
 
   @override
   Widget build(BuildContext context) {
@@ -597,26 +527,25 @@ class RoomAmenities extends StatelessWidget {
       );
     }
 
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: amenities.map((amenity) {
-        final amenityData = AmenityIcons.getAmenity(amenity);
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.9,
+      ),
+      itemCount: amenities.length,
+      itemBuilder: (context, index) {
+        final amenityData = AmenityIcons.getAmenity(amenities[index]);
         return Container(
-          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: ThemeColors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: ThemeColors.shadow.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
@@ -632,17 +561,17 @@ class RoomAmenities extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                amenityData?.label ?? amenity,
+                amenityData?.label ?? amenities[index],
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: ThemeColors.textPrimary,
                 ),
               ),
             ],
           ),
         );
-      }).toList(),
+      },
     );
   }
 }
@@ -650,10 +579,7 @@ class RoomAmenities extends StatelessWidget {
 class RoomAvailabilityCard extends StatelessWidget {
   final RoomAvailability availability;
 
-  const RoomAvailabilityCard({
-    super.key,
-    required this.availability,
-  });
+  const RoomAvailabilityCard({super.key, required this.availability});
 
   @override
   Widget build(BuildContext context) {
@@ -669,78 +595,33 @@ class RoomAvailabilityCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 20, color: color),
-          ),
+          Icon(icon, size: 20, color: color),
           const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isAvailable ? "Available" : "Unavailable",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+              if (isAvailable)
                 Text(
-                  isAvailable ? "Available" : "Unavailable",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: color,
+                  message,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: ThemeColors.textSecondary,
                   ),
                 ),
-                if (isAvailable)
-                  Text(
-                    message,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: ThemeColors.textSecondary,
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class BookNowButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const BookNowButton({
-    super.key,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ThemeColors.primary,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 2,
-        ),
-        onPressed: onPressed,
-        child: const Text(
-          'Book Now',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: ThemeColors.textOnPrimary,
-          ),
-        ),
       ),
     );
   }
@@ -749,20 +630,18 @@ class BookNowButton extends StatelessWidget {
 class _SectionDivider extends StatelessWidget {
   final IconData icon;
 
-  const _SectionDivider({
-    required this.icon,
-  });
+  const _SectionDivider({required this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Icon(icon, size: 18, color: ThemeColors.primary),
+        const SizedBox(width: 8),
         const Expanded(
           child: Divider(
             color: ThemeColors.border,
             thickness: 1,
-            indent: 8,
           ),
         ),
       ],
@@ -770,11 +649,12 @@ class _SectionDivider extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
+class SectionTitle extends StatelessWidget {
   final String title;
   final IconData icon;
 
-  const _SectionTitle({
+  const SectionTitle({
+    super.key,
     required this.title,
     required this.icon,
   });
@@ -789,8 +669,7 @@ class _SectionTitle extends StatelessWidget {
           title,
           style: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: ThemeColors.textPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -816,12 +695,12 @@ class _EmptyState extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color),
-          const SizedBox(width: 12),
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 8),
           Text(
             message,
             style: TextStyle(
@@ -848,67 +727,107 @@ class RoomErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Iconsax.warning_2, size: 48, color: ThemeColors.error),
-          const SizedBox(height: 16),
-          const Text(
-            'Failed to load rooms',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: ThemeColors.textPrimary,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Iconsax.warning_2,
+              size: 48,
+              color: ThemeColors.error,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            error,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: ThemeColors.textSecondary),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: onRetry,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ThemeColors.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+            const SizedBox(height: 16),
+            const Text(
+              'Failed to load rooms',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            child: const Text(
-              'Retry',
-              style: TextStyle(color: ThemeColors.textOnPrimary),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: ThemeColors.textSecondary),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ThemeColors.primary,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: const Text(
+                'Try Again',
+                style: TextStyle(color: ThemeColors.white),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class RoomEmptyView extends StatelessWidget {
-  const RoomEmptyView({
+  const RoomEmptyView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Iconsax.house_2,
+              size: 48,
+              color: ThemeColors.grey400,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No rooms available',
+              style: TextStyle(
+                fontSize: 18,
+                color: ThemeColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BookNowButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const BookNowButton({
     super.key,
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Iconsax.house_2, size: 48, color: ThemeColors.grey400),
-          SizedBox(height: 16),
-          Text(
-            'No rooms available at this time',
-            style: TextStyle(
-              fontSize: 18,
-              color: ThemeColors.textSecondary,
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ThemeColors.primary,
+          minimumSize: const Size(double.infinity, 50),
+        ),
+        child: const Text(
+          'Book Now',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: ThemeColors.white,
           ),
-        ],
+        ),
       ),
     );
   }

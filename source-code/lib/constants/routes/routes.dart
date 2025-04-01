@@ -1,7 +1,6 @@
 const loginViewRoute = '/login/';
 const registerViewRoute = '/register/';
 const forgotPasswordViewRoute = '/forgot-password/';
-const resetPasswordViewRoute = '/reset-password/';
 const hotelHomePageViewRoute = '/hotel-home-page/';
 const visitorHomePageViewRoute = '/visitor-home-page/';
 const verificationEmailViewRoute = '/verification-email/';
@@ -21,7 +20,7 @@ const hotelBrowseScreenRoute = 'hotel-browse-screen';
 const visitorProfileRoute = 'visitor-profile-screen';
 const updatePasswordRoute = 'update-password-screen';
 const updateInformationRoute = 'update-information-screen';
-const hotelHomeRoute = 'hotel-home-screen';
+const hotelDashboardRoute = 'hotel-home-screen';
 const hotelRoomsRoute = 'hotel-rooms-screen';
 const hotelBookingsRoute = 'hotel-bookings-screen';
 const hotelReviewsRoute = 'hotel-reviews-screen';

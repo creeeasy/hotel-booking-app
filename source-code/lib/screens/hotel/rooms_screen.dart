@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
+import 'package:fatiel/services/room/room_service.dart';
 import 'package:fatiel/utils/value_listenable_builder2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +49,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
   Future<List<Room>> _fetchRooms() async {
     try {
-      return await Room.getHotelRoomsById(_hotelId);
+      return await RoomService.getHotelRoomsById(_hotelId);
     } catch (e) {
       debugPrint('Error fetching rooms: $e');
       throw Exception('Failed to load rooms');
@@ -664,7 +665,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-      
+
                     // Basic Info Section
                     Card(
                       elevation: 2,
@@ -681,8 +682,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: nameController,
-                              style:
-                                  const TextStyle(color: ThemeColors.textPrimary),
+                              style: const TextStyle(
+                                  color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
                                 labelText: 'Room Name',
                                 labelStyle: const TextStyle(
@@ -691,13 +692,13 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                     color: ThemeColors.primary),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -711,8 +712,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: descController,
-                              style:
-                                  const TextStyle(color: ThemeColors.textPrimary),
+                              style: const TextStyle(
+                                  color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
                                 labelText: 'Description',
                                 labelStyle: const TextStyle(
@@ -721,13 +722,13 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                     color: ThemeColors.primary),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -743,9 +744,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                         ),
                       ),
                     ),
-      
+
                     const SizedBox(height: 16),
-      
+
                     // Pricing & Availability Section
                     Card(
                       elevation: 2,
@@ -757,13 +758,13 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
-                            _buildSectionHeader(
-                                Iconsax.dollar_circle, 'Pricing & Availability'),
+                            _buildSectionHeader(Iconsax.dollar_circle,
+                                'Pricing & Availability'),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: priceController,
-                              style:
-                                  const TextStyle(color: ThemeColors.textPrimary),
+                              style: const TextStyle(
+                                  color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
                                 labelText: 'Price per night',
                                 labelStyle: const TextStyle(
@@ -772,13 +773,13 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                     color: ThemeColors.primary),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -798,8 +799,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                             DropdownButtonFormField<int>(
                               value: capacity,
                               dropdownColor: ThemeColors.card,
-                              style:
-                                  const TextStyle(color: ThemeColors.textPrimary),
+                              style: const TextStyle(
+                                  color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
                                 labelText: 'Capacity',
                                 labelStyle: const TextStyle(
@@ -808,13 +809,13 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                     color: ThemeColors.primary),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide:
-                                      const BorderSide(color: ThemeColors.border),
+                                  borderSide: const BorderSide(
+                                      color: ThemeColors.border),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -852,19 +853,19 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                         ),
                       ),
                     ),
-      
+
                     const SizedBox(height: 16),
-      
+
                     // Photos Section
                     buildImageSection(),
-      
+
                     const SizedBox(height: 16),
-      
+
                     // Amenities Section
                     _buildAmenitiesSection(),
-      
+
                     const SizedBox(height: 24),
-      
+
                     // Submit Button
                     SizedBox(
                       width: double.infinity,
@@ -876,7 +877,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                               'hotelId': _hotelId,
                               'name': nameController.text.trim(),
                               'description': descController.text.trim(),
-                              'pricePerNight': double.parse(priceController.text),
+                              'pricePerNight':
+                                  double.parse(priceController.text),
                               'capacity': capacity,
                               'amenities': amenities,
                               'images': tempImages.value,
@@ -885,7 +887,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                 'nextAvailableDate': null,
                               },
                             };
-      
+
                             try {
                               if (isEditing) {
                                 await FirebaseFirestore.instance
@@ -897,7 +899,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                     .collection('rooms')
                                     .add(roomData);
                               }
-      
+
                               if (!mounted) return;
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(

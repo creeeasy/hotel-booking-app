@@ -1,4 +1,4 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/visitor_nav_bar.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
 import 'package:fatiel/screens/visitor/explore_screen.dart';

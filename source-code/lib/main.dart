@@ -1,6 +1,6 @@
 import 'package:fatiel/screens/auth_flow.dart';
 import 'package:fatiel/screens/hotel/bookings_screen.dart';
-import 'package:fatiel/screens/hotel/home_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_dashboard_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_profile_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
@@ -30,7 +30,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/screens/forgot_password_screen.dart';
 import 'package:fatiel/screens/login_screen.dart';
 import 'package:fatiel/screens/register_screen.dart';
-import 'package:fatiel/screens/reset_password_screen.dart';
 import 'package:fatiel/screens/verify_email_screen.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/firebase_auth_provider.dart';
@@ -75,7 +74,6 @@ class MyApp extends StatelessWidget {
           loginViewRoute: (context) => const LoginView(),
           registerViewRoute: (context) => RegisterView(),
           forgotPasswordViewRoute: (context) => const ForgotPasswordView(),
-          resetPasswordViewRoute: (context) => const ResetPassowrdView(),
           hotelHomePageViewRoute: (context) => const HotelHomeView(),
           visitorHomePageViewRoute: (context) => const VisitorHomeScreen(),
           verificationEmailViewRoute: (context) => const VerifyEmailView(),
@@ -97,7 +95,7 @@ class MyApp extends StatelessWidget {
           visitorProfileRoute: (context) => const VisitorProfileScreen(),
           updatePasswordRoute: (context) => const UpdatePasswordScreen(),
           updateInformationRoute: (context) => const UpdateUserInformation(),
-          hotelHomeRoute: (context) => const HotelHomeScreen(),
+          hotelDashboardRoute: (context) => const HotelDashboardScreen(),
           hotelRoomsRoute: (context) => const HotelRoomsPage(),
           hotelBookingsRoute: (context) => const HotelBookingsPage(),
           hotelReviewsRoute: (context) => const HotelReviewsScreen(),

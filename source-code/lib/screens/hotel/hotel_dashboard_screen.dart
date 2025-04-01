@@ -1,24 +1,27 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
-import 'package:fatiel/constants/routes/routes.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/enum/hotel_nav_bar.dart';
 import 'package:fatiel/helper/timestamp_formatter.dart';
 import 'package:fatiel/models/activity_item.dart';
-import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
-import 'package:fatiel/models/review.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_event.dart';
+import 'package:fatiel/services/booking/booking_service.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
+import 'package:fatiel/services/review/review_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 
-class HotelHomeScreen extends StatefulWidget {
-  const HotelHomeScreen({super.key});
+class HotelDashboardScreen extends StatefulWidget {
+  final Function(HotelNavBar)? onNavigate;
+
+  const HotelDashboardScreen({super.key, this.onNavigate});
 
   @override
-  State<HotelHomeScreen> createState() => _HotelHomeScreenState();
+  State<HotelDashboardScreen> createState() => _HotelDashboardScreenState();
 }
 
-class _HotelHomeScreenState extends State<HotelHomeScreen> {
+class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
+  late Function(HotelNavBar) onNavigate;
   late final Hotel hotel;
   late final Future<int> _fetchMonthlyBookingsFuture;
   late final Future<int> _fetchPendingBookingsFuture;
@@ -29,19 +32,21 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
   @override
   void initState() {
     super.initState();
+    onNavigate = widget.onNavigate!;
     final currentHotel = context.read<AuthBloc>().state.currentUser as Hotel;
     hotel = currentHotel;
 
     // Initialize futures
     _fetchMonthlyBookingsFuture =
-        Booking.fetchMonthlyBookingsFuture(hotelId: hotel.id);
+        BookingService.fetchMonthlyBookingsFuture(hotelId: hotel.id);
     _fetchPendingBookingsFuture =
-        Booking.fetchPendingBookingsFuture(hotelId: hotel.id);
+        BookingService.fetchPendingBookingsFuture(hotelId: hotel.id);
     _fetchAvailableRoomsCountFuture =
-        Review.fetchAvailableRoomsCountFuture(hotelId: hotel.id);
+        ReviewService.fetchAvailableRoomsCountFuture(hotelId: hotel.id);
     _fetchReviewStatisticsFuture =
-        Review.fetchReviewStatisticsFuture(hotelId: hotel.id);
-    _recentActivitiesFuture = Hotel.getRecentActivity(hotelId: currentHotel.id);
+        ReviewService.fetchReviewStatisticsFuture(hotelId: hotel.id);
+    _recentActivitiesFuture =
+        HotelService.getRecentActivity(hotelId: currentHotel.id);
   }
 
   @override
@@ -181,25 +186,25 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
               icon: Iconsax.home_2,
               title: 'Rooms',
               description: 'Manage room details',
-              onTap: () => Navigator.of(context).pushNamed(hotelRoomsRoute),
+              onTap: () => onNavigate(HotelNavBar.rooms),
             ),
             NavigationTile(
               icon: Iconsax.calendar,
               title: 'Bookings',
               description: 'View all bookings',
-              onTap: () => Navigator.of(context).pushNamed(hotelBookingsRoute),
+              onTap: () => onNavigate(HotelNavBar.bookings),
             ),
             NavigationTile(
               icon: Iconsax.star,
               title: 'Reviews',
               description: 'Check guest feedback',
-              onTap: () => Navigator.of(context).pushNamed(hotelReviewsRoute),
+              onTap: () => onNavigate(HotelNavBar.reviews),
             ),
             NavigationTile(
               icon: Iconsax.profile_2user,
               title: 'Profile',
               description: 'Hotel profile',
-              onTap: () => Navigator.of(context).pushNamed(hotelProfileRoute),
+              onTap: () => onNavigate(HotelNavBar.profile),
             ),
           ],
         ),
@@ -250,46 +255,6 @@ class _HotelHomeScreenState extends State<HotelHomeScreen> {
           },
         ),
       ],
-    );
-  }
-
-  void showProfileMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Iconsax.profile_circle, color: ThemeColors.primary),
-              title: Text('View Profile',
-                  style: TextStyle(color: ThemeColors.textPrimary)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.of(context).pushNamed(hotelProfileRoute);
-              },
-            ),
-            ListTile(
-              leading: Icon(Iconsax.setting, color: ThemeColors.primary),
-              title: Text('Settings',
-                  style: TextStyle(color: ThemeColors.textPrimary)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.of(context).pushNamed(hotelSettingsRoute);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: Icon(Iconsax.logout, color: ThemeColors.error),
-              title: Text('Logout', style: TextStyle(color: ThemeColors.error)),
-              onTap: () {
-                Navigator.pop(context);
-                context.read<AuthBloc>().add(const AuthEventLogOut());
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

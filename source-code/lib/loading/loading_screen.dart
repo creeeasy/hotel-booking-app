@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/loading/loading_screen_controller.dart';
 

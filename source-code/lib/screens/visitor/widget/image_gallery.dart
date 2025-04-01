@@ -1,32 +1,41 @@
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-class DetailsImageWithHero extends StatefulWidget {
-  const DetailsImageWithHero({
+class ImageGallery extends StatefulWidget {
+  const ImageGallery({
     super.key,
     required this.images,
-    required this.hotelId,
+    this.hotelId,
     this.onBackPressed,
+    this.containerAspectRatio = 16 / 9,
   });
 
   final List<String> images;
   final String? hotelId;
   final VoidCallback? onBackPressed;
+  final double containerAspectRatio;
 
   @override
-  State<DetailsImageWithHero> createState() => _DetailsImageWithHeroState();
+  State<ImageGallery> createState() => _ImageGalleryState();
 }
 
-class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
-  late PageController _pageController;
-  int currentIndex = 0;
+class _ImageGalleryState extends State<ImageGallery> {
+  late final PageController _pageController;
+  int _currentIndex = 0;
+  final Map<int, double?> _imageAspectRatios = {};
+  final Map<int, bool> _imageErrorStates = {};
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: currentIndex);
+    _pageController = PageController(initialPage: _currentIndex);
+    // Initialize aspect ratios as null (unknown)
+    for (int i = 0; i < widget.images.length; i++) {
+      _imageAspectRatios[i] = null;
+      _imageErrorStates[i] = false;
+    }
   }
 
   @override
@@ -41,8 +50,8 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     final bool multipleImages = hasImages && widget.images.length > 1;
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return SizedBox(
-      height: 360,
+    return AspectRatio(
+      aspectRatio: widget.containerAspectRatio,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -91,30 +100,81 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     return PageView.builder(
       controller: _pageController,
       itemCount: hasImages ? widget.images.length : 1,
-      onPageChanged: (index) => setState(() => currentIndex = index),
+      onPageChanged: (index) => setState(() => _currentIndex = index),
       itemBuilder: (context, index) {
         return Hero(
           tag: hasImages
               ? 'image_${widget.hotelId}_${widget.images[index]}'
               : 'placeholder_${widget.hotelId}',
           child: Container(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
-              color: ThemeColors.grey100,
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
-              child: _buildImageContent(hasImages, index),
-            ),
+            color: ThemeColors.grey100,
+            child: _buildImageContent(hasImages, index),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildImageContent(bool hasImages, int index) {
+    if (!hasImages) return _buildNoImagePlaceholder();
+    if (_imageErrorStates[index] == true) return _buildNoImagePlaceholder();
+
+    return InteractiveViewer(
+      panEnabled: true,
+      minScale: 1.0,
+      maxScale: 3.0,
+      child: _buildSmartImage(index),
+    );
+  }
+
+  Widget _buildSmartImage(int index) {
+    final imageAspectRatio = _imageAspectRatios[index];
+
+    return Image.network(
+      widget.images[index],
+      fit: imageAspectRatio != null
+          ? _getOptimalFit(imageAspectRatio)
+          : BoxFit.cover,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (frame == null && !wasSynchronouslyLoaded) {
+          return _buildLoadingIndicator();
+        }
+        return child;
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return _buildLoadingIndicator();
+      },
+      errorBuilder: (context, error, stackTrace) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() => _imageErrorStates[index] = true);
+          }
+        });
+        return _buildNoImagePlaceholder();
+      },
+      cacheWidth: (MediaQuery.of(context).size.width * 2).toInt(),
+      cacheHeight: (MediaQuery.of(context).size.height * 2).toInt(),
+    );
+  }
+
+  BoxFit _getOptimalFit(double imageAspectRatio) {
+    final containerAspectRatio = widget.containerAspectRatio;
+
+    // If image is wider than container relative to their heights
+    if (imageAspectRatio > containerAspectRatio) {
+      return BoxFit.fitHeight; // Show full height, crop sides
+    } else {
+      return BoxFit.fitWidth; // Show full width, crop top/bottom
+    }
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+        color: ThemeColors.primary,
+      ),
     );
   }
 
@@ -127,7 +187,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
           color: ThemeColors.black.withOpacity(0.4),
           shape: BoxShape.circle,
         ),
-        child: Icon(
+        child: const Icon(
           Iconsax.arrow_left_2,
           color: ThemeColors.white,
           size: 22,
@@ -136,33 +196,10 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     );
   }
 
-  Widget _buildImageContent(bool hasImages, int index) {
-    if (!hasImages) return _buildNoImagePlaceholder();
-
-    return Image.network(
-      widget.images[index],
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: ThemeColors.primary,
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                : null,
-          ),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) => _buildNoImagePlaceholder(),
-    );
-  }
-
   Widget _buildNoImagePlaceholder() {
     return Container(
       color: ThemeColors.grey200,
-      child: Center(
+      child: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -171,7 +208,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
               size: 48,
               color: ThemeColors.grey400,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               "No Images Available",
               style: TextStyle(
@@ -190,13 +227,14 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(widget.images.length, (index) {
-        return Container(
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
           width: 8,
           height: 8,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: currentIndex == index
+            color: _currentIndex == index
                 ? ThemeColors.white
                 : ThemeColors.white.withOpacity(0.5),
           ),
@@ -233,7 +271,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: currentIndex == index
+                  color: _currentIndex == index
                       ? ThemeColors.primary
                       : Colors.transparent,
                   width: 2,
@@ -241,29 +279,7 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  widget.images[index],
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: ThemeColors.primary,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: ThemeColors.grey200,
-                    child: Center(
-                      child: Icon(
-                        Iconsax.gallery_slash,
-                        color: ThemeColors.grey400,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ),
+                child: _buildThumbnailImage(index),
               ),
             ),
           );
@@ -272,9 +288,55 @@ class _DetailsImageWithHeroState extends State<DetailsImageWithHero> {
     );
   }
 
+  Widget _buildThumbnailImage(int index) {
+    if (_imageErrorStates[index] == true) {
+      return Container(
+        color: ThemeColors.grey200,
+        child: const Center(
+          child: Icon(
+            Iconsax.gallery_slash,
+            color: ThemeColors.grey400,
+            size: 24,
+          ),
+        ),
+      );
+    }
+
+    return Image.network(
+      widget.images[index],
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: ThemeColors.primary,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() => _imageErrorStates[index] = true);
+          }
+        });
+        return Container(
+          color: ThemeColors.grey200,
+          child: const Center(
+            child: Icon(
+              Iconsax.gallery_slash,
+              color: ThemeColors.grey400,
+              size: 24,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _handleThumbnailTap(int index) {
-    if (currentIndex != index) {
-      setState(() => currentIndex = index);
+    if (_currentIndex != index) {
+      setState(() => _currentIndex = index);
       _pageController.animateToPage(
         index,
         duration: const Duration(milliseconds: 300),

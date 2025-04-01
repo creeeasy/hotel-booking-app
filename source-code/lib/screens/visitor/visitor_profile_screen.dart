@@ -1,6 +1,9 @@
 import 'dart:typed_data';
-import 'package:fatiel/constants/colors/ThemeColorss.dart';
+import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/avatar_action.dart';
+import 'package:fatiel/helper/auth_helper.dart';
+import 'package:fatiel/services/visitor/visitor_service.dart';
+import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,8 +12,6 @@ import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
-import 'package:fatiel/services/auth/bloc/auth_event.dart';
-import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 
 class VisitorProfileScreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
 
       final visitorId =
           (context.read<AuthBloc>().state.currentUser as Visitor).id;
-      await Visitor.modifyVisitorAvatar(
+      await VisitorService.modifyVisitorAvatar(
         action: AvatarAction.update,
         visitorId: visitorId,
         newAvatarUrl: imageUrl,
@@ -71,15 +72,22 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
   }
 
   Future<void> _deleteProfileImage() async {
-    final shouldDelete = await _showConfirmationDialog("Remove Profile Image",
-        "Are you sure you want to remove your profile image?");
+    final shouldDelete = await showGenericDialog<bool>(
+      context: context,
+      title: "Remove Profile Image",
+      content: "Are you sure you want to remove your profile image?",
+      optionBuilder: () => {'Cancel': false, 'Remove': true},
+    ).then((value) => value ?? false);
+
     if (!shouldDelete) return;
 
     try {
       final visitorId =
           (context.read<AuthBloc>().state.currentUser as Visitor).id;
-      await Visitor.modifyVisitorAvatar(
-          action: AvatarAction.remove, visitorId: visitorId);
+      await VisitorService.modifyVisitorAvatar(
+        action: AvatarAction.remove,
+        visitorId: visitorId,
+      );
 
       setState(() {
         _imageBytes = null;
@@ -90,25 +98,6 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
     } catch (e) {
       _showSnackBar("Failed to remove image: ${e.toString()}");
     }
-  }
-
-  Future<void> _logout() async {
-    final shouldLogout = await _showConfirmationDialog(
-        "Logout", "Are you sure you want to log out?");
-    if (!shouldLogout) return;
-    if (!mounted) return;
-
-    context.read<AuthBloc>().add(const AuthEventLogOut());
-    Navigator.of(context).pop();
-  }
-
-  Future<bool> _showConfirmationDialog(String title, String content) async {
-    return await showGenericDialog<bool>(
-      context: context,
-      title: title,
-      content: content,
-      optionBuilder: () => {"Cancel": false, "Confirm": true},
-    ).then((value) => value ?? false);
   }
 
   void _showSnackBar(String message) {
@@ -349,7 +338,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton(
-        onPressed: _logout,
+        onPressed: () => handleLogout(context),
         style: OutlinedButton.styleFrom(
           foregroundColor: ThemeColors.error,
           side: BorderSide(color: ThemeColors.error.withOpacity(0.3)),

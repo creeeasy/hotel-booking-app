@@ -17,18 +17,23 @@ class RatingBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RatingBarIndicator(
+    return RatingBar.builder(
       itemSize: size ?? 24,
-      rating: rating ?? 0.0,
+      initialRating: rating ?? 0.0,
       direction: Axis.horizontal,
+      minRating: 1,
       itemCount: 5,
       itemBuilder: (BuildContext context, int index) {
         return Icon(
           Icons.star,
-          color: activeColor ?? Theme.of(context).colorScheme.secondary,
+          color: (rating ?? 0.0) > index
+              ? (activeColor ?? Theme.of(context).colorScheme.secondary)
+              : (inActiveColor ?? Colors.grey.shade300),
         );
       },
       unratedColor: inActiveColor ?? Colors.grey.shade300,
+      onRatingUpdate: (rating) {},
+      allowHalfRating: true,
     );
   }
 }

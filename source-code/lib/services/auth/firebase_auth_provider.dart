@@ -1,6 +1,8 @@
 import 'package:fatiel/enum/user_role.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/services/hotel/hotel_service.dart';
+import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utils/generate_search_keywords.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +26,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       final user = currentUser;
 
       if (user != null) {
-        final visitorData = await Visitor.getVisitorById(user.id);
+        final visitorData = await VisitorService.getVisitorById(user.id);
         final userRole =
             visitorData != null ? UserRole.visitor : UserRole.hotel;
 
@@ -110,6 +112,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
     }
   }
 
+  @override
   Future<AuthUser?> createVisitor({
     required String email,
     required String password,
@@ -208,7 +211,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
   Future<dynamic> getUser() async {
     final user = currentUser!;
 
-    final hotel = await Hotel.getHotelById(user.id);
+    final hotel = await HotelService.getHotelById(user.id);
     if (hotel != null) {
       final hotelData = Hotel(
         id: user.id,
@@ -231,7 +234,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       return {'isCompleted': isCompleted, 'hotel': hotelData};
     }
 
-    final visitor = await Visitor.getVisitorById(user.id);
+    final visitor = await VisitorService.getVisitorById(user.id);
     if (visitor != null) {
       return Visitor(
         id: user.id,
