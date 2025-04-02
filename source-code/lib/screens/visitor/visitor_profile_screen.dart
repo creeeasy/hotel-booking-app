@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/avatar_action.dart';
 import 'package:fatiel/helpers/auth_helper.dart';
+import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
@@ -62,8 +63,8 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
         _imageBytes = fileBytes;
         _imageUrl = imageUrl;
       });
-
       _showSnackBar("Profile image updated successfully");
+      context.read<AuthBloc>().add(const AuthEventInitialize());
     } catch (e) {
       _showSnackBar("Failed to upload image: ${e.toString()}");
     } finally {

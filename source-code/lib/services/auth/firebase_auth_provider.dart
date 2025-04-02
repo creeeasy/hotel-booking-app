@@ -33,7 +33,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         return AuthUser(
           id: user.id,
           email: user.email,
-          isEmailVerified: user.isEmailVerified,
+          isEmailVerified:true,
           role: userRole,
         );
       } else {
@@ -82,15 +82,15 @@ class FirebaseAuthProvider implements AuthProviderImplement {
     }
   }
 
-  @override
-  Future<void> sendEmailVerification() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await user.sendEmailVerification();
-    } else {
-      throw UserNotLoggedInException();
-    }
-  }
+  // @override
+  // Future<void> sendEmailVerification() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     await user.sendEmailVerification();
+  //   } else {
+  //     throw UserNotLoggedInException();
+  //   }
+  // }
 
   @override
   AuthUser? get currentUser {

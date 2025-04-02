@@ -17,7 +17,17 @@ import 'package:iconsax/iconsax.dart';
 class HotelBrowseView extends StatefulWidget {
   final Future<List<Hotel>> Function(HotelFilterParameters params)?
       filterFunction;
-  const HotelBrowseView({super.key, this.filterFunction});
+  final HotelFilterParameters? initialFilters;
+  final bool useUserLocationOnly;
+  final String appBackTitle;
+
+  const HotelBrowseView(
+      {super.key,
+      this.filterFunction,
+      this.initialFilters,
+      this.useUserLocationOnly = false,
+      this.appBackTitle = "All Hotels"});
+
   @override
   State<HotelBrowseView> createState() => _HotelBrowseViewState();
 }
@@ -29,12 +39,36 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
   RangeValues? _selectedRatingRange;
   RangeValues? _selectedPeopleRange;
   late Function fetchFilteredHotels;
+  late bool useUserLocationOnly;
 
   @override
   void initState() {
+    useUserLocationOnly = widget.useUserLocationOnly;
+    if (widget.initialFilters != null) {
+      _selectedPriceRange = widget.initialFilters!.minPrice;
+      // Only set location if we're not using user location only
+      if (!useUserLocationOnly) {
+        _selectedLocation = widget.initialFilters!.location;
+      }
+      if (widget.initialFilters!.minRating != null &&
+          widget.initialFilters!.maxRating != null) {
+        _selectedRatingRange = RangeValues(
+          widget.initialFilters!.minRating!.toDouble(),
+          widget.initialFilters!.maxRating!.toDouble(),
+        );
+      }
+      if (widget.initialFilters!.minPeople != null &&
+          widget.initialFilters!.maxPeople != null) {
+        _selectedPeopleRange = RangeValues(
+          widget.initialFilters!.minPeople!.toDouble(),
+          widget.initialFilters!.maxPeople!.toDouble(),
+        );
+      }
+    }
+
     fetchFilteredHotels = widget.filterFunction ??
         (HotelFilterParameters params) {
-          return HotelService.filterHotels(params: params);
+          return HotelService.getAllHotels(params: params);
         };
     super.initState();
   }
@@ -52,7 +86,9 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
           _selectedPriceRange = value;
           break;
         case FilterOption.location:
-          _selectedLocation = value;
+          if (!useUserLocationOnly) {
+            _selectedLocation = value;
+          }
           break;
       }
     });
@@ -64,12 +100,16 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: "All Hotels",
+          title: widget.appBackTitle,
           onBack: () => Navigator.of(context).pop(),
         ),
         body: Column(
           children: [
-            FilterHotelWidget(onFilterUpdate: _updateFilter),
+            FilterHotelWidget(
+              onFilterUpdate: _updateFilter,
+              initialFilters: widget.initialFilters,
+              showLocationFilter: !useUserLocationOnly, // Pass this flag
+            ),
             Expanded(
               child: FutureBuilder<List<Hotel>>(
                 future: fetchFilteredHotels(HotelFilterParameters(
@@ -78,7 +118,10 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
                   minPrice: _selectedPriceRange,
                   minPeople: _selectedPeopleRange?.start.toInt(),
                   maxPeople: _selectedPeopleRange?.end.toInt(),
-                  location: _selectedLocation,
+                  location: useUserLocationOnly
+                      ? widget.initialFilters
+                          ?.location // Use initial location if set
+                      : _selectedLocation,
                 )),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -108,8 +151,15 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
 
 class FilterHotelWidget extends StatefulWidget {
   final void Function(FilterOption option, dynamic val) onFilterUpdate;
+  final HotelFilterParameters? initialFilters;
+  final bool showLocationFilter; // New parameter
 
-  const FilterHotelWidget({super.key, required this.onFilterUpdate});
+  const FilterHotelWidget({
+    super.key,
+    required this.onFilterUpdate,
+    this.initialFilters,
+    this.showLocationFilter = true, // Default to showing location filter
+  });
 
   @override
   State<FilterHotelWidget> createState() => _FilterHotelWidgetState();
@@ -121,10 +171,51 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
   int? _selectedLocation;
   RangeValues? _selectedRating;
   RangeValues? _selectedRequiredPeople;
+  late bool showLocationFilter;
 
   @override
   void initState() {
     onFilterUpdate = widget.onFilterUpdate;
+    showLocationFilter = widget.showLocationFilter;
+
+    // Initialize with initial filter values if provided
+    if (widget.initialFilters != null) {
+      _selectedPrice = widget.initialFilters!.minPrice;
+      if (showLocationFilter) {
+        _selectedLocation = widget.initialFilters!.location;
+      }
+      if (widget.initialFilters!.minRating != null &&
+          widget.initialFilters!.maxRating != null) {
+        _selectedRating = RangeValues(
+          widget.initialFilters!.minRating!.toDouble(),
+          widget.initialFilters!.maxRating!.toDouble(),
+        );
+      }
+      if (widget.initialFilters!.minPeople != null &&
+          widget.initialFilters!.maxPeople != null) {
+        _selectedRequiredPeople = RangeValues(
+          widget.initialFilters!.minPeople!.toDouble(),
+          widget.initialFilters!.maxPeople!.toDouble(),
+        );
+      }
+
+      // Notify parent about initial values
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_selectedPrice != null) {
+          onFilterUpdate(FilterOption.price, _selectedPrice);
+        }
+        if (showLocationFilter && _selectedLocation != null) {
+          onFilterUpdate(FilterOption.location, _selectedLocation);
+        }
+        if (_selectedRating != null) {
+          onFilterUpdate(FilterOption.rating, _selectedRating);
+        }
+        if (_selectedRequiredPeople != null) {
+          onFilterUpdate(FilterOption.minPeople, _selectedRequiredPeople);
+        }
+      });
+    }
+
     super.initState();
   }
 
@@ -141,11 +232,15 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
       _selectedPrice = null;
       _selectedRating = null;
       _selectedRequiredPeople = null;
-      _selectedLocation = null;
+      if (showLocationFilter) {
+        _selectedLocation = null;
+      }
       onFilterUpdate(FilterOption.price, null);
       onFilterUpdate(FilterOption.rating, null);
       onFilterUpdate(FilterOption.minPeople, null);
-      onFilterUpdate(FilterOption.location, null);
+      if (showLocationFilter) {
+        onFilterUpdate(FilterOption.location, null);
+      }
     });
   }
 
@@ -212,11 +307,13 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
         children: [
           _resetOptionIcon(),
           const SizedBox(width: 8),
-          _filterIcon(
-              icon: Iconsax.location,
-              label: "Location",
-              onFilter: () => _showFilterOptions(FilterOption.location)),
-          const SizedBox(width: 8),
+          if (showLocationFilter) ...[
+            _filterIcon(
+                icon: Iconsax.location,
+                label: "Location",
+                onFilter: () => _showFilterOptions(FilterOption.location)),
+            const SizedBox(width: 8),
+          ],
           _filterIcon(
               icon: Iconsax.dollar_circle,
               label: "Price",

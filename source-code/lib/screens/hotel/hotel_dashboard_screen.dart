@@ -38,9 +38,9 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
 
     // Initialize futures
     _fetchMonthlyBookingsFuture =
-        BookingService.fetchMonthlyBookingsFuture(hotelId: hotel.id);
+        BookingService.fetchMonthlyBookingsCount(hotelId: hotel.id);
     _fetchPendingBookingsFuture =
-        BookingService.fetchPendingBookingsFuture(hotelId: hotel.id);
+        BookingService.fetchPendingBookingsCount(hotelId: hotel.id);
     _fetchAvailableRoomsCountFuture =
         ReviewService.fetchAvailableRoomsCountFuture(hotelId: hotel.id);
     _fetchReviewStatisticsFuture =

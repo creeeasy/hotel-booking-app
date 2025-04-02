@@ -36,4 +36,22 @@ class HotelFilterParameters {
       location: map['location'] as int?,
     );
   }
+
+  HotelFilterParameters copyWith({
+    int? minRating,
+    int? maxRating,
+    int? minPrice,
+    int? minPeople,
+    int? maxPeople,
+    int? location,
+  }) {
+    return HotelFilterParameters(
+      minRating: minRating ?? this.minRating,
+      maxRating: maxRating ?? this.maxRating,
+      minPrice: minPrice ?? this.minPrice,
+      minPeople: minPeople ?? this.minPeople,
+      maxPeople: maxPeople ?? this.maxPeople,
+      location: location ?? this.location,
+    );
+  }
 }

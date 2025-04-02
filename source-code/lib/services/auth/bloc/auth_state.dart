@@ -71,10 +71,10 @@ class AuthStateHotelLoggedIn extends AuthState {
       : super(isLoading: isLoading, currentUser: user);
 }
 
-class AuthStateNeedsVerification extends AuthState {
-  const AuthStateNeedsVerification({required bool isLoading})
-      : super(isLoading: isLoading);
-}
+// class AuthStateNeedsVerification extends AuthState {
+//   const AuthStateNeedsVerification({required bool isLoading})
+//       : super(isLoading: isLoading);
+// }
 
 class AuthStateForgotPassword extends AuthState {
   final Exception? exception;

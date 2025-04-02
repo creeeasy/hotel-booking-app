@@ -5,6 +5,7 @@ class L10n {
   static const supportedLocales = [
     Locale('en'),
     Locale('fr'),
+    Locale('ar'),
   ];
 
   static AppLocalizations of(BuildContext context) {
@@ -17,6 +18,8 @@ class L10n {
         return 'English';
       case 'fr':
         return 'Français';
+      case 'ar':
+        return 'العربية';
       default:
         return '';
     }

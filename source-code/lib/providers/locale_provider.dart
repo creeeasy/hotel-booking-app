@@ -8,6 +8,8 @@ class LocaleProvider with ChangeNotifier {
   Locale? get locale => _locale;
 
   Future<void> setLocale(Locale locale) async {
+    if (!L10n.supportedLocales.contains(locale)) return;
+    
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('languageCode', locale.languageCode);
     _locale = locale;
@@ -23,14 +25,16 @@ class LocaleProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final languageCode = prefs.getString('languageCode');
-      if (languageCode != null &&
-          L10n.supportedLocales.contains(Locale(languageCode))) {
-        _locale = Locale(languageCode);
-        notifyListeners();
+      if (languageCode != null) {
+        final locale = Locale(languageCode);
+        if (L10n.supportedLocales.contains(locale)) {
+          _locale = locale;
+          notifyListeners();
+        }
       }
     } catch (e) {
-      // Fallback to default locale if storage fails
       _locale = const Locale('en');
+      notifyListeners();
     }
   }
 }

@@ -40,9 +40,9 @@ class AuthEventHotelLogIn extends AuthEvent {
   const AuthEventHotelLogIn();
 }
 
-class AuthEventSendEmailVerification extends AuthEvent {
-  const AuthEventSendEmailVerification();
-}
+// class AuthEventSendEmailVerification extends AuthEvent {
+//   const AuthEventSendEmailVerification();
+// }
 
 class AuthEventForgotPassword extends AuthEvent {
   final String? email;

@@ -6,6 +6,7 @@ import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 
 class BookingService {
+  /// Fetches a booking by its ID
   static Future<Booking> getBookingById(String bookingId) async {
     try {
       final doc = await FirebaseFirestore.instance
@@ -13,13 +14,21 @@ class BookingService {
           .doc(bookingId)
           .get();
 
+      if (!doc.exists) {
+        throw Exception('Booking not found');
+      }
+
       return Booking.fromFirestore(doc);
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching booking: $e');
+      rethrow;
     } catch (e) {
       log('Error fetching booking: $e');
       rethrow;
     }
   }
 
+  /// Creates a new booking with validation
   static Future<BookingResult> createBooking({
     required String hotelId,
     required String roomId,
@@ -29,25 +38,34 @@ class BookingService {
     required double totalPrice,
   }) async {
     try {
+      // Validate dates
+      if (checkInDate.isAfter(checkOutDate)) {
+        return const BookingFailure(
+            'Check-in date must be before check-out date');
+      }
+
+      if (checkInDate.isBefore(DateTime.now())) {
+        return const BookingFailure('Check-in date cannot be in the past');
+      }
+
       final roomRef =
           FirebaseFirestore.instance.collection("rooms").doc(roomId);
       final roomDoc = await roomRef.get();
 
       if (!roomDoc.exists) {
-        return const BookingFailure('Room not found.');
+        return const BookingFailure('Room not found');
       }
 
       final roomData = Room.fromFirestore(roomDoc);
 
-      if (!roomData.availability.isAvailable ||
-          (roomData.availability.nextAvailableDate != null &&
-              roomData.availability.nextAvailableDate!.isAfter(checkInDate))) {
+      // Check room availability
+      if (!_isRoomAvailable(roomData, checkInDate, checkOutDate)) {
         return const BookingFailure(
-            'Room is not available for the selected dates.');
+            'Room is not available for the selected dates');
       }
 
-      final docRef =
-          await FirebaseFirestore.instance.collection('bookings').add({
+      // Create booking document
+      final bookingData = {
         'hotelId': hotelId,
         'roomId': roomId,
         'visitorId': visitorId,
@@ -56,95 +74,144 @@ class BookingService {
         'totalPrice': totalPrice,
         'status': BookingStatus.pending.name,
         'createdAt': Timestamp.fromDate(DateTime.now()),
-      });
+      };
 
-      await roomRef.update({
-        'availability.nextAvailableDate': Timestamp.fromDate(checkOutDate),
-      });
+      // Run transaction to ensure data consistency
+      final bookingRef = await FirebaseFirestore.instance.runTransaction(
+        (transaction) async {
+          // Create booking
+          final docRef =
+              FirebaseFirestore.instance.collection('bookings').doc();
+          transaction.set(docRef, bookingData);
 
-      final doc = await docRef.get();
-      await BookingService.updateVisitorBooking(
-          bookingId: docRef.id, visitorId: visitorId);
-      return BookingSuccess(Booking.fromFirestore(doc));
+          // Update room availability
+          transaction.update(roomRef, {
+            'availability.nextAvailableDate': Timestamp.fromDate(checkOutDate),
+            'availability.isAvailable': false,
+          });
+
+          return docRef;
+        },
+      );
+
+      // Update visitor's bookings list
+      await _updateVisitorBookings(visitorId, bookingRef.id);
+
+      final booking = await getBookingById(bookingRef.id);
+      return BookingSuccess(booking);
+    } on FirebaseException catch (e) {
+      log('Firebase error creating booking: $e');
+      return BookingFailure('Failed to create booking: ${e.message}');
     } catch (e) {
-      return BookingFailure('Error creating booking: $e');
+      log('Error creating booking: $e');
+      return const BookingFailure('An unexpected error occurred');
     }
   }
 
-  static Future<void> updateVisitorBooking({
-    required String visitorId,
-    required String bookingId,
-  }) async {
+  /// Updates a visitor's bookings list with the new booking ID
+  static Future<void> _updateVisitorBookings(
+      String visitorId, String bookingId) async {
     try {
-      final visitorDoc =
-          FirebaseFirestore.instance.collection("visitors").doc(visitorId);
-      final docSnapshot = await visitorDoc.get();
-
-      if (docSnapshot.exists) {
-        await visitorDoc.update({
-          'bookings': FieldValue.arrayUnion([bookingId])
-        });
-      }
+      await FirebaseFirestore.instance
+          .collection("visitors")
+          .doc(visitorId)
+          .update({
+        'bookings': FieldValue.arrayUnion([bookingId])
+      });
+    } on FirebaseException catch (e) {
+      log('Firebase error updating visitor bookings: $e');
+      rethrow;
     } catch (e) {
-      print("Error updating visitor booking: $e");
+      log('Error updating visitor bookings: $e');
+      rethrow;
     }
   }
 
-  static Future<int> fetchMonthlyBookingsFuture(
+  /// Checks if a room is available for the given dates
+  static bool _isRoomAvailable(Room room, DateTime checkIn, DateTime checkOut) {
+    final availability = room.availability;
+
+    if (availability.isAvailable) {
+      return true;
+    }
+
+    final nextAvailable = availability.nextAvailableDate;
+    if (nextAvailable != null && checkIn.isAfter(nextAvailable)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Fetches monthly bookings count for a hotel
+  static Future<int> fetchMonthlyBookingsCount(
       {required String hotelId}) async {
     try {
       final now = DateTime.now();
       final firstDayOfMonth = DateTime(now.year, now.month, 1);
-      final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+      final lastDayOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
 
       final querySnapshot = await FirebaseFirestore.instance
           .collection('bookings')
           .where('hotelId', isEqualTo: hotelId)
-          .where('createdAt', isGreaterThanOrEqualTo: firstDayOfMonth)
-          .where('createdAt', isLessThanOrEqualTo: lastDayOfMonth)
+          .where('createdAt',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth),
+              isLessThanOrEqualTo: Timestamp.fromDate(lastDayOfMonth))
           .get();
 
       return querySnapshot.size;
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching monthly bookings: $e');
+      return 0;
     } catch (e) {
-      print(e);
       log('Error fetching monthly bookings: $e');
       return 0;
     }
   }
 
-  static Future<int> fetchPendingBookingsFuture(
+  /// Fetches pending bookings count for a hotel
+  static Future<int> fetchPendingBookingsCount(
       {required String hotelId}) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('bookings')
           .where('hotelId', isEqualTo: hotelId)
-          .where('status', isEqualTo: 'pending')
+          .where('status', isEqualTo: BookingStatus.pending.name)
           .get();
 
       return querySnapshot.size;
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching pending bookings: $e');
+      return 0;
     } catch (e) {
       log('Error fetching pending bookings: $e');
       return 0;
     }
   }
 
-  static Future<List<Booking>> fetchHotelBookingsById(
+  /// Fetches all bookings for a hotel
+  static Future<List<Booking>> fetchHotelBookings(
       {required String hotelId}) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('bookings')
           .where('hotelId', isEqualTo: hotelId)
+          .orderBy('createdAt', descending: true)
           .get();
 
       return querySnapshot.docs
           .map((doc) => Booking.fromFirestore(doc))
           .toList();
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching hotel bookings: $e');
+      return [];
     } catch (e) {
       log('Error fetching hotel bookings: $e');
       return [];
     }
   }
 
+  /// Updates booking status and handles related room availability
   static Future<BookingResult> updateBookingStatus({
     required String bookingId,
     required BookingStatus newStatus,
@@ -153,59 +220,70 @@ class BookingService {
       final bookingRef =
           FirebaseFirestore.instance.collection('bookings').doc(bookingId);
 
-      // First get the current booking to check roomId
-      final bookingDoc = await bookingRef.get();
-      if (!bookingDoc.exists) {
-        return const BookingFailure('Booking not found');
-      }
+      return await FirebaseFirestore.instance.runTransaction(
+        (transaction) async {
+          // Get current booking data
+          final bookingDoc = await transaction.get(bookingRef);
+          if (!bookingDoc.exists) {
+            throw Exception('Booking not found');
+          }
 
-      final booking = Booking.fromFirestore(bookingDoc);
+          final booking = Booking.fromFirestore(bookingDoc);
 
-      // Update the booking status
-      await bookingRef.update({
-        'status': newStatus.name,
-      });
+          // Update booking status
+          transaction.update(bookingRef, {
+            'status': newStatus.name,
+          });
 
-      // If completed or cancelled, update room availability
-      if (newStatus == BookingStatus.completed ||
-          newStatus == BookingStatus.cancelled) {
-        await FirebaseFirestore.instance
-            .collection('rooms')
-            .doc(booking.roomId)
-            .update({
-          'availability.isAvailable': true,
-          'availability.nextAvailableDate': null,
-        });
-      }
+          // Handle room availability for completed/cancelled bookings
+          if (newStatus == BookingStatus.completed ||
+              newStatus == BookingStatus.cancelled) {
+            final roomRef = FirebaseFirestore.instance
+                .collection('rooms')
+                .doc(booking.roomId);
 
-      return BookingSuccess(booking);
+            transaction.update(roomRef, {
+              'availability.isAvailable': true,
+              'availability.nextAvailableDate': null,
+            });
+          }
+
+          return BookingSuccess(booking);
+        },
+      );
+    } on FirebaseException catch (e) {
+      log('Firebase error updating booking status: $e');
+      return BookingFailure('Failed to update booking: ${e.message}');
     } catch (e) {
       log('Error updating booking status: $e');
-      return BookingFailure('Failed to update booking status: $e');
+      return const BookingFailure('An unexpected error occurred');
     }
   }
 
+  /// Fetches bookings for a user filtered by status
   static Future<List<Booking>> getBookingsByUser(
-      String visitorId, BookingStatus status) async {
+    String visitorId,
+    BookingStatus status,
+  ) async {
     try {
       final visitor = await VisitorService.getVisitorById(visitorId);
-      if (visitor!.bookings == null) {
+      if (visitor == null ||
+          visitor.bookings == null ||
+          visitor.bookings!.isEmpty) {
         return [];
       }
-      final bookingIds = visitor.bookings!;
 
-      List<Booking> filteredBookings = [];
+      // Fetch all bookings at once for better performance
+      final bookings = await Future.wait(
+        visitor.bookings!.map((id) => getBookingById(id)),
+      );
 
-      for (final bookingId in bookingIds) {
-        final bookingData = await BookingService.getBookingById(bookingId);
-
-        if (bookingData.status == status) {
-          filteredBookings.add(bookingData);
-        }
-      }
-      return filteredBookings;
+      return bookings.where((b) => b.status == status).toList();
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching user bookings: $e');
+      return [];
     } catch (e) {
-      log('Error fetching bookings by user: $e');
+      log('Error fetching user bookings: $e');
       return [];
     }
   }

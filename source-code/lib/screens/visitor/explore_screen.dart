@@ -20,9 +20,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ExploreView extends StatefulWidget {
-  final int? location;
+  final HotelFilterParameters? initialFilters;
 
-  const ExploreView({super.key, this.location});
+  const ExploreView({super.key, this.initialFilters});
 
   @override
   State<ExploreView> createState() => _ExploreViewState();
@@ -32,6 +32,16 @@ class _ExploreViewState extends State<ExploreView> {
   HotelListType _selectedTab = HotelListType.recommended;
   final _hotelCarouselController = CarouselController();
   final _cityCarouselController = CarouselController();
+  late HotelFilterParameters _currentFilters;
+  int? userLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    userLocation =
+        (context.read<AuthBloc>().state.currentUser as Visitor).location;
+    _currentFilters = widget.initialFilters ?? HotelFilterParameters();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +49,18 @@ class _ExploreViewState extends State<ExploreView> {
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final currentVisitor = state.currentUser as Visitor;
+
           return Scaffold(
             backgroundColor: ThemeColors.background,
             body: RefreshIndicator(
-              onRefresh: () async => setState(() {}),
+              onRefresh: _refreshData,
               color: ThemeColors.primary,
               backgroundColor: ThemeColors.surface,
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   _buildAppBarSection(currentVisitor),
-                  _buildMainContentSection(currentVisitor.location),
+                  _buildMainContentSection(),
                   _buildCitiesSection(),
                 ],
               ),
@@ -59,6 +70,8 @@ class _ExploreViewState extends State<ExploreView> {
       ),
     );
   }
+
+  Future<void> _refreshData() async => setState(() {});
 
   SliverPadding _buildAppBarSection(Visitor visitor) {
     return SliverPadding(
@@ -110,7 +123,7 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
-  SliverPadding _buildMainContentSection(int? location) {
+  SliverPadding _buildMainContentSection() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverToBoxAdapter(
@@ -120,7 +133,7 @@ class _ExploreViewState extends State<ExploreView> {
             _buildTabSelector(),
             const SizedBox(height: 24),
             FutureBuilder<List<Hotel>>(
-              future: _getHotelsBasedOnTab(location),
+              future: _getHotelsBasedOnTab(),
               builder: (context, snapshot) {
                 final hotelsCount = snapshot.data?.length ?? 0;
                 return Column(
@@ -193,11 +206,15 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
-  Future<List<Hotel>> _getHotelsBasedOnTab(int? location) {
-    final params = HotelFilterParameters(location: location);
+  Future<List<Hotel>> _getHotelsBasedOnTab() {
+    final params = _currentFilters.copyWith(
+      location: _selectedTab == HotelListType.nearMe
+          ? userLocation
+          : _currentFilters.location,
+    );
     return _selectedTab == HotelListType.recommended
-        ? HotelService.getRecommendedHotels(params: params, limit: 5)
-        : HotelService.getNearbyHotels(location, params: params);
+        ? HotelService.getRecommendedHotels(params: params)
+        : HotelService.getNearbyHotels(userLocation, params: params);
   }
 
   String _getSectionTitle(int count) {
@@ -211,9 +228,14 @@ class _ExploreViewState extends State<ExploreView> {
       context,
       MaterialPageRoute(
         builder: (context) => HotelBrowseView(
+          useUserLocationOnly: _selectedTab == HotelListType.nearMe,
+          appBackTitle: _selectedTab == HotelListType.recommended
+              ? 'Recommended Hotels'
+              : 'Hotels Near You',
+          initialFilters: _currentFilters,
           filterFunction: (params) => _selectedTab == HotelListType.recommended
               ? HotelService.getRecommendedHotels(params: params)
-              : HotelService.getNearbyHotels(widget.location, params: params),
+              : HotelService.getNearbyHotels(userLocation, params: params),
         ),
       ),
     );
@@ -231,8 +253,6 @@ class _ExploreViewState extends State<ExploreView> {
       return ErrorWidgetWithRetry(
         errorMessage: 'Failed to load hotels',
         onRetry: () => setState(() {}),
-        // backgroundColor: ThemeColors.error.withOpacity(0.1),
-        // textColor: ThemeColors.error,
       );
     } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
       return _buildHotelsCarousel(snapshot.data!);
@@ -277,11 +297,7 @@ class _ExploreViewState extends State<ExploreView> {
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
       child: Column(
         children: [
-          const Icon(
-            Iconsax.house,
-            size: 72,
-            color: ThemeColors.grey400,
-          ),
+          const Icon(Iconsax.house, size: 72, color: ThemeColors.grey400),
           const SizedBox(height: 16),
           Text(
             "No Hotels Available",
@@ -330,16 +346,12 @@ class _ExploreViewState extends State<ExploreView> {
                   return ErrorWidgetWithRetry(
                     errorMessage: 'Failed to load city data',
                     onRetry: () => setState(() {}),
-                    // backgroundColor: ThemeColors.error.withOpacity(0.1),
-                    // textColor: ThemeColors.error,
                   );
                 } else if (snapshot.hasData) {
                   return _buildCitiesCarousel(snapshot.data!);
                 } else {
                   return const NoDataWidget(
                     message: "No hotels are currently listed in these cities.",
-                    // backgroundColor: ThemeColors.grey50,
-                    // textColor: ThemeColors.textSecondary,
                   );
                 }
               },
@@ -351,28 +363,49 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Widget _buildCitiesCarousel(Map<int, int> hotelStats) {
+    final filteredWilayas = Wilaya.wilayasList
+        .where((wilaya) =>
+            hotelStats[wilaya.ind] != null && hotelStats[wilaya.ind]! > 0)
+        .toList();
+
+    if (filteredWilayas.isEmpty) {
+      return const NoDataWidget(
+        message: "No hotels are currently listed in these cities.",
+      );
+    }
+
     return CarouselSlider.builder(
       carouselController: _cityCarouselController,
-      itemCount: Wilaya.wilayasList.length,
+      itemCount: filteredWilayas.length,
       options: CarouselOptions(
         height: 140,
         viewportFraction: 0.45,
         enableInfiniteScroll: false,
-        autoPlay: true,
+        autoPlay: filteredWilayas.length > 1,
         autoPlayInterval: const Duration(seconds: 3),
       ),
       itemBuilder: (context, index, _) {
-        final wilaya = Wilaya.wilayasList[index];
+        final wilaya = filteredWilayas[index];
         return ExploreCityWidget(
           wilaya: wilaya,
           count: hotelStats[wilaya.ind] ?? 0,
-          onTap: () => Navigator.pushNamed(
-            context,
-            wilayaDetailsViewRoute,
-            arguments: wilaya.ind,
-          ),
+          onTap: () => _navigateToWilayaHotels(wilaya),
         );
       },
+    );
+  }
+
+  void _navigateToWilayaHotels(Wilaya wilaya) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HotelBrowseView(
+          initialFilters: _currentFilters.copyWith(location: wilaya.ind),
+          filterFunction: (params) => HotelService.getRecommendedHotels(
+            params: params.copyWith(location: wilaya.ind),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -430,7 +463,7 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
-class ExploreCityWidget extends StatefulWidget {
+class ExploreCityWidget extends StatelessWidget {
   final Wilaya wilaya;
   final VoidCallback? onTap;
   final int count;
@@ -443,44 +476,22 @@ class ExploreCityWidget extends StatefulWidget {
   });
 
   @override
-  State<ExploreCityWidget> createState() => _ExploreCityWidgetState();
-}
-
-class _ExploreCityWidgetState extends State<ExploreCityWidget> {
-  late Wilaya wilaya;
-
-  @override
-  void initState() {
-    super.initState();
-    wilaya = Wilaya.fromIndex(widget.wilaya.ind)!;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final height = constraints.maxHeight;
         final width = constraints.maxWidth;
 
-        // Scale elements based on height (Adaptive UI)
-        final titleFontSize = height * 0.16;
-        final hotelCountFontSize = height * 0.12;
-        final padding = height * 0.08;
-        final borderRadius = height * 0.15;
-        final shadowBlur = height * 0.06;
-        final hotelBadgePadding = EdgeInsets.symmetric(
-          vertical: height * 0.03,
-          horizontal: width * 0.04,
-        );
-
         return GestureDetector(
-          onTap: widget.onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+          onTap: onTap,
+          child: Container(
+            margin: EdgeInsets.symmetric(
+              vertical: height * 0.08,
+              horizontal: width * 0.08,
+            ),
             decoration: BoxDecoration(
               color: ThemeColors.white,
-              borderRadius: BorderRadius.circular(borderRadius),
+              borderRadius: BorderRadius.circular(height * 0.15),
               boxShadow: const [
                 BoxShadow(
                   color: ThemeColors.shadow,
@@ -489,80 +500,61 @@ class _ExploreCityWidgetState extends State<ExploreCityWidget> {
                 ),
               ],
             ),
-            margin:
-                EdgeInsets.symmetric(vertical: padding, horizontal: padding),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(borderRadius),
+              borderRadius: BorderRadius.circular(height * 0.15),
               child: Stack(
-                children: <Widget>[
-                  // Background Image with adjusted height
-                  SizedBox(
-                    height: double.infinity,
-                    width: double.infinity,
+                children: [
+                  SizedBox.expand(
                     child: Image.asset(
                       wilaya.image,
                       fit: BoxFit.cover,
+                      cacheHeight: height.toInt(),
                     ),
                   ),
-
-                  // Gradient Overlay for better text readability
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ThemeColors.darkBackground.withOpacity(0.7),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            ThemeColors.darkBackground.withOpacity(0.7),
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
                       ),
                     ),
                   ),
-
-                  // City Name with shadow and enhanced readability
                   Positioned(
-                    left: padding,
-                    bottom: padding * 1.2,
+                    left: height * 0.08,
+                    bottom: height * 0.1,
                     child: Text(
                       wilaya.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: titleFontSize,
+                        fontSize: height * 0.16,
                         color: ThemeColors.white,
-                        shadows: [
-                          Shadow(
-                            blurRadius: shadowBlur,
-                            color: ThemeColors.black.withOpacity(0.5),
-                            offset: const Offset(1.5, 1.5),
-                          ),
-                        ],
                       ),
                     ),
                   ),
-
-                  // Hotel Count Badge (Enhanced UI)
                   Positioned(
-                    top: padding,
-                    right: padding,
+                    top: height * 0.08,
+                    right: height * 0.08,
                     child: Container(
-                      padding: hotelBadgePadding,
+                      padding: EdgeInsets.symmetric(
+                        vertical: height * 0.03,
+                        horizontal: width * 0.04,
+                      ),
                       decoration: BoxDecoration(
                         gradient: ThemeColors.accentGradient,
-                        borderRadius: BorderRadius.circular(borderRadius * 0.5),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: ThemeColors.shadowDark,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(height * 0.075),
                       ),
                       child: Text(
-                        '${widget.count} Hotels',
+                        '$count Hotels',
                         style: TextStyle(
                           color: ThemeColors.white,
                           fontWeight: FontWeight.w700,
-                          fontSize: hotelCountFontSize,
+                          fontSize: height * 0.12,
                         ),
                       ),
                     ),

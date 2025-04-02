@@ -289,76 +289,78 @@ class HotelService {
     }
   }
 
-  static Future<List<Hotel>> getNearbyHotels(
-    int? userLocation, {
-    HotelFilterParameters? params,
-    int limit = 0,
-  }) async {
-    if (userLocation == null) return [];
+  static final CollectionReference<Map<String, dynamic>> _hotelsCollection =
+      FirebaseFirestore.instance.collection('hotels');
 
-    try {
-      Query hotelQuery = FirebaseFirestore.instance
-          .collection('hotels')
-          .where('location', isEqualTo: userLocation);
-
-      if (params != null) {
-        final HotelFilterParameters(:minRating, :maxRating) = params;
-
-        if (minRating != null && minRating > 0) {
-          hotelQuery = hotelQuery.where('ratings.rating',
-              isGreaterThanOrEqualTo: minRating);
-        }
-        if (maxRating != null && maxRating < 5) {
-          hotelQuery = hotelQuery.where('ratings.rating',
-              isLessThanOrEqualTo: maxRating);
-        }
-      }
-
-      if (limit > 0) {
-        hotelQuery = hotelQuery.limit(limit);
-      }
-
-      final hotels =
-          (await hotelQuery.get()).docs.map(Hotel.fromFirestore).toList();
-      if (hotels.isEmpty || limit == 0) return hotels;
-
-      final hotelIds = hotels.map((hotel) => hotel.id).toList();
-      Query roomQuery = _buildRoomQuery(hotelIds, params);
-
-      final matchingHotelIds =
-          await _filterRoomIdsByCapacity(roomQuery, params);
-      final filteredHotels =
-          hotels.where((hotel) => matchingHotelIds.contains(hotel.id)).toList();
-      return limit > 0 ? filteredHotels.take(limit).toList() : filteredHotels;
-    } catch (e) {
-      print(e);
-      log('Error fetching nearby hotels: $e');
-      return [];
-    }
-  }
+  static final CollectionReference<Map<String, dynamic>> _roomsCollection =
+      FirebaseFirestore.instance.collection('rooms');
 
   static Future<List<Hotel>> getRecommendedHotels({
     required HotelFilterParameters params,
-    int limit = 0,
   }) async {
     try {
-      Query hotelQuery = _buildHotelQuery(params, limit);
-
-      final hotels =
-          (await hotelQuery.get()).docs.map(Hotel.fromFirestore).toList();
-      if (hotels.isEmpty || limit == 0) return hotels;
-
-      final filteredHotels = await _filterHotelsByRooms(hotels, params);
-      return limit > 0 ? filteredHotels.take(limit).toList() : filteredHotels;
+      final hotels = await _getFilteredHotels(params);
+      if (hotels.isEmpty) return hotels;
+      return await _filterHotelsByRoomAvailability(hotels, params);
     } catch (e) {
       log('Error fetching recommended hotels: $e');
       return [];
     }
   }
 
-  static Query _buildHotelQuery(HotelFilterParameters params, int limit) {
-    Query query = FirebaseFirestore.instance.collection('hotels');
+  static Future<List<Hotel>> getNearbyHotels(
+    int? userLocation, {
+    HotelFilterParameters? params,
+  }) async {
+    if (userLocation == null) return [];
 
+    try {
+      Query<Map<String, dynamic>> hotelQuery = _hotelsCollection.where(
+        'location',
+        isEqualTo: userLocation,
+      );
+
+      final paramsWithoutLocation = params != null
+          ? HotelFilterParameters(
+              minRating: params.minRating,
+              maxRating: params.maxRating,
+              minPrice: params.minPrice,
+              minPeople: params.minPeople,
+              maxPeople: params.maxPeople,
+              location: null,
+            )
+          : null;
+
+      if (paramsWithoutLocation != null) {
+        hotelQuery = _applyHotelFilters(hotelQuery, paramsWithoutLocation);
+      }
+
+      final hotels = (await hotelQuery.get())
+          .docs
+          .map((doc) => Hotel.fromFirestore(doc))
+          .toList();
+
+      return paramsWithoutLocation != null
+          ? await _filterHotelsByRoomAvailability(hotels, paramsWithoutLocation)
+          : hotels;
+    } catch (e) {
+      log('Error fetching nearby hotels: $e');
+      return [];
+    }
+  }
+
+  static Future<List<Hotel>> _getFilteredHotels(
+      HotelFilterParameters params) async {
+    Query<Map<String, dynamic>> query = _hotelsCollection;
+    query = _applyHotelFilters(query, params);
+    final snapshot = await query.get();
+    return snapshot.docs.map(Hotel.fromFirestore).toList();
+  }
+
+  static Query<Map<String, dynamic>> _applyHotelFilters(
+    Query<Map<String, dynamic>> query,
+    HotelFilterParameters params,
+  ) {
     if (params.minRating != null && params.minRating! > 0) {
       query = query.where('ratings.rating',
           isGreaterThanOrEqualTo: params.minRating);
@@ -370,21 +372,51 @@ class HotelService {
     if (params.location != null) {
       query = query.where('location', isEqualTo: params.location);
     }
-    return limit > 0 ? query.limit(limit) : query;
+    return query;
   }
 
-  static Query _buildRoomQuery(
-      List<String> hotelIds, HotelFilterParameters? params) {
-    Query query = FirebaseFirestore.instance
-        .collection('rooms')
-        .where('hotelId', whereIn: hotelIds);
+  static Future<List<Hotel>> _filterHotelsByRoomAvailability(
+    List<Hotel> hotels,
+    HotelFilterParameters params,
+  ) async {
+    if (!_needsRoomFiltering(params)) return hotels;
 
-    if (params != null && params.minPrice != null) {
-      query =
-          query.where('pricePerNight', isGreaterThanOrEqualTo: params.minPrice);
-      final maxPrice = priceRanges.firstWhere(
-          (range) => range['min'] == params.minPrice,
-          orElse: () => {'max': null})['max'];
+    final hotelIds = hotels.map((hotel) => hotel.id).toList();
+    final matchingHotelIds = await _getMatchingRoomHotelIds(hotelIds, params);
+    return hotels
+        .where((hotel) => matchingHotelIds.contains(hotel.id))
+        .toList();
+  }
+
+  static Future<Set<String>> _getMatchingRoomHotelIds(
+    List<String> hotelIds,
+    HotelFilterParameters params,
+  ) async {
+    Query<Map<String, dynamic>> roomQuery = _roomsCollection.where(
+      'hotelId',
+      whereIn: hotelIds,
+    );
+
+    roomQuery = _applyRoomFilters(roomQuery, params);
+
+    final snapshot = await roomQuery.get();
+    return snapshot.docs
+        .where((doc) => _matchesCapacity(doc, params))
+        .map((doc) => doc['hotelId'] as String)
+        .toSet();
+  }
+
+  static Query<Map<String, dynamic>> _applyRoomFilters(
+    Query<Map<String, dynamic>> query,
+    HotelFilterParameters params,
+  ) {
+    if (params.minPrice != null) {
+      query = query.where(
+        'pricePerNight',
+        isGreaterThanOrEqualTo: params.minPrice!.toDouble(),
+      );
+
+      final maxPrice = _getMaxPriceForRange(params.minPrice!.toDouble());
       if (maxPrice != null) {
         query = query.where('pricePerNight', isLessThanOrEqualTo: maxPrice);
       }
@@ -392,31 +424,48 @@ class HotelService {
     return query;
   }
 
-  static Future<Set<String>> _filterRoomIdsByCapacity(
-      Query roomQuery, HotelFilterParameters? params) async {
-    final snapshot = await roomQuery.get();
-    return snapshot.docs
-        .where((doc) {
-          final capacity = doc['capacity'] as int;
-          return (params?.minPeople == null ||
-                  capacity >= params!.minPeople!) &&
-              (params?.maxPeople == null || capacity <= params!.maxPeople!);
-        })
-        .map((doc) => doc['hotelId'] as String)
-        .toSet();
+  static double? _getMaxPriceForRange(double minPrice) {
+    final range = priceRanges.firstWhere(
+      (range) => range['min'] == minPrice,
+      orElse: () => {'max': null},
+    );
+    return range['max']?.toDouble();
   }
 
-  static Future<List<Hotel>> _filterHotelsByRooms(
-      List<Hotel> hotels, HotelFilterParameters params) async {
-    final hotelIds = hotels.map((hotel) => hotel.id).toList();
-    Query roomQuery = _buildRoomQuery(hotelIds, params);
-
-    final matchingHotelIds = await _filterRoomIdsByCapacity(roomQuery, params);
-    return hotels
-        .where((hotel) => matchingHotelIds.contains(hotel.id))
-        .toList();
+  static bool _matchesCapacity(
+    DocumentSnapshot roomDoc,
+    HotelFilterParameters params,
+  ) {
+    final capacity = roomDoc['capacity'] as int;
+    return (params.minPeople == null || capacity >= params.minPeople!) &&
+        (params.maxPeople == null || capacity <= params.maxPeople!);
   }
 
+  static Future<List<Hotel>> getAllHotels({
+    HotelFilterParameters? params,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = _hotelsCollection;
+
+      if (params != null) {
+        query = _applyHotelFilters(query, params);
+      }
+
+      final snapshot = await query.get();
+      List<Hotel> hotels = snapshot.docs.map(Hotel.fromFirestore).toList();
+
+      if (params != null && _needsRoomFiltering(params)) {
+        hotels = await _filterHotelsByRoomAvailability(hotels, params);
+      }
+
+      return hotels;
+    } catch (e) {
+      log('Error fetching all hotels: $e');
+      return [];
+    }
+  }
+
+// Supporting functions (these remain the same as in your existing code)
   static Future<List<ActivityItem>> getRecentActivity({
     required String hotelId,
   }) async {
@@ -431,6 +480,12 @@ class HotelService {
       print('Error fetching recent activity: $e');
       return [];
     }
+  }
+
+  static bool _needsRoomFiltering(HotelFilterParameters params) {
+    return params.minPrice != null ||
+        params.minPeople != null ||
+        params.maxPeople != null;
   }
 
   static Future<List<ActivityItem>> _getRecentBookings(String hotelId) async {

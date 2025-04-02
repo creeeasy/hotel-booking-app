@@ -10,7 +10,7 @@ import 'package:fatiel/helpers/loading/loading_screen.dart';
 import 'package:fatiel/screens/forgot_password_screen.dart';
 import 'package:fatiel/screens/login_screen.dart';
 import 'package:fatiel/screens/register_screen.dart';
-import 'package:fatiel/screens/verify_email_screen.dart';
+// import 'package:fatiel/screens/verify_email_screen.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
@@ -78,8 +78,8 @@ class _AuthFlowState extends State<AuthFlow> {
                 return const HotelHomeView();
               } else if (state is AuthStateVisitorLoggedIn) {
                 return const VisitorHomeScreen();
-              } else if (state is AuthStateNeedsVerification) {
-                return const VerifyEmailView();
+              // } else if (state is AuthStateNeedsVerification) {
+              //   return const VerifyEmailView();
               } else if (state is AuthStateLoggedOut) {
                 return const LoginView();
               } else if (state is AuthStateForgotPassword) {

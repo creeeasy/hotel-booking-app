@@ -9,10 +9,10 @@ import 'package:fatiel/services/auth/bloc/auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(AuthProvider provider)
       : super(const AuthStateUninitialized(isLoading: true)) {
-    on<AuthEventSendEmailVerification>((event, emit) async {
-      await provider.sendEmailVerification();
-      emit(state);
-    });
+    // on<AuthEventSendEmailVerification>((event, emit) async {
+    //   await provider.sendEmailVerification();
+    //   emit(state);
+    // });
 
     on<AuthEventShouldRegister>(((event, emit) {
       emit(const AuthStateRegistering(exception: null, isLoading: false));
@@ -42,10 +42,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           password: password,
           hotelName: hotelName,
         );
-        await provider.sendEmailVerification();
-        emit(const AuthStateNeedsVerification(
-          isLoading: false,
-        ));
+        // await provider.sendEmailVerification();
+        // emit(const AuthStateNeedsVerification(
+        //   isLoading: false,
+        // ));
       } on Exception catch (e) {
         emit(AuthStateHotelRegistering(
           exception: e,
@@ -74,10 +74,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           firstName: firstName,
           lastName: lastName,
         );
-        await provider.sendEmailVerification();
-        emit(const AuthStateNeedsVerification(
-          isLoading: false,
-        ));
+        // await provider.sendEmailVerification();
+        // emit(const AuthStateNeedsVerification(
+        //   isLoading: false,
+        // ));
       } on Exception catch (e) {
         emit(AuthStateVisitorRegistering(
           exception: e,
@@ -125,37 +125,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user == null) {
         emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } else {
-        if (!user.isEmailVerified) {
-          emit(const AuthStateNeedsVerification(isLoading: false));
-        } else {
-          final authenticatedUser = await provider.getUser();
-          if (authenticatedUser is Map<String, dynamic> &&
-              authenticatedUser["hotel"] is Hotel) {
-            final bool isCompleted = authenticatedUser["isCompleted"] as bool;
-            final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+        // if (!user.isEmailVerified) {
+        //   emit(const AuthStateNeedsVerification(isLoading: false));
+        // } else {
+        final authenticatedUser = await provider.getUser();
+        if (authenticatedUser is Map<String, dynamic> &&
+            authenticatedUser["hotel"] is Hotel) {
+          final bool isCompleted = authenticatedUser["isCompleted"] as bool;
+          final Hotel hotel = authenticatedUser["hotel"] as Hotel;
 
-            if (isCompleted) {
-              return emit(AuthStateHotelLoggedIn(
-                isLoading: false,
-                user: hotel,
-              ));
-            }
-
-            emit(AuthStateHotelDetailsCompletion(
-              exception: null,
+          if (isCompleted) {
+            return emit(AuthStateHotelLoggedIn(
               isLoading: false,
-              hotel: hotel,
-            ));
-          } else {
-            VisitorBookingsStream.listenToBookings(null);
-            VisitorFavoritesStream.listenToFavorites();
-
-            return emit(AuthStateVisitorLoggedIn(
-              isLoading: false,
-              user: authenticatedUser,
+              user: hotel,
             ));
           }
+
+          emit(AuthStateHotelDetailsCompletion(
+            exception: null,
+            isLoading: false,
+            hotel: hotel,
+          ));
+        } else {
+          VisitorBookingsStream.listenToBookings(null);
+          VisitorFavoritesStream.listenToFavorites();
+
+          return emit(AuthStateVisitorLoggedIn(
+            isLoading: false,
+            user: authenticatedUser,
+          ));
         }
+        // }
       }
     }));
 
@@ -178,44 +178,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final password = event.password;
 
       try {
-        final user = await provider.logIn(email: email, password: password);
+        await provider.logIn(email: email, password: password);
+        // final user = await provider.logIn(email: email, password: password);
 
-        if (!user!.isEmailVerified) {
-          emit(const AuthStateNeedsVerification(
-            isLoading: false,
-          ));
-        } else {
-          emit(const AuthStateLoggedOut(
-            exception: null,
-            isLoading: false,
-          ));
-          final authenticatedUser = await provider.getUser();
-          if (authenticatedUser is Map<String, dynamic> &&
-              authenticatedUser["hotel"] is Hotel) {
-            final bool isCompleted = authenticatedUser["isCompleted"] as bool;
-            final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+        // if (!user!.isEmailVerified) {
+        //   emit(const AuthStateNeedsVerification(
+        //     isLoading: false,
+        //   ));
+        // } else {
+        emit(const AuthStateLoggedOut(
+          exception: null,
+          isLoading: false,
+        ));
+        final authenticatedUser = await provider.getUser();
+        if (authenticatedUser is Map<String, dynamic> &&
+            authenticatedUser["hotel"] is Hotel) {
+          final bool isCompleted = authenticatedUser["isCompleted"] as bool;
+          final Hotel hotel = authenticatedUser["hotel"] as Hotel;
 
-            if (isCompleted) {
-              return emit(AuthStateHotelLoggedIn(
-                isLoading: false,
-                user: hotel,
-              ));
-            }
-
-            emit(AuthStateHotelDetailsCompletion(
-              exception: null,
+          if (isCompleted) {
+            return emit(AuthStateHotelLoggedIn(
               isLoading: false,
-              hotel: hotel,
-            ));
-          } else {
-            VisitorBookingsStream.listenToBookings(null);
-            VisitorFavoritesStream.listenToFavorites();
-
-            return emit(AuthStateVisitorLoggedIn(
-              isLoading: false,
-              user: authenticatedUser,
+              user: hotel,
             ));
           }
+
+          emit(AuthStateHotelDetailsCompletion(
+            exception: null,
+            isLoading: false,
+            hotel: hotel,
+          ));
+        } else {
+          VisitorBookingsStream.listenToBookings(null);
+          VisitorFavoritesStream.listenToFavorites();
+
+          return emit(AuthStateVisitorLoggedIn(
+            isLoading: false,
+            user: authenticatedUser,
+          ));
+          // }
         }
       } on Exception catch (exception) {
         emit(

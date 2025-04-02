@@ -41,7 +41,7 @@ class _VisitorHomeScreenState extends State<VisitorHomeScreen> {
           physics: const NeverScrollableScrollPhysics(),
           children: const [
             ExploreView(),
-            BookingView(),
+            BookingScreen(),
             FavoritePage(),
           ],
         ),

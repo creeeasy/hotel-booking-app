@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
           hotelDetailsRoute: (context) => const HotelDetailsView(),
           favoritesViewRoute: (context) => const FavoritePage(),
           exploreViewRoute: (context) => const ExploreView(),
-          bookingsViewRoute: (context) => const BookingView(),
+          bookingsViewRoute: (context) => const BookingScreen(),
           wilayaDetailsViewRoute: (context) => const WilayaDetailsPageView(),
           searchHotelViewRoute: (context) => const SearchHotelView(),
           roomBookingOffersViewRoute: (context) =>

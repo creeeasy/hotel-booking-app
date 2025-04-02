@@ -52,10 +52,10 @@ class AuthService implements AuthProvider {
     return provider.logIn(email: email, password: password);
   }
 
-  @override
-  Future<void> sendEmailVerification() {
-    return provider.sendEmailVerification();
-  }
+  // @override
+  // Future<void> sendEmailVerification() {
+  //   return provider.sendEmailVerification();
+  // }
 
   @override
   AuthUser? get currentUser => provider.currentUser;
