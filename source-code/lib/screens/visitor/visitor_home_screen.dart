@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/visitor_nav_bar.dart';
 import 'package:fatiel/screens/visitor/booking_screen.dart';
@@ -68,11 +69,11 @@ class _VisitorHomeScreenState extends State<VisitorHomeScreen> {
       getTabLabel: (tab) {
         switch (tab) {
           case VisitorNavBar.explore:
-            return 'Explore';
+            return L10n.of(context).explore;
           case VisitorNavBar.booking:
-            return 'Bookings';
+            return L10n.of(context).bookings;
           case VisitorNavBar.favorite:
-            return 'Favorites';
+            return L10n.of(context).favorites;
         }
       },
       elevation: 8.0,

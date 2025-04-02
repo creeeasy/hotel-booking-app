@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -26,7 +27,7 @@ class NoReviewsUI extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              "No Reviews Yet",
+              L10n.of(context).noReviewsYet,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,

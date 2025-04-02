@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -100,7 +101,7 @@ class RoomCardWidget extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "${room.capacity} Guests",
+                          "${room.capacity} ${L10n.of(context).guests}",
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.8),
                           ),
@@ -118,7 +119,7 @@ class RoomCardWidget extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "${room.pricePerNight.toStringAsFixed(2)}/night",
+                          "${room.pricePerNight.toStringAsFixed(2)}/${L10n.of(context).night}",
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: priceColor,
@@ -139,7 +140,7 @@ class RoomCardWidget extends StatelessWidget {
                 // Availability Badge
                 Align(
                   alignment: Alignment.centerRight,
-                  child: _buildAvailabilityBadge(),
+                  child: _buildAvailabilityBadge(context),
                 ),
               ],
             ),
@@ -210,7 +211,7 @@ class RoomCardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAvailabilityBadge() {
+  Widget _buildAvailabilityBadge(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -235,7 +236,9 @@ class RoomCardWidget extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            room.availability.isAvailable ? "Available" : "Unavailable",
+            room.availability.isAvailable
+                ? L10n.of(context).available
+                : L10n.of(context).unavailable,
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,

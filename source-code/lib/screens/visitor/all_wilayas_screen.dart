@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/wilaya.dart';
@@ -29,7 +30,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: CustomBackAppBar(
-          title: "All Wilayas",
+          title: L10n.of(context).allWilayas,
           onBack: () => Navigator.of(context).pop(),
         ),
         backgroundColor: ThemeColors.background,
@@ -40,19 +41,19 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
                 future: HotelService.getHotelStatistics(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildLoadingIndicator();
+                    return _buildLoadingIndicator(context);
                   } else if (snapshot.hasError) {
                     return ErrorWidgetWithRetry(
-                      errorMessage: 'Failed to load wilaya data',
+                      errorMessage: L10n.of(context).failedToLoadWilayaData,
                       onRetry: () => setState(() {}),
                     );
                   } else if (!snapshot.hasData) {
-                    return const NoDataWidget(
-                      message: "No hotels currently listed in any wilaya",
+                    return NoDataWidget(
+                      message: L10n.of(context).noHotelsListedInAnyWilaya,
                       // icon: Iconsax.map,
                     );
                   }
-                  return _buildWilayaGrid(snapshot.data!);
+                  return _buildWilayaGrid(snapshot.data!, context);
                 },
               ),
             ),
@@ -62,19 +63,19 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
     );
   }
 
-  Widget _buildLoadingIndicator() {
-    return const Center(
+  Widget _buildLoadingIndicator(BuildContext context) {
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
+          const CircularProgressIndicator(
             color: ThemeColors.primary,
             strokeWidth: 2,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
-            "Discovering amazing places for you",
-            style: TextStyle(
+            L10n.of(context).discoveringAmazingPlaces,
+            style: const TextStyle(
               color: ThemeColors.textSecondary,
               fontSize: 16,
             ),
@@ -84,7 +85,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
     );
   }
 
-  Widget _buildWilayaGrid(Map<int, int> hotelStats) {
+  Widget _buildWilayaGrid(Map<int, int> hotelStats, BuildContext context) {
     return RefreshIndicator(
       color: ThemeColors.primary,
       onRefresh: () async {
@@ -102,15 +103,15 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
         itemBuilder: (context, index) {
           final wilaya = wilayas[index];
           final hotelCount = hotelStats[wilaya.ind] ?? 0;
-          return _buildWilayaCard(wilaya, hotelCount);
+          return _buildWilayaCard(wilaya, hotelCount, context);
         },
       ),
     );
   }
 
-  Widget _buildWilayaCard(Wilaya wilaya, int hotelCount) {
+  Widget _buildWilayaCard(Wilaya wilaya, int hotelCount, BuildContext context) {
     return GestureDetector(
-      onTap: () => _navigateToWilayaDetails(wilaya.ind),
+      onTap: () => _navigateToWilayaDetails(wilaya.ind, context),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -172,7 +173,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Wilaya ${wilaya.ind}",
+                      '${L10n.of(context).wilaya} ${wilaya.ind}',
                       style: TextStyle(
                         color: ThemeColors.white.withOpacity(0.9),
                         fontSize: 14,
@@ -229,7 +230,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
     );
   }
 
-  void _navigateToWilayaDetails(int wilayaNumber) {
+  void _navigateToWilayaDetails(int wilayaNumber, BuildContext context) {
     Navigator.pushNamed(
       context,
       wilayaDetailsViewRoute,

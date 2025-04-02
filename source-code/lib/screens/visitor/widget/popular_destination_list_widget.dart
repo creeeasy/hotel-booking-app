@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/enum/hotel_entity.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
 import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
@@ -51,14 +52,13 @@ class _PopularDestinationListWidgetState
                 future: getData(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return const NoDataWidget(
-                      message:
-                          "No popular destinations available at the moment.",
+                    return NoDataWidget(
+                      message: L10n.of(context).noPopularDestinationsAvailable,
                     );
                   }
                   if (snapshot.hasError) {
                     return ErrorWidgetWithRetry(
-                      errorMessage: 'Error: ${snapshot.error}',
+                      errorMessage: '${L10n.of(context).error}: ${snapshot.error}',
                     );
                   } else {
                     return ListView.builder(

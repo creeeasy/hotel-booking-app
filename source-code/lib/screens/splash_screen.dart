@@ -167,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen>
                               // Solid text
                               Transform.translate(
                                 offset: Offset(0, _textSlideAnimation.value),
-                                child: Text(
+                                child: const Text(
                                   "Fatiel Hotels",
                                   style: TextStyle(
                                     fontSize: 38,
@@ -236,7 +236,7 @@ class _SplashScreenState extends State<SplashScreen>
                       opacity: 0.5 + (0.3 * _controller.value),
                       child: Text(
                         "EST. ${DateTime.now().year}",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w300,

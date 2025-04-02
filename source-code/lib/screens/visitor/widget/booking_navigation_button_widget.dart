@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
@@ -45,15 +46,15 @@ class _BookingNavigationButtonWidgetState
   Future<bool> _showTotalPriceDialog() async {
     return await showGenericDialog<bool>(
       context: context,
-      title: 'Confirm Booking',
+      title: L10n.of(context).confirmBooking,
       content: '''
-      Check-in Date: ${DateFormat('MMM d, y').format(_startDate!)}
-      Check-out Date: ${DateFormat('MMM d, y').format(_endDate!)}
-      Total Nights: ${_endDate!.difference(_startDate!).inDays}
-      Total Price: \$${_totalPrice.toStringAsFixed(2)}''',
+      ${L10n.of(context).checkInDate}: ${DateFormat('MMM d, y').format(_startDate!)}
+      ${L10n.of(context).checkOutDate}: ${DateFormat('MMM d, y').format(_endDate!)}
+      ${L10n.of(context).totalNights}: ${_endDate!.difference(_startDate!).inDays}
+      ${L10n.of(context).totalPrice}: \$${_totalPrice.toStringAsFixed(2)}''',
       optionBuilder: () => {
-        'Cancel': false,
-        'Confirm & Pay': true,
+        L10n.of(context).cancel: false,
+        L10n.of(context).confirmAndPay: true,
       },
     ).then((value) => value ?? false);
   }
@@ -70,9 +71,9 @@ class _BookingNavigationButtonWidgetState
       initialDate: initialDate,
       firstDate: initialDate,
       lastDate: DateTime(2100),
-      helpText: "Select Check-in Date",
-      cancelText: "Cancel",
-      confirmText: "Next",
+      helpText: L10n.of(context).selectCheckInDate,
+      cancelText: L10n.of(context).cancel,
+      confirmText: L10n.of(context).next,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -98,9 +99,9 @@ class _BookingNavigationButtonWidgetState
       initialDate: minEndDate,
       firstDate: minEndDate,
       lastDate: DateTime(2100),
-      helpText: "Select Check-out Date",
-      cancelText: "Cancel",
-      confirmText: "Confirm",
+      helpText: L10n.of(context).selectCheckOutDate,
+      cancelText: L10n.of(context).cancel,
+      confirmText: L10n.of(context).confirm,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -149,7 +150,7 @@ class _BookingNavigationButtonWidgetState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text("Booking confirmed successfully!"),
+              content: Text(L10n.of(context).bookingConfirmed),
               backgroundColor: ThemeColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -212,14 +213,14 @@ class _BookingNavigationButtonWidgetState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "From \$${room.pricePerNight.toStringAsFixed(2)}",
+                    "${L10n.of(context).from} \$${room.pricePerNight.toStringAsFixed(2)}",
                     style: TextStyle(
                       fontSize: 14,
                       color: ThemeColors.textSecondary,
                     ),
                   ),
                   Text(
-                    "\$${room.pricePerNight.toStringAsFixed(2)} / night",
+                    "\$${room.pricePerNight.toStringAsFixed(2)} / ${L10n.of(context).night}",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -258,8 +259,10 @@ class _BookingNavigationButtonWidgetState
                     const SizedBox(width: 8),
                     Text(
                       isAvailable
-                          ? (_isConfirming ? "Confirm" : "Book Now")
-                          : "Unavailable",
+                          ? (_isConfirming
+                              ? L10n.of(context).confirm
+                              : L10n.of(context).bookNow)
+                          : L10n.of(context).unavailable,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

@@ -10,6 +10,7 @@ import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:fatiel/l10n/l10n.dart';
 
 bool isValidUrl(String url) {
   try {
@@ -41,12 +42,12 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
     final input = controller.text.trim();
     if (currentIndex == 2 && !isValidUrl(input)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Type a valid url!")),
+        SnackBar(content: Text(L10n.of(context).validUrl)), // Localized
       );
       return;
     } else if (input.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Input can't be empty!")),
+        SnackBar(content: Text(L10n.of(context).inputEmpty)), // Localized
       );
       return;
     }
@@ -70,17 +71,23 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
   Map<String, dynamic> getStepData() {
     switch (currentIndex) {
       case 0:
-        return {'title': "Update Location", 'controller': _locationController};
+        return {
+          'title': L10n.of(context).updateLocation,
+          'controller': _locationController
+        }; // Localized
       case 1:
         return {
-          'title': "Update Description",
+          'title': L10n.of(context).updateDescription, // Localized
           'controller': _descriptionController
         };
       case 2:
-        return {'title': "Update Map Link", 'controller': _mapLinkController};
+        return {
+          'title': L10n.of(context).updateMapLink,
+          'controller': _mapLinkController
+        }; // Localized
       case 3:
         return {
-          'title': "Update Contact Information",
+          'title': L10n.of(context).updateContactInformation, // Localized
           'controller': _contactInfoController
         };
       default:
@@ -117,7 +124,7 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
             return Scaffold(
               backgroundColor: ThemeColors.background,
               appBar: CustomBackAppBar(
-                title: "Complete Your Hotel Profile",
+                title: L10n.of(context).completeHotelProfile, // Localized
                 titleSize: 19,
                 icon: Iconsax.logout,
                 onBack: () => handleLogout(context),
@@ -148,7 +155,8 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                                 value: _locationController.text.isNotEmpty
                                     ? int.tryParse(_locationController.text)
                                     : null,
-                                hint: const Text("Select a Wilaya"),
+                                hint: Text(
+                                    L10n.of(context).selectWilaya), // Localized
                                 isExpanded: true,
                                 onChanged: (int? newValue) {
                                   if (newValue != null) {
@@ -169,20 +177,21 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                             : TextField(
                                 controller: stepData['controller'],
                                 decoration: InputDecoration(
-                                  hintText:
-                                      "Enter ${stepData['title']?.toLowerCase()}...",
+                                  hintText: L10n.of(context).enterField(
+                                      stepData['title']?.toLowerCase() ??
+                                          ''), // Localized
                                   hintStyle: TextStyle(
                                       color: Colors.grey[600], fontSize: 16),
                                   contentPadding: const EdgeInsets.symmetric(
                                       vertical: 15, horizontal: 20),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                         color: ThemeColors.primary, width: 2),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                         color: ThemeColors.accentPink,
                                         width: 2),
                                   ),
@@ -224,9 +233,9 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 12),
                                 ),
-                                child: const Text(
-                                  "Back",
-                                  style: TextStyle(
+                                child: Text(
+                                  L10n.of(context).back, // Localized
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -251,7 +260,9 @@ class _HotelDetailsCompletionState extends State<HotelDetailsCompletion> {
                                       color: ThemeColors.white, strokeWidth: 2),
                                 )
                               : Text(
-                                  currentIndex == 3 ? "Finish" : "Next",
+                                  currentIndex == 3
+                                      ? L10n.of(context).finish // Localized
+                                      : L10n.of(context).next, // Localized
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600),

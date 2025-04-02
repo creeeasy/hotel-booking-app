@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
@@ -26,8 +27,8 @@ class _FavoritePageState extends State<FavoritePage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: ThemeColors.background,
-        appBar: const CustomBackAppBar(
-          title: "Favorites",
+        appBar: CustomBackAppBar(
+          title: L10n.of(context).favoritesTitle,
           titleColor: ThemeColors.primary,
           iconColor: ThemeColors.primary,
         ),
@@ -62,15 +63,15 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicatorWidget(),
-          SizedBox(height: 16),
+          const CircularProgressIndicatorWidget(),
+          const SizedBox(height: 16),
           Text(
-            'Loading your favorites',
-            style: TextStyle(
+            L10n.of(context).loadingYourFavorites,
+            style: const TextStyle(
               color: ThemeColors.textSecondary,
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -94,19 +95,19 @@ class _FavoritePageState extends State<FavoritePage> {
               color: ThemeColors.error,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Couldn\'t load favorites',
-              style: TextStyle(
+            Text(
+              L10n.of(context).couldntLoadFavorites,
+              style: const TextStyle(
                 fontSize: 18,
                 color: ThemeColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Please check your connection and try again',
+            Text(
+              L10n.of(context).checkConnectionAndTryAgain,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: ThemeColors.textSecondary,
                 height: 1.5,
@@ -125,7 +126,7 @@ class _FavoritePageState extends State<FavoritePage> {
                 ),
                 elevation: 0,
               ),
-              child: const Text('Try Again'),
+              child: Text(L10n.of(context).tryAgain),
             ),
           ],
         ),
@@ -153,21 +154,21 @@ class _FavoritePageState extends State<FavoritePage> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              "No Favorites Yet",
-              style: TextStyle(
+            Text(
+              L10n.of(context).noFavoritesYet,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: ThemeColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                "Save your favorite hotels by tapping the heart icon when browsing",
+                L10n.of(context).saveFavoritesMessage,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   color: ThemeColors.textSecondary,
                   height: 1.5,
@@ -180,7 +181,7 @@ class _FavoritePageState extends State<FavoritePage> {
                   Navigator.pushNamed(context, hotelBrowseScreenRoute),
               icon: const Icon(Iconsax.search_normal,
                   size: 20, color: ThemeColors.textOnPrimary),
-              label: const Text("Browse Hotels"),
+              label: Text(L10n.of(context).browseHotels),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ThemeColors.primary,
                 foregroundColor: ThemeColors.textOnPrimary,

@@ -8,7 +8,6 @@ import 'package:fatiel/screens/hotel/hotel_dashboard_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_profile_screen.dart';
 import 'package:fatiel/screens/hotel/hotel_reviews_screen.dart';
-import 'package:fatiel/screens/hotel/hotel_settings_screen.dart';
 import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/hotel_details_page.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
@@ -120,7 +119,6 @@ class MyApp extends StatelessWidget {
           hotelBookingsRoute: (context) => const HotelBookingsPage(),
           hotelReviewsRoute: (context) => const HotelReviewsScreen(),
           hotelProfileRoute: (context) => const HotelProfileView(),
-          hotelSettingsRoute: (context) => const HotelSettingsView(),
           authFlowRoute: (context) => const AuthFlow(),
         },
         home: const SplashScreen());

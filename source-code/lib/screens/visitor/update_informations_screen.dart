@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
@@ -33,9 +34,9 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-              "Input can't be empty!",
-              style: TextStyle(color: ThemeColors.textOnDark),
+            content: Text(
+              L10n.of(context).inputCantBeEmpty,
+              style: const TextStyle(color: ThemeColors.textOnDark),
             ),
             backgroundColor: ThemeColors.error,
             behavior: SnackBarBehavior.floating,
@@ -74,8 +75,8 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
       } else {
         await showGenericDialog<void>(
           context: context,
-          title: "Success",
-          content: "Your profile data has been updated successfully.",
+          title: L10n.of(context).success,
+          content: L10n.of(context).profileUpdatedSuccessfully,
           optionBuilder: () => {'OK': true},
         );
         if (context.mounted) {
@@ -88,7 +89,7 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              "An error occurred: ${e.toString()}",
+              "${L10n.of(context).anErrorOccurred}: ${e.toString()}",
               style: const TextStyle(color: ThemeColors.textOnDark),
             ),
             backgroundColor: ThemeColors.error,
@@ -110,13 +111,19 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
     switch (currentIndex) {
       case 0:
         return {
-          'title': "Update first name",
+          'title': L10n.of(context).updateFirstName,
           'controller': _firstNameController
         };
       case 1:
-        return {'title': "Update last name", 'controller': _lastNameController};
+        return {
+          'title': L10n.of(context).updateLastName,
+          'controller': _lastNameController
+        };
       case 2:
-        return {'title': "Select location", 'controller': _locationController};
+        return {
+          'title': L10n.of(context).selectLocation,
+          'controller': _locationController
+        };
       default:
         return {};
     }
@@ -141,7 +148,7 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: "Update Your Information",
+          title: L10n.of(context).updateYourInformation,
           titleColor: ThemeColors.primary,
           iconColor: ThemeColors.primary,
           backgroundColor: ThemeColors.background,
@@ -171,9 +178,10 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                           value: _locationController.text.isNotEmpty
                               ? int.tryParse(_locationController.text)
                               : null,
-                          hint: const Text(
-                            "Select a Wilaya",
-                            style: TextStyle(color: ThemeColors.textSecondary),
+                          hint: Text(
+                            L10n.of(context).selectAWilaya,
+                            style: const TextStyle(
+                                color: ThemeColors.textSecondary),
                           ),
                           isExpanded: true,
                           dropdownColor: ThemeColors.surface,
@@ -181,7 +189,7 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                             color: ThemeColors.textPrimary,
                             fontSize: 16,
                           ),
-                          icon: Icon(
+                          icon: const Icon(
                             Iconsax.arrow_down_1,
                             color: ThemeColors.primary,
                           ),
@@ -249,7 +257,7 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                                 filled: true,
                                 fillColor: ThemeColors.white,
                                 hintText:
-                                    "Enter ${getStepData()['title']?.toLowerCase()}...",
+                                    "${L10n.of(context).enter} ${getStepData()['title']?.toLowerCase()}...",
                                 hintStyle: const TextStyle(
                                   color: ThemeColors.textSecondary,
                                   fontSize: 14,
@@ -293,9 +301,9 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                               vertical: 12,
                             ),
                           ),
-                          child: const Text(
-                            "Back",
-                            style: TextStyle(
+                          child: Text(
+                            L10n.of(context).back,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: ThemeColors.textPrimary,
@@ -329,7 +337,9 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
                             ),
                           )
                         : Text(
-                            currentIndex == 2 ? "Finish" : "Next",
+                            currentIndex == 2
+                                ? L10n.of(context).finish
+                                : L10n.of(context).next,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

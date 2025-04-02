@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
@@ -50,7 +51,7 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
     if (fname.isEmpty || lname.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Please enter your first and last name."),
+          content: Text(L10n.of(context).firstNameLastNameRequired),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -65,7 +66,7 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
     if (mail.isEmpty || !mail.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Please enter a valid email address."),
+          content: Text(L10n.of(context).validEmail),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -80,7 +81,7 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
     if (pwd.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Password must be at least 6 characters long."),
+          content: Text(L10n.of(context).passwordLength),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -95,7 +96,7 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
     if (pwd != confirmPwd) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Passwords do not match."),
+          content: Text(L10n.of(context).passwordMatch),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -124,22 +125,22 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
           if (state is AuthStateVisitorRegistering) {
             setState(() => _isLoading = false);
             if (state.exception is WeakPasswordException) {
-              await showErrorDialog(context, 'Weak password');
+              await showErrorDialog(context, L10n.of(context).weakPassword);
             } else if (state.exception is MissingPasswordException) {
-              await showErrorDialog(context, 'Missing password');
+              await showErrorDialog(context, L10n.of(context).missingPassword);
             } else if (state.exception is EmailAlreadyInUseException) {
-              await showErrorDialog(context, 'Email is already in use');
+              await showErrorDialog(context, L10n.of(context).emailInUse);
             } else if (state.exception is GenericException) {
-              await showErrorDialog(context, 'Failed to register');
+              await showErrorDialog(context, L10n.of(context).registerFailed);
             } else if (state.exception is InvalidEmailException) {
-              await showErrorDialog(context, 'Invalid email');
+              await showErrorDialog(context, L10n.of(context).invalidEmail);
             }
           }
         },
         child: Scaffold(
           backgroundColor: ThemeColors.background,
           appBar: CustomBackAppBar(
-            title: 'Create Account',
+            title: L10n.of(context).createAccount,
             onBack: () =>
                 context.read<AuthBloc>().add(const AuthEventShouldRegister()),
           ),
@@ -154,7 +155,7 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Join Fatiel",
+                      L10n.of(context).joinFatiel,
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -185,32 +186,32 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
                 _buildInputField(
                   controller: _firstNameController,
                   icon: Iconsax.user,
-                  label: 'First Name',
+                  label: L10n.of(context).firstName,
                 ),
                 const SizedBox(height: 20),
                 _buildInputField(
                   controller: _lastNameController,
                   icon: Iconsax.user,
-                  label: 'Last Name',
+                  label: L10n.of(context).lastName,
                 ),
                 const SizedBox(height: 20),
                 _buildInputField(
                   controller: _emailController,
                   icon: Iconsax.sms,
-                  label: 'Email',
+                  label: L10n.of(context).email,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
                 _buildPasswordField(
                   controller: _passwordController,
-                  label: 'Password',
+                  label: L10n.of(context).password,
                   isVisible: notVisiblePassword,
                   onVisibilityChanged: passwordVisibility,
                 ),
                 const SizedBox(height: 20),
                 _buildPasswordField(
                   controller: _confirmPasswordController,
-                  label: 'Confirm Password',
+                  label: L10n.of(context).confirmPassword,
                   isVisible: notVisibleConfirmPassword,
                   onVisibilityChanged: confirmPasswordVisibility,
                 ),
@@ -242,9 +243,9 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
-                            "Create Account",
-                            style: TextStyle(
+                        : Text(
+                            L10n.of(context).createAccountButton,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.5,
@@ -417,31 +418,6 @@ class _VisitorRegistrationViewState extends State<VisitorRegistrationView> {
           ),
         ),
         cursorColor: ThemeColors.primary,
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({required IconData icon, required Color color}) {
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        color: ThemeColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: ThemeColors.shadow.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Icon(
-          icon,
-          size: 24,
-          color: color,
-        ),
       ),
     );
   }

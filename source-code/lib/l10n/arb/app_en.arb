@@ -1,7 +1,14 @@
 {
   "@@locale": "en",
   "loginTitle": "Login",
-  "welcomeBack": "Welcome Back",
+  "welcomeBackSimple": "Welcome Back",
+  "welcomeBack": "Welcome Back, {hotelName}!",
+  "@welcomeBack": {
+    "description": "Welcome message for hotel dashboard",
+    "placeholders": {
+      "hotelName": {}
+    }
+  },
   "signInToAccount": "Sign in to access your account",
   "emailAddress": "Email Address",
   "emailHint": "your@email.com",
@@ -18,5 +25,639 @@
   "invalidEmail": "Invalid email",
   "missingPassword": "Missing password",
   "wrongCredentials": "Wrong credentials",
-  "authError": "Authentication error"
+  "authError": "Authentication error",
+  "bookings": "Bookings",
+  "noHotelsFound": "No hotels found",
+  "roomCapacity": "{count, plural, one {# guest} other {# guests}}",
+  "completed": "Completed",
+  "tryAgain": "Try Again",
+  "filterRating": "Rating",
+  "@filterRating": {
+    "description": "Filter option for rating"
+  },
+  "filterPrice": "Price",
+  "@filterPrice": {
+    "description": "Filter option for price"
+  },
+  "filterMinPeople": "Min. People",
+  "@filterMinPeople": {
+    "description": "Filter option for minimum people"
+  },
+  "filterLocation": "Localisation",
+  "@filterLocation": {
+    "description": "Filter option for location"
+  },
+  
+  "logoutTitle": "Log out",
+  "@logoutTitle": {
+    "description": "Title for logout dialog"
+  },
+  "logoutContent": "Are you sure you want to log out?",
+  "@logoutContent": {
+    "description": "Content for logout dialog"
+  },
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "logout": "Log Out",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Text for very recent time"
+  },
+  "minutesAgo": "{minutes} minutes ago",
+  "@minutesAgo": {
+    "description": "Text for minutes ago",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "hoursAgo": "{hours} hours ago",
+  "@hoursAgo": {
+    "description": "Text for hours ago",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "daysAgo": "{days} days ago",
+  "@daysAgo": {
+    "description": "Text for days ago",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  
+  "amenityWifi": "WiFi",
+  "amenityPool": "Pool",
+  "amenityGym": "Gym",
+  "amenityRestaurant": "Restaurant",
+  "amenitySpa": "Spa",
+  "amenityParking": "Parking",
+  "amenityRoomService": "Room Service",
+  "amenityPlayground": "Kids Playground",
+  "amenityBar": "Bar",
+  "amenityConcierge": "Concierge",
+  "amenityBusinessCenter": "Business Center",
+  "amenityLaundry": "Laundry",
+  "amenityAirportShuttle": "Airport Shuttle",
+  "amenityPetFriendly": "Pet Friendly",
+  "amenityAccessible": "Accessible",
+  "amenitySmokeFree": "Smoke Free",
+  "amenityBeachAccess": "Beach Access",
+  "amenityTv": "TV",
+  "amenityAc": "Air Conditioning",
+  "amenityHeating": "Heating",
+  "amenitySafe": "Safe",
+  "amenityKitchen": "Kitchen",
+  "amenityMinibar": "Minibar",
+  "amenityBathtub": "Bathtub",
+  "amenityToiletries": "Toiletries",
+  
+  "noHotelsTitle": "No Hotels Found",
+  "@noHotelsTitle": {
+    "description": "Title shown when no hotels are found"
+  },
+  "noHotelsDefaultMessage": "We couldn't find any hotels matching your criteria. Try adjusting your search filters or exploring nearby locations.",
+  "@noHotelsDefaultMessage": {
+    "description": "Default message shown when no hotels are found"
+  },
+  
+  "bookingsTitle": "Bookings",
+  "@bookingsTitle": {
+    "description": "Title for bookings page"
+  },
+  "bookingsNavTitle": "Bookings",
+  "@bookingsNavTitle": {
+    "description": "Title for bookings navigation tile"
+  },
+  "filterBookingsTitle": "Filter Bookings",
+  "@filterBookingsTitle": {
+    "description": "Title for filter dialog"
+  },
+  "bookingDetailsTitle": "Booking Details",
+  "@bookingDetailsTitle": {
+    "description": "Title for booking details sheet"
+  },
+  "roomInformation": "Room Information",
+  "@roomInformation": {
+    "description": "Section header for room info"
+  },
+  "guestInformation": "Guest Information",
+  "@guestInformation": {
+    "description": "Section header for guest info"
+  },
+  "bookingDates": "Booking Dates",
+  "@bookingDates": {
+    "description": "Section header for booking dates"
+  },
+  "paymentInformation": "Payment Information",
+  "@paymentInformation": {
+    "description": "Section header for payment info"
+  },
+  "totalAmount": "Total Amount",
+  "@totalAmount": {
+    "description": "Label for total amount"
+  },
+  "paymentStatus": "Payment Status",
+  "@paymentStatus": {
+    "description": "Label for payment status"
+  },
+  "paid": "Paid",
+  "@paid": {
+    "description": "Text shown when payment is complete"
+  },
+  "markCompleted": "Mark as Completed",
+  "@markCompleted": {
+    "description": "Button text to complete booking"
+  },
+  "checkIn": "Check-in",
+  "@checkIn": {
+    "description": "Label for check-in date"
+  },
+  "checkOut": "Check-out",
+  "@checkOut": {
+    "description": "Label for check-out date"
+  },
+  "perNight": "{price} per night",
+  "@perNight": {
+    "description": "Price per night text",
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "noBookingsFound": "No Bookings Found",
+  "@noBookingsFound": {
+    "description": "Title when no bookings exist"
+  },
+  "noBookingsDefault": "You don't have any bookings yet",
+  "@noBookingsDefault": {
+    "description": "Default no bookings message"
+  },
+  "noFilteredBookings": "No {status} bookings found",
+  "@noFilteredBookings": {
+    "description": "Message when no filtered bookings exist",
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "failedToLoadBookings": "Failed to load bookings",
+  "@failedToLoadBookings": {
+    "description": "Error message when bookings fail to load"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "summaryTotal": "Total",
+  "@summaryTotal": {
+    "description": "Summary card title for total bookings"
+  },
+  "summaryPending": "Pending",
+  "@summaryPending": {
+    "description": "Summary card title for pending bookings"
+  },
+  "summaryCompleted": "Completed",
+  "@summaryCompleted": {
+    "description": "Summary card title for completed bookings"
+  },
+  "summaryRevenue": "Revenue",
+  "@summaryRevenue": {
+    "description": "Summary card title for revenue"
+  },
+  "complete": "Complete",
+  "@complete": {
+    "description": "Button text to complete booking"
+  },
+  "nights": "{count, plural, =1{night} other{nights}}",
+  "@nights": {
+    "description": "Pluralized night count",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  
+  "dashboardSubtitle": "Here's what's happening today",
+  "@dashboardSubtitle": {
+    "description": "Subtitle for hotel dashboard"
+  },
+  "activeBookings": "Active Bookings",
+  "@activeBookings": {
+    "description": "Label for active bookings metric"
+  },
+  "roomsAvailable": "Rooms Available",
+  "@roomsAvailable": {
+    "description": "Label for available rooms metric"
+  },
+  "totalReviews": "Total Reviews",
+  "@totalReviews": {
+    "description": "Label for reviews metric"
+  },
+  "pendingBookings": "Pending Bookings",
+  "@pendingBookings": {
+    "description": "Label for pending bookings metric"
+  },
+  "quickAccess": "Quick Access",
+  "@quickAccess": {
+    "description": "Section title for quick access buttons"
+  },
+  "recentActivity": "Recent Activity",
+  "@recentActivity": {
+    "description": "Section title for recent activity"
+  },
+  "noRecentActivity": "No recent activity",
+  "@noRecentActivity": {
+    "description": "Message shown when there's no activity"
+  },
+  
+  "roomsTitle": "Rooms",
+  "@roomsTitle": {
+    "description": "Title for rooms navigation tile"
+  },
+  "roomsDescription": "Manage room details",
+  "@roomsDescription": {
+    "description": "Description for rooms navigation tile"
+  },
+  "bookingsDescription": "View all bookings",
+  "@bookingsDescription": {
+    "description": "Description for bookings navigation tile"
+  },
+  "reviewsTitle": "Reviews",
+  "@reviewsTitle": {
+    "description": "Title for reviews navigation tile"
+  },
+  "reviewsDescription": "Check guest feedback",
+  "@reviewsDescription": {
+    "description": "Description for reviews navigation tile"
+  },
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Title for profile navigation tile"
+  },
+  "profileDescription": "Hotel profile",
+  "@profileDescription": {
+    "description": "Description for profile navigation tile"
+  },
+  
+  "validUrl": "Type a valid url!",
+  "emptyInput": "Input can't be empty!",
+  "updateLocation": "Update Location",
+  "updateDescription": "Update Description",
+  "updateMapLink": "Update Map Link",
+  "updateContactInfo": "Update Contact Information",
+  "completeHotelProfile": "Complete Your Hotel Profile",
+  "selectWilaya": "Select a Wilaya",
+  "back": "Back",
+  "finish": "Finish",
+  "next": "Next",
+  "loadingPlaceholder": "Loading",
+  "inputEmpty": "Input can't be empty!",
+  "updateContactInformation": "Update Contact Information",
+  "enterField": "Enter {field}...",
+  "@enterField": {
+    "description": "Hint text for input fields",
+    "placeholders": {
+      "field": {}
+    }
+  },
+  
+  "profile": "Profile",
+  "settings": "Settings",
+  "logOut": "Log Out",
+  "hotelPhotos": "Hotel Photos",
+  "noPhotosAdded": "No photos added",
+  "addPhoto": "Add Photo",
+  "basicInformation": "Basic Information",
+  "hotelName": "Hotel Name",
+  "required": "Required",
+  "description": "Description",
+  "contactInformation": "Contact Information",
+  "phoneNumber": "Phone Number",
+  "location": "Location",
+  "wilaya": "Wilaya",
+  "mapLink": "Map Link",
+  "profileUpdatedSuccessfully": "Profile updated successfully",
+  "errorUpdatingProfile": "Error updating profile",
+  "imageUploadedSuccessfully": "Image uploaded successfully",
+  "errorUploadingImage": "Error uploading image",
+  "imageRemovedSuccessfully": "Image removed successfully",
+  "errorRemovingImage": "Error removing image",
+  
+  "guestReviews": "Guest Reviews",
+  "all": "All",
+  "stars": "{count} Stars",
+  "@stars": {
+    "description": "Star rating label",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "reviewsCount": "{count} Reviews",
+  "@reviewsCount": {
+    "description": "Review count label",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "errorLoadingReviews": "Error loading reviews",
+  
+  "home": "Home",
+  "rooms": "Rooms",
+  "reviews": "Reviews",
+  
+  "hotelRegistration": "Hotel Registration",
+  "registerHotel": "Register Your Hotel",
+  "email": "Email",
+  "confirmPassword": "Confirm Password",
+  "registerHotelButton": "Register Hotel",
+  "enterHotelName": "Please enter your hotel's name.",
+  "validEmail": "Please enter a valid email address.",
+  "passwordLength": "Password must be at least 6 characters long.",
+  "passwordMatch": "Passwords do not match.",
+  "weakPassword": "Weak password",
+  "emailInUse": "Email is already in use",
+  "registerFailed": "Failed to register",
+  
+  "createAccount": "Create Account",
+  "joinFatiel": "Join Fatiel",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "createAccountButton": "Create Account",
+  "firstNameLastNameRequired": "Please enter your first and last name.",
+  
+  "confirmBooking": "Confirm Booking",
+  "checkInDate": "Check-in Date",
+  "checkOutDate": "Check-out Date",
+  "totalNights": "Total Nights",
+  "totalPrice": "Total Price",
+  "confirmAndPay": "Confirm & Pay",
+  "selectCheckInDate": "Select Check-in Date",
+  "selectCheckOutDate": "Select Check-out Date",
+  "confirm": "Confirm",
+  "bookingConfirmed": "Booking confirmed successfully!",
+  "from": "From",
+  "night": "night",
+  "bookNow": "Book Now",
+  "unavailable": "Unavailable",
+  
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "goToHome": "Go to Home",
+  
+  "removeFromFavorites": "Remove from Favorites",
+  "removeHotelFromFavoritesConfirmation": "Are you sure you want to remove this hotel from your favorites?",
+  "remove": "Remove",
+  "addedToFavorites": "Added to favorites",
+  "removedFromFavorites": "Removed from favorites",
+  "failedToUpdateFavorites": "Failed to update favorites",
+  "removeFromFavoritesSemantic": "Remove from favorites",
+  "addToFavoritesSemantic": "Add to favorites",
+  "imageNotAvailable": "Image not available",
+  "locationNotSpecified": "Location not specified",
+  "noImageAvailable": "No image available",
+  
+  "hotel": "hotel",
+  "hotels": "hotels",
+  "tryAdjustingSearchFilters": "Try adjusting your search filters",
+  "noDataFound": "No Data Found",
+  "noPopularDestinationsAvailable": "No popular destinations available at the moment.",
+  "error": "Error",
+  "guests": "Guests",
+  "available": "Available",
+  "seeAll": "See all",
+  "allWilayas": "All Wilayas",
+  "failedToLoadWilayaData": "Failed to load wilaya data",
+  "noHotelsListedInAnyWilaya": "No hotels currently listed in any wilaya",
+  "discoveringAmazingPlaces": "Discovering amazing places for you",
+  
+  "bookingSummary": "Booking Summary",
+  "priceSummary": "Price Summary",
+  "roomRate": "Room Rate",
+  "duration": "Duration",
+  "roomDetails": "Room Details",
+  "capacity": "Capacity",
+  "exploreHotel": "Explore Hotel",
+  "bookingError": "Booking Error",
+  "goBack": "Go Back",
+  "noBookingFound": "No Booking Found",
+  "noBookingDetails": "We couldn't find any booking details",
+  "myBookings": "My Bookings",
+  "failedToLoadBookingDetails": "Failed to load booking details",
+  "bookingDetailsNotAvailable": "Booking details not available",
+  "unknownLocation": "Unknown location",
+  "cancelled": "Cancelled",
+  "viewDetails": "View Details",
+  "writeAReview": "Write a Review",
+  "editReview": "Edit Review",
+  "shareYourExperience": "Share your experience...",
+  "pleaseWriteAComment": "Please write a comment",
+  "submit": "Submit",
+  "update": "Update",
+  "deleteReview": "Delete Review",
+  "areYouSureDeleteReview": "Are you sure you want to delete this review?",
+  "delete": "Delete",
+  "cancelBooking": "Cancel Booking",
+  "areYouSureCancelBooking": "Are you sure you want to cancel this booking?",
+  "no": "No",
+  "yesCancel": "Yes, Cancel",
+  "exploreHotels": "Explore Hotels",
+  "noPendingBookings": "No Pending Bookings!",
+  "noCompletedBookings": "No Completed Bookings!",
+  "noCancelledBookings": "No Cancelled Bookings!",
+  "startYourJourney": "Start your journey today! Find the best hotels\nand book your dream stay effortlessly.",
+  "completedBookingsAppearHere": "Your completed bookings will appear here.\nShare your experience by leaving reviews!",
+  "cancelledBookingsAppearHere": "Your cancelled bookings will appear here.\nYou can always book again!",
+  "pending": "Pending",
+  "amenities": "Amenities",
+  "recommended": "Recommended",
+  "nearMe": "Near Me",
+  "recommendedHotels": "Recommended Hotels",
+  "hotelsNearYou": "Hotels Near You",
+  "success": "Success",
+  "failedToLoadHotels": "Failed to load hotels",
+  "noHotelsAvailable": "No Hotels Available",
+  "noHotelsMatchingCriteria": "We couldn't find any hotels matching your criteria.",
+  "findHotelsInCities": "Find hotels in cities",
+  "failedToLoadCityData": "Failed to load city data",
+  "noHotelsListedInCities": "No hotels are currently listed in these cities.",
+  "loadingYourFavorites": "Loading your favorites",
+  "couldntLoadFavorites": "Couldn't load favorites",
+  "checkConnectionAndTryAgain": "Please check your connection and try again",
+  "noFavoritesYet": "No Favorites Yet",
+  "saveFavoritesMessage": "Save your favorite hotels by tapping the heart icon when browsing",
+  "browseHotels": "Browse Hotels",
+  "recommendedHotelsCount": "Recommended Hotels ({count})",
+  "hotelsNearYouCount": "Hotels Near You ({count})",
+  "weCouldntFindAnyHotels": "We couldn't find any hotels matching your criteria.",
+  "noReviewsDataAvailable": "No reviews data available",
+  "guestFavorite": "Guest Favorite",
+  "basedOnReviews": "Based on {totalRatings} reviews",
+  "starsCount": "{ratingCount} Stars",
+  "exploreRoomOffers": "Explore room offers",
+  "perNightSimple": "Per night",
+  "roomType": "Room Type",
+  "dates": "Dates",
+  "totalPrice": "Total Price",
+  "successfullyBooked": "Successfully booked",
+  "noAmenitiesListed": "No amenities listed",
+  "availableFrom": "Available from",
+  "notCurrentlyAvailable": "Not currently available",
+  "failedToLoadRooms": "Failed to load rooms",
+  "noRoomsAvailable": "No rooms available",
+  "searchHotels": "Search Hotels",
+  "searchHotelsLocations": "Search hotels, locations...",
+  "searchForHotels": "Search for hotels",
+  "enterHotelNameLocation": "Enter hotel name, location or amenities to find your perfect stay",
+  "searchFailed": "Search failed",
+  "inputCantBeEmpty": "Input can't be empty!",
+  "profileUpdatedSuccessfully": "Your profile data has been updated successfully.",
+  "anErrorOccurred": "An error occurred",
+  "updateFirstName": "Update first name",
+  "updateLastName": "Update last name",
+  "selectLocation": "Select location",
+  "updateYourInformation": "Update Your Information",
+  "selectAWilaya": "Select a Wilaya",
+  "enter": "Enter",
+  "passwordUpdatedSuccessfully": "Your password has been updated successfully",
+  "updatePassword": "Update Password",
+  "currentPassword": "Current Password",
+  "pleaseEnterCurrentPassword": "Please enter your current password",
+  "newPassword": "New Password",
+  "pleaseEnterNewPassword": "Please enter a new password",
+  "passwordMustBeAtLeast6Characters": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "weakPassword": "The password provided is too weak.",
+  "wrongPassword": "Your current password is incorrect.",
+  "requiresRecentLogin": "Please reauthenticate to update your password.",
+  "genericError": "An unexpected error occurred. Please try again.",
+  "failedToUpdatePassword": "Failed to update password. Please try again.",
+  "passwordMismatch": "Password Mismatch",
+  "explore": "Explore",
+  "favorites": "Favorites",
+  "profileSettings": "Profile Settings",
+  "imageUploadFailed": "Image upload failed",
+  "profileImageUpdatedSuccessfully": "Profile image updated successfully",
+  "failedToUploadImage": "Failed to upload image",
+  "removeProfileImage": "Remove Profile Image",
+  "removeProfileImageConfirmation": "Are you sure you want to remove your profile image?",
+  "remove": "Remove",
+  "profileImageRemoved": "Profile image removed",
+  "failedToRemoveImage": "Failed to remove image",
+  "ok": "OK",
+  "uploading": "Uploading...",
+  "removePhoto": "Remove Photo",
+  "accountSettings": "Account Settings",
+  "updateProfile": "Update Profile",
+  "changePassword": "Change Password",
+  "wilayaNotFound": "Wilaya not found",
+  "wilayaDataNotAvailable": "Wilaya data not available",
+  "failedToLoadImage": "Failed to load image",
+  "unknownLocation": "Unknown location",
+  "rooms": "rooms",
+  "noHotelsRegistered": "There are currently no hotels registered in {wilayaName}",
+  "pleaseWaitAMoment": "Please wait a moment",
+  "pressBackAgainToExit": "Press back again to exit",
+  "passwordReset": "Password reset",
+  "passwordResetSentMessage": "We have now sent you a password reset link.",
+  "invalidEmail": "Invalid email",
+  "userNotFound": "User not found",
+  "forgotPasswordGenericError": "We could not process your request. Please make sure that you are a registered user, or if not, register a user now by going back one step.",
+  "resetPassword": "Reset Password",
+  "forgotPasswordInstructions": "Enter your registered email address to receive a password reset link",
+  "enterYourEmail": "Please enter your email",
+  "enterValidEmail": "Please enter a valid email",
+  "sendResetLink": "Send Reset Link",
+  "backToLogin": "Back to Login",
+  "failedToLoadHotelDetails": "Failed to load hotel details",
+  "noHotelInformationAvailable": "No hotel information available",
+  "room": "Room",
+  "noDescriptionAvailable": "No description available",
+  "noContactInformationAvailable": "No contact information available",
+  "ratingsAndReviews": "Ratings & Reviews",
+  "viewAll": "View all",
+  "reviews": "reviews",
+  "noReviewsYet": "No reviews yet",
+  "averageRating": "Average Rating",
+  "locationOnMap": "Location on Map",
+  "openInMaps": "Open in Maps",
+  "mapLocationNotAvailable": "Map location not available",
+  "roomOffers": "Room Offers",
+  "viewRoomOffers": "View Room Offers",
+  "selectAccountType": "Select your account type to begin",
+  "traveler": "Traveler",
+  "travelerSubtitle": "Discover and book luxury stays worldwide",
+  "hotelPartner": "Hotel Partner",
+  "hotelPartnerSubtitle": "List and manage your luxury properties",
+  "alreadyHaveAccount": "Already have an account? ",
+  "hotelInformationNotAvailable": "Hotel information not available",
+  "roomAvailable": "room available",
+  "premium": "PREMIUM",
+  "perPage": "per page",
+  "failedToLoadReviewerDetails": "Failed to load reviewer details",
+  "reviewedBy": "Reviewed by",
+  "noCommentProvided": "No comment provided",
+  "roomsTitle": "Rooms",
+  "noRoomsAvailable": "No rooms available",
+  "addRoom": "Add Room",
+  "failedToLoadRooms": "Failed to load rooms",
+  "retry": "Retry",
+  "roomMarkedAsUnavailable": "Room marked as unavailable",
+  "roomMarkedAsAvailable": "Room marked as available",
+  "failedToUpdateRoom": "Failed to update room: {error}",
+  "deleteRoom": "Delete Room",
+  "deleteRoomConfirmation": "This action cannot be undone. Are you sure?",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "roomDeletedSuccessfully": "Room deleted successfully",
+  "failedToDeleteRoom": "Failed to delete room: {error}",
+  "editRoom": "Edit Room",
+  "addNewRoom": "Add New Room",
+  "roomName": "Room Name",
+  "description": "Description",
+  "pricePerNight": "Price per night",
+  "capacity": "Capacity",
+  "availableForBooking": "Available for booking",
+  "roomPhotos": "Room Photos",
+  "addPhoto": "Add Photo",
+  "amenities": "Amenities",
+  "imageUploadedSuccessfully": "Image uploaded successfully",
+  "errorUploadingImage": "Error uploading image: {error}",
+  "imageRemovedSuccessfully": "Image removed successfully",
+  "errorRemovingImage": "Error removing image: {error}",
+  "updateRoom": "Update Room",
+  "roomUpdatedSuccessfully": "Room updated successfully",
+  "roomAddedSuccessfully": "Room added successfully",
+  "failedToAddRoom": "Failed to add room: {error}",
+  "failedToUpdateRoomGeneric": "Failed to update room: {error}",
+  "guest": "{count, plural, =1{guest} other{guests}}",
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "photoCount": "{count, plural, =1{photo} other{photos}}",
+  "edit": "Edit",
+  "markUnavailable": "Mark Unavailable",
+  "markAvailable": "Mark Available",
+  "basicInformation": "Basic Information",
+  "pricingAvailability": "Pricing & Availability",
+  "all": "All",
+  "pending": "Pending",
+  "cancelled": "Cancelled",
+  "completed": "Completed",
+  "changeLanguage": "Change Language",
+  "selectLanguage": "Select Language",
+  "filterLocation": "Location",
+  "filterPrice": "Price",
+  "filterRating": "Rating",
+  "filterMinPeople": "Guests",
+  "resetFiltersTitle": "Reset Filters",
+  "resetFiltersContent": "Are you sure you want to reset all filters?",
+  "resetFiltersCancel": "Cancel",
+  "resetFiltersConfirm": "Reset",
+  "applyFilters": "Apply Filters",
+  "filterByMinGuests": "Minimum Guests",
+  "filterByPriceRange": "Price Range",
+  "filterByCustomerRating": "Customer Rating",
+  "filterByLocation": "Location (Wilaya)",
+  "allHotels": "All Hotels",
+  "favoritesTitle": "Favorites"
 }

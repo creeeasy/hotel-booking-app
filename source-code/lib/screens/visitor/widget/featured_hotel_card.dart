@@ -1,5 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
@@ -58,10 +59,10 @@ class FeaturedHotelCard extends StatelessWidget {
           child: Stack(
             children: [
               // Hero Image with Gradient Overlay
-              _buildHotelImage(hotel.images),
+              _buildHotelImage(hotel.images, context),
 
               // Content Overlay
-              _buildContentOverlay(hotel, locationName),
+              _buildContentOverlay(hotel, locationName, context),
 
               // Premium Badge (if applicable)
               if (showPremiumBadge && hotel.ratings.rating >= 4.5)
@@ -84,7 +85,7 @@ class FeaturedHotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHotelImage(List<String> images) {
+  Widget _buildHotelImage(List<String> images, BuildContext context) {
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: Container(
@@ -112,10 +113,10 @@ class FeaturedHotelCard extends StatelessWidget {
                   );
                 },
                 errorBuilder: (context, error, stackTrace) =>
-                    _buildImageErrorWidget(),
+                    _buildImageErrorWidget(context),
               )
             else
-              _buildImageErrorWidget(),
+              _buildImageErrorWidget(context),
 
             // Gradient Overlay
             Positioned.fill(
@@ -140,20 +141,20 @@ class FeaturedHotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImageErrorWidget() {
+  Widget _buildImageErrorWidget(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Iconsax.gallery_slash,
             size: 40,
             color: ThemeColors.grey400,
           ),
           const SizedBox(height: 8),
           Text(
-            'Image not available',
-            style: TextStyle(
+            L10n.of(context).imageNotAvailable,
+            style: const TextStyle(
               color: ThemeColors.grey600,
               fontSize: 14,
             ),
@@ -163,7 +164,8 @@ class FeaturedHotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContentOverlay(Hotel hotel, String? locationName) {
+  Widget _buildContentOverlay(
+      Hotel hotel, String? locationName, BuildContext context) {
     return Positioned(
       bottom: 0,
       left: 0,
@@ -212,7 +214,7 @@ class FeaturedHotelCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Iconsax.location,
                         size: 16,
                         color: ThemeColors.accentPink,
@@ -220,7 +222,7 @@ class FeaturedHotelCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          locationName ?? 'Location not specified',
+                          locationName ?? L10n.of(context).locationNotSpecified,
                           style: TextStyle(
                             fontSize: 14,
                             color: ThemeColors.white.withOpacity(0.9),
@@ -257,7 +259,7 @@ class FeaturedHotelCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         hotel.ratings.totalRating.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: ThemeColors.white,
@@ -291,7 +293,7 @@ class FeaturedHotelCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
@@ -299,7 +301,7 @@ class FeaturedHotelCard extends StatelessWidget {
               size: 14,
               color: ThemeColors.white,
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Text(
               'PREMIUM',
               style: TextStyle(

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -74,12 +75,12 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
     if (_wilayaId == null) return const SafeArea(child: SizedBox.shrink());
 
     if (_wilayaId == -1) {
-      return const SafeArea(
+      return SafeArea(
         child: Scaffold(
           body: Center(
             child: Text(
-              'Wilaya not found',
-              style: TextStyle(
+              L10n.of(context).wilayaNotFound,
+              style: const TextStyle(
                 color: ThemeColors.error,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -92,12 +93,12 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
 
     final wilaya = Wilaya.fromIndex(_wilayaId!);
     if (wilaya == null) {
-      return const SafeArea(
+      return SafeArea(
         child: Scaffold(
           body: Center(
             child: Text(
-              'Wilaya data not available',
-              style: TextStyle(
+              L10n.of(context).wilayaDataNotAvailable,
+              style: const TextStyle(
                 color: ThemeColors.error,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -191,7 +192,7 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Failed to load image',
+            L10n.of(context).failedToLoadImage,
             style: TextStyle(
               color: ThemeColors.textSecondary.withOpacity(0.7),
               fontSize: 16,
@@ -215,7 +216,7 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
         if (snapshot.hasError) {
           return SliverFillRemaining(
             child: ErrorWidgetWithRetry(
-              errorMessage: 'Failed to load hotels',
+              errorMessage: L10n.of(context).failedToLoadHotels,
               onRetry: _refreshData,
             ),
           );
@@ -294,7 +295,7 @@ class HotelCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHotelImage(),
-            _buildHotelDetails(),
+            _buildHotelDetails(context),
           ],
         ),
       ),
@@ -329,7 +330,7 @@ class HotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHotelDetails() {
+  Widget _buildHotelDetails(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -337,9 +338,9 @@ class HotelCard extends StatelessWidget {
         children: [
           _buildHotelName(),
           const SizedBox(height: 10),
-          if (hotel.location != null) _buildLocation(),
+          if (hotel.location != null) _buildLocation(context),
           const SizedBox(height: 14),
-          _buildRatingAndRooms(),
+          _buildRatingAndRooms(context),
         ],
       ),
     );
@@ -359,7 +360,7 @@ class HotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLocation() {
+  Widget _buildLocation(BuildContext context) {
     return Row(
       children: [
         Icon(
@@ -370,7 +371,8 @@ class HotelCard extends StatelessWidget {
         const SizedBox(width: 6),
         Expanded(
           child: Text(
-            Wilaya.fromIndex(hotel.location!)?.name ?? 'Unknown location',
+            Wilaya.fromIndex(hotel.location!)?.name ??
+                L10n.of(context).unknownLocation,
             style: TextStyle(
               fontSize: 15,
               color: ThemeColors.textSecondary.withOpacity(0.8),
@@ -384,12 +386,12 @@ class HotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRatingAndRooms() {
+  Widget _buildRatingAndRooms(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildRating(),
-        if (hotel.totalRooms != null) _buildRoomCount(),
+        if (hotel.totalRooms != null) _buildRoomCount(context),
       ],
     );
   }
@@ -423,9 +425,9 @@ class HotelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRoomCount() {
+  Widget _buildRoomCount(BuildContext context) {
     return Text(
-      '${hotel.totalRooms} rooms',
+      '${hotel.totalRooms} ${L10n.of(context).rooms}',
       style: TextStyle(
         fontWeight: FontWeight.w600,
         color: ThemeColors.textSecondary.withOpacity(0.8),
@@ -463,9 +465,9 @@ class NoHotelsWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 28),
-          const Text(
-            'No Hotels Available',
-            style: TextStyle(
+          Text(
+            L10n.of(context).noHotelsAvailable,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: ThemeColors.textPrimary,
@@ -474,7 +476,7 @@ class NoHotelsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'There are currently no hotels registered in $wilayaName',
+            L10n.of(context).noHotelsRegistered(wilayaName),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,

@@ -31,7 +31,7 @@ class ExploreItemHeaderWidget extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: ThemeColors.textPrimary,
@@ -54,14 +54,14 @@ class ExploreItemHeaderWidget extends StatelessWidget {
                 children: [
                   Text(
                     subtitle!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: ThemeColors.primary,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(
+                  const Icon(
                     Iconsax.arrow_right_3,
                     size: 20,
                     color: ThemeColors.primary,

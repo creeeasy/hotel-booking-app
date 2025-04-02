@@ -74,7 +74,7 @@ class PopularDestinationRowWidget extends StatelessWidget {
                                         left: 8, bottom: 32, top: 8),
                                     child: Text(
                                       popularList!.titleTxt,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 24,
                                         color: ThemeColors.textOnPrimary,

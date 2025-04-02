@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -24,10 +25,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   Future<void> showPasswordResetSentDialog(BuildContext context) {
     return showGenericDialog(
         context: context,
-        title: 'Password reset',
-        content: 'We have now sent you a password reset link.',
+        title: L10n.of(context).passwordReset,
+        content: L10n.of(context).passwordResetSentMessage,
         optionBuilder: () => {
-              'OK': null,
+              L10n.of(context).ok: null,
             });
   }
 
@@ -54,13 +55,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               _emailController.clear();
               await showPasswordResetSentDialog(context);
             } else if (state.exception is InvalidEmailException) {
-              await showErrorDialog(context, 'Invalid email');
+              await showErrorDialog(context, L10n.of(context).invalidEmail);
             } else if (state.exception is UserNotFoundException) {
-              await showErrorDialog(context, 'User Not found exception');
+              await showErrorDialog(context, L10n.of(context).userNotFound);
             } else if (state.exception is GenericException) {
               await showErrorDialog(
                 context,
-                'We could not process your request. Please make sure that you are a registered user, or if not, register a user now by going back one step.',
+                L10n.of(context).forgotPasswordGenericError,
               );
             }
           }
@@ -130,9 +131,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                             const SizedBox(height: 32),
 
                             // Title with improved typography
-                            const Text(
-                              'Reset Password',
-                              style: TextStyle(
+                            Text(
+                              L10n.of(context).resetPassword,
+                              style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w800,
                                 color: ThemeColors.textOnPrimary,
@@ -145,7 +146,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
                             // Instruction Text with better readability
                             Text(
-                              'Enter your registered email address to receive a password reset link',
+                              L10n.of(context).forgotPasswordInstructions,
                               style: TextStyle(
                                 fontSize: 16,
                                 height: 1.5,
@@ -199,7 +200,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                     fontSize: 15,
                                   ),
                                   border: InputBorder.none,
-                                  labelText: 'Email Address',
+                                  labelText: L10n.of(context).emailAddress,
                                   labelStyle: TextStyle(
                                     color: ThemeColors.textOnPrimary
                                         .withOpacity(0.8),
@@ -216,10 +217,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 cursorColor: ThemeColors.textOnPrimary,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
+                                    return L10n.of(context).enterYourEmail;
                                   }
                                   if (!_isValidEmail(value)) {
-                                    return 'Please enter a valid email';
+                                    return L10n.of(context).enterValidEmail;
                                   }
                                   return null;
                                 },
@@ -288,15 +289,16 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                               color: Colors.white,
                                             ),
                                           )
-                                        : const Row(
+                                        : Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Icon(Iconsax.send_2, size: 20),
-                                              SizedBox(width: 12),
+                                              const Icon(Iconsax.send_2,
+                                                  size: 20),
+                                              const SizedBox(width: 12),
                                               Text(
-                                                'Send Reset Link',
-                                                style: TextStyle(
+                                                L10n.of(context).sendResetLink,
+                                                style: const TextStyle(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.w700,
                                                   letterSpacing: 0.5,
@@ -326,7 +328,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                   ),
                                 ),
                                 child: Text(
-                                  'Back to Login',
+                                  L10n.of(context).backToLogin,
                                   style: TextStyle(
                                     color: ThemeColors.textOnPrimary
                                         .withOpacity(0.9),

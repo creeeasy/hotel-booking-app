@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/screens/visitor/widget/positioned_favorite_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -170,7 +171,7 @@ class _ImageGalleryState extends State<ImageGallery> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(
+    return const Center(
       child: CircularProgressIndicator(
         strokeWidth: 2,
         color: ThemeColors.primary,
@@ -199,19 +200,19 @@ class _ImageGalleryState extends State<ImageGallery> {
   Widget _buildNoImagePlaceholder() {
     return Container(
       color: ThemeColors.grey200,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Iconsax.gallery_slash,
               size: 48,
               color: ThemeColors.grey400,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              "No Images Available",
-              style: TextStyle(
+              L10n.of(context).noImageAvailable,
+              style: const TextStyle(
                 fontSize: 16,
                 color: ThemeColors.textSecondary,
                 fontWeight: FontWeight.w500,

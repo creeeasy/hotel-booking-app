@@ -1,6 +1,7 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/hotel_nav_bar.dart';
 import 'package:fatiel/helpers/timestamp_formatter.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/activity_item.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
@@ -32,11 +33,10 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    onNavigate = widget.onNavigate!;
+    onNavigate = widget.onNavigate ?? (_) {};
     final currentHotel = context.read<AuthBloc>().state.currentUser as Hotel;
     hotel = currentHotel;
 
-    // Initialize futures
     _fetchMonthlyBookingsFuture =
         BookingService.fetchMonthlyBookingsCount(hotelId: hotel.id);
     _fetchPendingBookingsFuture =
@@ -78,7 +78,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Welcome Back, ${hotel.hotelName}!',
+          L10n.of(context).welcomeBack(hotel.hotelName),
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: ThemeColors.textPrimary,
@@ -86,7 +86,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Here\'s what\'s happening today',
+          L10n.of(context).dashboardSubtitle,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: ThemeColors.textSecondary,
               ),
@@ -102,14 +102,14 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
           children: [
             _buildMetricCard(
               future: _fetchMonthlyBookingsFuture,
-              title: 'Active Bookings',
+              title: L10n.of(context).activeBookings,
               icon: Iconsax.book,
               color: ThemeColors.primary,
             ),
             const SizedBox(width: 12),
             _buildMetricCard(
               future: _fetchAvailableRoomsCountFuture,
-              title: 'Rooms Available',
+              title: L10n.of(context).roomsAvailable,
               icon: Iconsax.home,
               color: ThemeColors.success,
             ),
@@ -120,7 +120,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
           children: [
             _buildMetricCard(
               future: _fetchReviewStatisticsFuture,
-              title: 'Total Reviews',
+              title: L10n.of(context).totalReviews,
               icon: Iconsax.star,
               color: ThemeColors.star,
               isRating: true,
@@ -128,7 +128,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
             const SizedBox(width: 12),
             _buildMetricCard(
               future: _fetchPendingBookingsFuture,
-              title: 'Pending Bookings',
+              title: L10n.of(context).pendingBookings,
               icon: Iconsax.calendar_add,
               color: ThemeColors.accentPink,
             ),
@@ -151,7 +151,9 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
         builder: (context, snapshot) {
           return MetricCard(
             title: title,
-            value: snapshot.hasData ? '${snapshot.data}' : '--',
+            value: snapshot.hasData
+                ? '${snapshot.data}'
+                : L10n.of(context).loadingPlaceholder,
             icon: icon,
             color: color,
             isRating: isRating,
@@ -167,7 +169,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Access',
+          L10n.of(context).quickAccess,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: ThemeColors.textPrimary,
@@ -184,26 +186,26 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
           children: [
             NavigationTile(
               icon: Iconsax.home_2,
-              title: 'Rooms',
-              description: 'Manage room details',
+              title: L10n.of(context).roomsTitle,
+              description: L10n.of(context).roomsDescription,
               onTap: () => onNavigate(HotelNavBar.rooms),
             ),
             NavigationTile(
               icon: Iconsax.calendar,
-              title: 'Bookings',
-              description: 'View all bookings',
+              title: L10n.of(context).bookingsNavTitle,
+              description: L10n.of(context).bookingsDescription,
               onTap: () => onNavigate(HotelNavBar.bookings),
             ),
             NavigationTile(
               icon: Iconsax.star,
-              title: 'Reviews',
-              description: 'Check guest feedback',
+              title: L10n.of(context).reviewsTitle,
+              description: L10n.of(context).reviewsDescription,
               onTap: () => onNavigate(HotelNavBar.reviews),
             ),
             NavigationTile(
               icon: Iconsax.profile_2user,
-              title: 'Profile',
-              description: 'Hotel profile',
+              title: L10n.of(context).profileTitle,
+              description: L10n.of(context).profileDescription,
               onTap: () => onNavigate(HotelNavBar.profile),
             ),
           ],
@@ -217,7 +219,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Recent Activity',
+          L10n.of(context).recentActivity,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: ThemeColors.textPrimary,
@@ -228,7 +230,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
           future: _recentActivitiesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(
                   color: ThemeColors.primary,
                 ),
@@ -237,8 +239,8 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Text(
-                'No recent activity',
-                style: TextStyle(color: ThemeColors.textSecondary),
+                L10n.of(context).noRecentActivity,
+                style: const TextStyle(color: ThemeColors.textSecondary),
               );
             }
 
@@ -247,7 +249,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
                   .map((activity) => ActivityItemWidget(
                         title: activity.title,
                         description: activity.description,
-                        time: formatTimeDifference(activity.timestamp),
+                        time: formatTimeDifference(context, activity.timestamp),
                         icon: activity.icon,
                       ))
                   .toList(),
@@ -285,10 +287,10 @@ class MetricCard extends StatelessWidget {
         color: ThemeColors.card,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(
+          const BoxShadow(
             color: ThemeColors.shadow,
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -311,7 +313,7 @@ class MetricCard extends StatelessWidget {
           Row(
             children: [
               if (isLoading)
-                SizedBox(
+                const SizedBox(
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(
@@ -329,7 +331,7 @@ class MetricCard extends StatelessWidget {
                 ),
               if (isRating && !isLoading) ...[
                 const SizedBox(width: 4),
-                Icon(Iconsax.star1, size: 16, color: ThemeColors.star),
+                const Icon(Iconsax.star1, size: 16, color: ThemeColors.star),
               ],
             ],
           ),
@@ -362,13 +364,6 @@ class NavigationTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: ThemeColors.card,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: ThemeColors.shadow,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

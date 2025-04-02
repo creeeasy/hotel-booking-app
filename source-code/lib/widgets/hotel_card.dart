@@ -1,6 +1,7 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/helpers/format_rating.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
@@ -45,15 +46,15 @@ class _HotelCardState extends State<HotelCard> {
         // Error State
         if (snapshot.hasError) {
           return ErrorWidgetWithRetry(
-            errorMessage: 'Failed to load hotel details',
+            errorMessage: L10n.of(context).failedToLoadHotelDetails,
             onRetry: () => setState(() {}),
           );
         }
 
         // Empty State
         if (!snapshot.hasData) {
-          return const NoDataWidget(
-            message: "Hotel information not available",
+          return NoDataWidget(
+            message: L10n.of(context).hotelInformationNotAvailable,
           );
         }
 
@@ -211,7 +212,7 @@ class _HotelCardState extends State<HotelCard> {
             Icon(Iconsax.gallery_slash, size: 40, color: ThemeColors.grey500),
             const SizedBox(height: 8),
             Text(
-              'Image not available',
+              L10n.of(context).imageNotAvailable,
               style: TextStyle(
                 color: ThemeColors.grey600,
                 fontSize: 14,
@@ -279,7 +280,7 @@ class _HotelCardState extends State<HotelCard> {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          locationName ?? 'Location not specified',
+                          locationName ?? L10n.of(context).locationNotSpecified,
                           style: TextStyle(
                             fontSize: 14,
                             color: ThemeColors.white.withOpacity(0.9),
@@ -332,7 +333,7 @@ class _HotelCardState extends State<HotelCard> {
             if (hotel.totalRooms != null) ...[
               const SizedBox(height: 8),
               Text(
-                '${hotel.totalRooms} rooms available',
+                '${hotel.totalRooms} ${hotel.totalRooms == 1 ? L10n.of(context).roomAvailable : L10n.of(context).roomsAvailable}',
                 style: TextStyle(
                   fontSize: 13,
                   color: ThemeColors.white.withOpacity(0.8),
@@ -362,18 +363,18 @@ class _HotelCardState extends State<HotelCard> {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Iconsax.crown_1,
               size: 14,
               color: ThemeColors.white,
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
-              'PREMIUM',
-              style: TextStyle(
+              L10n.of(context).premium,
+              style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
                 color: ThemeColors.white,

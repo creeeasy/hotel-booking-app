@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,7 +83,7 @@ class _BookingScreenState extends State<BookingScreen>
     return SafeArea(
       child: Scaffold(
         backgroundColor: ThemeColors.background,
-        appBar: const CustomBackAppBar(title: "My Bookings"),
+        appBar: CustomBackAppBar(title: L10n.of(context).myBookings),
         body: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             final visitor = state.currentUser as Visitor;
@@ -198,7 +199,7 @@ class _BookingTab extends StatelessWidget {
               : Border.all(color: ThemeColors.border, width: 1),
         ),
         child: Text(
-          status.displayName,
+          displayName(status, context),
           style: TextStyle(
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
@@ -209,6 +210,17 @@ class _BookingTab extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String displayName(BookingStatus bookingStatus, BuildContext context) {
+    switch (bookingStatus) {
+      case BookingStatus.pending:
+        return L10n.of(context).pending;
+      case BookingStatus.completed:
+        return L10n.of(context).completed;
+      case BookingStatus.cancelled:
+        return L10n.of(context).cancelled;
+    }
   }
 }
 
@@ -284,14 +296,14 @@ class _BookingCard extends StatelessWidget {
 
         if (snapshot.hasError) {
           return ErrorWidgetWithRetry(
-            errorMessage: 'Failed to load booking details',
+            errorMessage: L10n.of(context).failedToLoadBookingDetails,
             onRetry: () => onAction(),
           );
         }
 
         if (!snapshot.hasData) {
-          return const NoDataWidget(
-            message: "Booking details not available",
+          return NoDataWidget(
+            message: L10n.of(context).bookingDetailsNotAvailable,
           );
         }
 
@@ -401,14 +413,14 @@ class _HotelImageWithDates extends StatelessWidget {
             children: [
               Expanded(
                 child: _DateCard(
-                  label: "Check-In",
+                  label: L10n.of(context).checkIn,
                   date: booking.checkInDate,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _DateCard(
-                  label: "Check-Out",
+                  label: L10n.of(context).checkOut,
                   date: booking.checkOutDate,
                 ),
               ),
@@ -493,8 +505,9 @@ class _HotelLocationInfo extends StatelessWidget {
         Expanded(
           child: Text(
             hotel.location != null
-                ? Wilaya.fromIndex(hotel.location!)?.name ?? 'Unknown location'
-                : 'Unknown location',
+                ? Wilaya.fromIndex(hotel.location!)?.name ??
+                    L10n.of(context).unknownLocation
+                : L10n.of(context).unknownLocation,
             style: const TextStyle(
               fontSize: 14,
               color: ThemeColors.textSecondary,
@@ -522,9 +535,9 @@ class _BookingActions extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (booking.status) {
       case BookingStatus.cancelled:
-        return const _BookingStatusBadge(
+        return _BookingStatusBadge(
           icon: Iconsax.close_circle,
-          text: "Cancelled",
+          text: L10n.of(context).cancelled,
           color: ThemeColors.error,
         );
       case BookingStatus.completed:
@@ -559,9 +572,9 @@ class _CompletedBookingActions extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const _BookingStatusBadge(
+        _BookingStatusBadge(
           icon: Iconsax.tick_circle,
-          text: "Completed",
+          text: L10n.of(context).completed,
           color: ThemeColors.success,
         ),
         const SizedBox(width: 12),
@@ -625,7 +638,7 @@ class _PendingBookingActions extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text("View Details"),
+            child: Text(L10n.of(context).viewDetails),
           ),
         ),
       ],
@@ -687,7 +700,9 @@ class _ReviewActions extends StatelessWidget {
           builder: (context, setState) {
             return AlertDialog(
               title: Text(
-                existingReview == null ? "Write a Review" : "Edit Review",
+                existingReview == null
+                    ? L10n.of(context).writeAReview
+                    : L10n.of(context).editReview,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               content: Column(
@@ -706,7 +721,7 @@ class _ReviewActions extends StatelessWidget {
                   TextField(
                     controller: commentController,
                     decoration: InputDecoration(
-                      hintText: "Share your experience...",
+                      hintText: L10n.of(context).shareYourExperience,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -718,7 +733,7 @@ class _ReviewActions extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel"),
+                  child: Text(L10n.of(context).cancel),
                 ),
                 ElevatedButton(
                   onPressed: isSubmitting
@@ -726,8 +741,9 @@ class _ReviewActions extends StatelessWidget {
                       : () async {
                           if (commentController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Please write a comment"),
+                              SnackBar(
+                                content:
+                                    Text(L10n.of(context).pleaseWriteAComment),
                               ),
                             );
                             return;
@@ -771,7 +787,9 @@ class _ReviewActions extends StatelessWidget {
                             color: Colors.white,
                           ),
                         )
-                      : Text(existingReview == null ? "Submit" : "Update"),
+                      : Text(existingReview == null
+                          ? L10n.of(context).submit
+                          : L10n.of(context).update),
                 ),
               ],
             );
@@ -786,11 +804,11 @@ class _ReviewActions extends StatelessWidget {
 
     final shouldDelete = await showGenericDialog<bool>(
       context: context,
-      title: "Delete Review",
-      content: "Are you sure you want to delete this review?",
+      title: L10n.of(context).deleteReview,
+      content: L10n.of(context).areYouSureDeleteReview,
       optionBuilder: () => {
-        "Cancel": false,
-        "Delete": true,
+        L10n.of(context).cancel: false,
+        L10n.of(context).delete: true,
       },
     );
 
@@ -878,16 +896,17 @@ class _CancelBookingButtonState extends State<_CancelBookingButton> {
                 color: ThemeColors.error,
               ),
             )
-          : const Text("Cancel Booking"),
+          : Text(L10n.of(context).cancelBooking),
     );
   }
 
   Future<void> _confirmCancel() async {
     final shouldCancel = await showGenericDialog<bool>(
       context: context,
-      title: 'Cancel Booking',
-      content: 'Are you sure you want to cancel this booking?',
-      optionBuilder: () => {'No': false, 'Yes, Cancel': true},
+      title: L10n.of(context).cancelBooking,
+      content: L10n.of(context).areYouSureCancelBooking,
+      optionBuilder: () =>
+          {L10n.of(context).no: false, L10n.of(context).yesCancel: true},
     );
 
     if (shouldCancel != true) return;
@@ -939,14 +958,14 @@ class _EmptyBookingView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              _getEmptyTitle(),
+              _getEmptyTitle(context),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 12),
             Text(
-              _getEmptyDescription(),
+              _getEmptyDescription(context),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: ThemeColors.textSecondary,
@@ -968,7 +987,7 @@ class _EmptyBookingView extends StatelessWidget {
                 elevation: 2,
               ),
               icon: const Icon(Iconsax.search_normal, size: 20),
-              label: const Text("Explore Hotels"),
+              label: Text(L10n.of(context).exploreHotels),
             ),
           ],
         ),
@@ -987,25 +1006,25 @@ class _EmptyBookingView extends StatelessWidget {
     }
   }
 
-  String _getEmptyTitle() {
+  String _getEmptyTitle(BuildContext context) {
     switch (status) {
       case BookingStatus.pending:
-        return "No Pending Bookings!";
+        return L10n.of(context).noPendingBookings;
       case BookingStatus.completed:
-        return "No Completed Bookings!";
+        return L10n.of(context).noCompletedBookings;
       case BookingStatus.cancelled:
-        return "No Cancelled Bookings!";
+        return L10n.of(context).noCancelledBookings;
     }
   }
 
-  String _getEmptyDescription() {
+  String _getEmptyDescription(BuildContext context) {
     switch (status) {
       case BookingStatus.pending:
-        return "Start your journey today! Find the best hotels\nand book your dream stay effortlessly.";
+        return L10n.of(context).startYourJourney;
       case BookingStatus.completed:
-        return "Your completed bookings will appear here.\nShare your experience by leaving reviews!";
+        return L10n.of(context).completedBookingsAppearHere;
       case BookingStatus.cancelled:
-        return "Your cancelled bookings will appear here.\nYou can always book again!";
+        return L10n.of(context).cancelledBookingsAppearHere;
     }
   }
 }
@@ -1034,7 +1053,7 @@ class _ErrorView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              "Failed to load bookings",
+              L10n.of(context).failedToLoadBookings,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: ThemeColors.error,
                   ),
@@ -1052,24 +1071,11 @@ class _ErrorView extends StatelessWidget {
                 backgroundColor: ThemeColors.primary,
                 foregroundColor: ThemeColors.textOnPrimary,
               ),
-              child: const Text("Retry"),
+              child: Text(L10n.of(context).retry),
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-extension on BookingStatus {
-  String get displayName {
-    switch (this) {
-      case BookingStatus.pending:
-        return 'Pending';
-      case BookingStatus.completed:
-        return 'Completed';
-      case BookingStatus.cancelled:
-        return 'Cancelled';
-    }
   }
 }

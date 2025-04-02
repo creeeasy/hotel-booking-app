@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +45,14 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     if (widget.showConfirmation && _isFavorite) {
       final shouldRemove = await showGenericDialog<bool>(
         context: context,
-        title: 'Remove from Favorites',
-        content:
-            'Are you sure you want to remove this hotel from your favorites?',
+        title: L10n.of(context).removeFromFavorites,
+        content: L10n.of(context).removeHotelFromFavoritesConfirmation,
         showIcon: true,
         icon: Iconsax.heart_slash,
-        optionBuilder: () => {'Cancel': false, 'Remove': true},
+        optionBuilder: () => {
+          L10n.of(context).cancel: false,
+          L10n.of(context).remove: true
+        },
       );
 
       if (shouldRemove != true) return;
@@ -85,7 +88,9 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          _isFavorite ? 'Added to favorites' : 'Removed from favorites',
+          _isFavorite
+              ? L10n.of(context).addedToFavorites
+              : L10n.of(context).removedFromFavorites,
         ),
         backgroundColor: ThemeColors.darkBackground,
         behavior: SnackBarBehavior.floating,
@@ -100,7 +105,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   void _showErrorSnackbar(String error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Failed to update favorites: $error'),
+        content: Text('${L10n.of(context).failedToUpdateFavorites}: $error'),
         backgroundColor: ThemeColors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -138,7 +143,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                     key: const ValueKey('loading'),
                     width: widget.size,
                     height: widget.size,
-                    child: CircularProgressIndicator(
+                    child: const CircularProgressIndicator(
                       strokeWidth: 2.5,
                       color: activeColor,
                     ),
@@ -149,8 +154,8 @@ class _FavoriteButtonState extends State<FavoriteButton> {
                     size: widget.size,
                     color: _isFavorite ? activeColor : inactiveColor,
                     semanticLabel: _isFavorite
-                        ? 'Remove from favorites'
-                        : 'Add to favorites',
+                        ? L10n.of(context).removeFromFavoritesSemantic
+                        : L10n.of(context).addToFavoritesSemantic,
                   ),
           ),
         ),

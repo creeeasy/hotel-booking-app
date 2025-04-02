@@ -1,6 +1,7 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/helpers/format_rating.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/custom_outlined_button.dart';
@@ -43,14 +44,14 @@ class _HotelDetailsViewState extends State<HotelDetailsView> {
 
             if (snapshot.hasError) {
               return ErrorWidgetWithRetry(
-                errorMessage: 'Failed to load hotel details',
+                errorMessage: L10n.of(context).failedToLoadHotelDetails,
                 onRetry: () => setState(() {}),
               );
             }
 
             if (!snapshot.hasData) {
-              return const NoDataWidget(
-                message: "No hotel information available",
+              return NoDataWidget(
+                message: L10n.of(context).noHotelInformationAvailable,
                 // icon: Iconsax.house_2,
               );
             }
@@ -90,17 +91,17 @@ class HotelDetailsBody extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                _buildHotelHeader(),
+                _buildHotelHeader(context),
                 const DividerWidget(),
-                _buildLocationSection(),
+                _buildLocationSection(context),
                 const DividerWidget(),
-                _buildDescriptionSection(),
+                _buildDescriptionSection(context),
                 const DividerWidget(),
-                _buildContactSection(),
+                _buildContactSection(context),
                 const DividerWidget(),
                 _buildRatingsSection(context),
                 const DividerWidget(),
-                _buildMapSection(),
+                _buildMapSection(context),
                 const DividerWidget(),
                 _buildRoomOffersSection(context),
               ]),
@@ -111,7 +112,7 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildHotelHeader() {
+  Widget _buildHotelHeader(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -130,7 +131,7 @@ class HotelDetailsBody extends StatelessWidget {
         const SizedBox(height: 8),
         if (hotel.totalRooms != null)
           Text(
-            "${hotel.totalRooms} ${hotel.totalRooms == 1 ? 'Room' : 'Rooms'} available",
+            "${hotel.totalRooms} ${hotel.totalRooms == 1 ? L10n.of(context).room : L10n.of(context).rooms} ${L10n.of(context).available}",
             style: const TextStyle(
               fontSize: 14,
               color: ThemeColors.textSecondary,
@@ -141,12 +142,12 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSection() {
+  Widget _buildLocationSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(
-          title: "Location",
+        SectionTitle(
+          title: L10n.of(context).location,
           titleColor: ThemeColors.primary,
         ),
         const SizedBox(height: 8),
@@ -162,8 +163,8 @@ class HotelDetailsBody extends StatelessWidget {
               child: Text(
                 hotel.location != null
                     ? Wilaya.fromIndex(hotel.location!)?.name ??
-                        'Unknown location'
-                    : 'Location not specified',
+                        L10n.of(context).unknownLocation
+                    : L10n.of(context).locationNotSpecified,
                 style: const TextStyle(
                   fontSize: 16,
                   color: ThemeColors.textPrimary,
@@ -177,17 +178,17 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionSection() {
+  Widget _buildDescriptionSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(
-          title: "Description",
+        SectionTitle(
+          title: L10n.of(context).description,
           titleColor: ThemeColors.primary,
         ),
         const SizedBox(height: 8),
         Text(
-          hotel.description ?? 'No description available',
+          hotel.description ?? L10n.of(context).noDescriptionAvailable,
           style: const TextStyle(
             fontSize: 15,
             color: ThemeColors.textPrimary,
@@ -198,17 +199,17 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildContactSection() {
+  Widget _buildContactSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(
-          title: "Contact Information",
+        SectionTitle(
+          title: L10n.of(context).contactInformation,
           titleColor: ThemeColors.primary,
         ),
         const SizedBox(height: 8),
         Text(
-          hotel.contactInfo ?? 'No contact information available',
+          hotel.contactInfo ?? L10n.of(context).noContactInformationAvailable,
           style: const TextStyle(
             fontSize: 15,
             color: ThemeColors.textPrimary,
@@ -222,19 +223,20 @@ class HotelDetailsBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(
-          title: "Ratings & Reviews",
+        SectionTitle(
+          title: L10n.of(context).ratingsAndReviews,
           titleColor: ThemeColors.primary,
         ),
         const SizedBox(height: 12),
         hotel.ratings.totalRating == 0
-            ? _buildNoRatings()
+            ? _buildNoRatings(context)
             : Column(
                 children: [
-                  _buildRatingsSummary(),
+                  _buildRatingsSummary(context),
                   const SizedBox(height: 16),
                   CustomOutlinedButton(
-                    text: "View all ${hotel.ratings.totalRating} reviews",
+                    text:
+                        "${L10n.of(context).viewAll} ${hotel.ratings.totalRating} ${L10n.of(context).reviews}",
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
@@ -249,7 +251,7 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildNoRatings() {
+  Widget _buildNoRatings(BuildContext context) {
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -260,9 +262,9 @@ class HotelDetailsBody extends StatelessWidget {
             color: ThemeColors.primary.withOpacity(0.1),
           ),
         ),
-        child: const Text(
-          'No reviews yet',
-          style: TextStyle(
+        child: Text(
+          L10n.of(context).noReviewsYet,
+          style: const TextStyle(
             color: ThemeColors.textSecondary,
           ),
         ),
@@ -270,7 +272,7 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildRatingsSummary() {
+  Widget _buildRatingsSummary(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -294,9 +296,9 @@ class HotelDetailsBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Average Rating',
-                style: TextStyle(
+              Text(
+                L10n.of(context).averageRating,
+                style: const TextStyle(
                   color: ThemeColors.textSecondary,
                 ),
               ),
@@ -313,9 +315,9 @@ class HotelDetailsBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Total Reviews',
-                style: TextStyle(
+              Text(
+                L10n.of(context).totalReviews,
+                style: const TextStyle(
                   color: ThemeColors.textSecondary,
                 ),
               ),
@@ -326,23 +328,23 @@ class HotelDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildMapSection() {
+  Widget _buildMapSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(
-          title: "Location on Map",
+        SectionTitle(
+          title: L10n.of(context).locationOnMap,
           titleColor: ThemeColors.primary,
         ),
         const SizedBox(height: 12),
         hotel.mapLink != null
             ? CustomOutlinedButton(
-                text: "Open in Maps",
+                text: L10n.of(context).openInMaps,
                 onPressed: () => launchUrl(Uri.parse(hotel.mapLink!)),
               )
-            : const Text(
-                'Map location not available',
-                style: TextStyle(
+            : Text(
+                L10n.of(context).mapLocationNotAvailable,
+                style: const TextStyle(
                   color: ThemeColors.textSecondary,
                 ),
               ),
@@ -354,14 +356,14 @@ class HotelDetailsBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(
-          title: "Room Offers",
+        SectionTitle(
+          title: L10n.of(context).roomOffers,
           titleColor: ThemeColors.primary,
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Explore our available room options and special offers',
-          style: TextStyle(
+        Text(
+          L10n.of(context).exploreRoomOffers,
+          style: const TextStyle(
             color: ThemeColors.textSecondary,
           ),
         ),
@@ -385,14 +387,14 @@ class HotelDetailsBody extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Iconsax.house_2, size: 20),
-                SizedBox(width: 8),
+                const Icon(Iconsax.house_2, size: 20),
+                const SizedBox(width: 8),
                 Text(
-                  'View Room Offers',
-                  style: TextStyle(
+                  L10n.of(context).viewRoomOffers,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),

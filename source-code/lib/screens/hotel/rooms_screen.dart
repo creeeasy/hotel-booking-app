@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:fatiel/l10n/l10n.dart';
 
 class HotelRoomsPage extends StatefulWidget {
   const HotelRoomsPage({super.key});
@@ -52,7 +53,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       return await RoomService.getHotelRoomsById(_hotelId);
     } catch (e) {
       debugPrint('Error fetching rooms: $e');
-      throw Exception('Failed to load rooms');
+      throw Exception(L10n.of(context).failedToLoadRooms);
     }
   }
 
@@ -67,8 +68,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: ThemeColors.background,
-        appBar: const CustomBackAppBar(
-          title: 'Rooms',
+        appBar: CustomBackAppBar(
+          title: L10n.of(context).roomsTitle,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _showAddEditRoomDialog(),
@@ -147,9 +148,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
           Icon(Iconsax.house,
               size: 64, color: ThemeColors.textSecondary.withOpacity(0.5)),
           const SizedBox(height: 16),
-          const Text(
-            'No rooms available',
-            style: TextStyle(
+          Text(
+            L10n.of(context).noRoomsAvailable,
+            style: const TextStyle(
               fontSize: 18,
               color: ThemeColors.textPrimary,
             ),
@@ -165,7 +166,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: const Text('Add Room'),
+            child: Text(L10n.of(context).addRoom),
           ),
         ],
       ),
@@ -179,9 +180,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         children: [
           const Icon(Iconsax.warning_2, size: 64, color: ThemeColors.error),
           const SizedBox(height: 16),
-          const Text(
-            'Failed to load rooms',
-            style: TextStyle(
+          Text(
+            L10n.of(context).failedToLoadRooms,
+            style: const TextStyle(
               fontSize: 18,
               color: ThemeColors.textPrimary,
             ),
@@ -208,7 +209,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: const Text('Retry'),
+            child: Text(L10n.of(context).retry),
           ),
         ],
       ),
@@ -227,8 +228,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         SnackBar(
           content: Text(
             room.availability.isAvailable
-                ? 'Room marked as unavailable'
-                : 'Room marked as available',
+                ? L10n.of(context).roomMarkedAsUnavailable
+                : L10n.of(context).roomMarkedAsAvailable,
           ),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -242,7 +243,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update room: $e'),
+          content:
+              Text(L10n.of(context).failedToUpdateRoomGeneric(e.toString())),
           behavior: SnackBarBehavior.floating,
           backgroundColor: ThemeColors.error,
         ),
@@ -255,20 +257,20 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: ThemeColors.card,
-        title: const Text(
-          'Delete Room',
-          style: TextStyle(color: ThemeColors.textPrimary),
+        title: Text(
+          L10n.of(context).deleteRoom,
+          style: const TextStyle(color: ThemeColors.textPrimary),
         ),
-        content: const Text(
-          'This action cannot be undone. Are you sure?',
-          style: TextStyle(color: ThemeColors.textSecondary),
+        content: Text(
+          L10n.of(context).deleteRoomConfirmation,
+          style: const TextStyle(color: ThemeColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: ThemeColors.primary),
+            child: Text(
+              L10n.of(context).cancel,
+              style: const TextStyle(color: ThemeColors.primary),
             ),
           ),
           TextButton(
@@ -276,9 +278,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
               Navigator.pop(context);
               await _deleteRoom(room);
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: ThemeColors.error),
+            child: Text(
+              L10n.of(context).delete,
+              style: const TextStyle(color: ThemeColors.error),
             ),
           ),
         ],
@@ -295,8 +297,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Room deleted successfully'),
+        SnackBar(
+          content: Text(L10n.of(context).roomDeletedSuccessfully),
           behavior: SnackBarBehavior.floating,
           backgroundColor: ThemeColors.primary,
         ),
@@ -306,7 +308,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to delete room: $e'),
+          content: Text(L10n.of(context).failedToDeleteRoom(e.toString())),
           behavior: SnackBarBehavior.floating,
           backgroundColor: ThemeColors.error,
         ),
@@ -349,8 +351,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Image uploaded successfully'),
+          SnackBar(
+            content: Text(L10n.of(context).imageUploadedSuccessfully),
             behavior: SnackBarBehavior.floating,
             backgroundColor: ThemeColors.primary,
           ),
@@ -359,7 +361,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error uploading image: $e'),
+            content: Text(L10n.of(context).errorUploadingImage(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: ThemeColors.error,
           ),
@@ -385,8 +387,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Image removed successfully'),
+          SnackBar(
+            content: Text(L10n.of(context).imageRemovedSuccessfully),
             behavior: SnackBarBehavior.floating,
             backgroundColor: ThemeColors.primary,
           ),
@@ -395,7 +397,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error removing image: $e'),
+            content: Text(L10n.of(context).errorRemovingImage(e.toString())),
             behavior: SnackBarBehavior.floating,
             backgroundColor: ThemeColors.error,
           ),
@@ -490,14 +492,14 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                 width: 1,
               ),
             ),
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Iconsax.add, color: ThemeColors.primary, size: 24),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Add Photo',
-                  style: TextStyle(
+                  L10n.of(context).addPhoto,
+                  style: const TextStyle(
                     fontSize: 12,
                     color: ThemeColors.primary,
                   ),
@@ -525,7 +527,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionHeader(Iconsax.gallery, 'Room Photos'),
+                  _buildSectionHeader(
+                      Iconsax.gallery, L10n.of(context).roomPhotos),
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 120,
@@ -556,7 +559,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       );
     }
 
-    Widget _buildAmenitiesSection() {
+    Widget buildAmenitiesSection() {
       return Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
@@ -568,7 +571,8 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader(Iconsax.tick_circle, 'Amenities'),
+              _buildSectionHeader(
+                  Iconsax.tick_circle, L10n.of(context).amenities),
               const SizedBox(height: 12),
               StatefulBuilder(builder: (context, setState) {
                 return Wrap(
@@ -577,7 +581,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                   children: AmenityIcons.amenities.entries.map((entry) {
                     final isSelected = amenities.contains(entry.value.label);
                     return InputChip(
-                      label: Text(entry.value.label),
+                      label: Text(
+                        AmenityIcon.getLocalizedLabel(entry.key, context),
+                      ),
                       labelStyle: TextStyle(
                         color: isSelected
                             ? ThemeColors.textOnPrimary
@@ -657,7 +663,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                       ),
                     ),
                     Text(
-                      isEditing ? 'Edit Room' : 'Add New Room',
+                      isEditing
+                          ? L10n.of(context).editRoom
+                          : L10n.of(context).addNewRoom,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -677,15 +685,15 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
-                            _buildSectionHeader(
-                                Iconsax.info_circle, 'Basic Information'),
+                            _buildSectionHeader(Iconsax.info_circle,
+                                L10n.of(context).basicInformation),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: nameController,
                               style: const TextStyle(
                                   color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
-                                labelText: 'Room Name',
+                                labelText: L10n.of(context).roomName,
                                 labelStyle: const TextStyle(
                                     color: ThemeColors.textSecondary),
                                 prefixIcon: const Icon(Iconsax.house,
@@ -715,7 +723,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                               style: const TextStyle(
                                   color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
-                                labelText: 'Description',
+                                labelText: L10n.of(context).description,
                                 labelStyle: const TextStyle(
                                     color: ThemeColors.textSecondary),
                                 prefixIcon: const Icon(Iconsax.note,
@@ -759,14 +767,14 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                         child: Column(
                           children: [
                             _buildSectionHeader(Iconsax.dollar_circle,
-                                'Pricing & Availability'),
+                                L10n.of(context).pricingAvailability),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: priceController,
                               style: const TextStyle(
                                   color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
-                                labelText: 'Price per night',
+                                labelText: L10n.of(context).pricePerNight,
                                 labelStyle: const TextStyle(
                                     color: ThemeColors.textSecondary),
                                 prefixIcon: const Icon(Iconsax.dollar_circle,
@@ -802,7 +810,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                               style: const TextStyle(
                                   color: ThemeColors.textPrimary),
                               decoration: InputDecoration(
-                                labelText: 'Capacity',
+                                labelText: L10n.of(context).capacity,
                                 labelStyle: const TextStyle(
                                     color: ThemeColors.textSecondary),
                                 prefixIcon: const Icon(Iconsax.profile_2user,
@@ -827,7 +835,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                   .map((e) => DropdownMenuItem(
                                         value: e,
                                         child: Text(
-                                            '$e ${e == 1 ? 'guest' : 'guests'}'),
+                                            '$e ${L10n.of(context).guest(e)}'),
                                       ))
                                   .toList(),
                               onChanged: (value) => capacity = value ?? 1,
@@ -835,9 +843,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                             const SizedBox(height: 16),
                             StatefulBuilder(builder: (context, setState) {
                               return SwitchListTile(
-                                title: const Text(
-                                  'Available for booking',
-                                  style: TextStyle(
+                                title: Text(
+                                  L10n.of(context).availableForBooking,
+                                  style: const TextStyle(
                                     color: ThemeColors.textPrimary,
                                   ),
                                 ),
@@ -862,7 +870,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                     const SizedBox(height: 16),
 
                     // Amenities Section
-                    _buildAmenitiesSection(),
+                    buildAmenitiesSection(),
 
                     const SizedBox(height: 24),
 
@@ -906,8 +914,10 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                                 SnackBar(
                                   content: Text(
                                     isEditing
-                                        ? 'Room updated successfully'
-                                        : 'Room added successfully',
+                                        ? L10n.of(context)
+                                            .roomUpdatedSuccessfully
+                                        : L10n.of(context)
+                                            .roomAddedSuccessfully,
                                   ),
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: ThemeColors.primary,
@@ -919,7 +929,12 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    'Failed to ${isEditing ? 'update' : 'add'} room: $e',
+                                    isEditing
+                                        ? L10n.of(context)
+                                            .failedToUpdateRoomGeneric(
+                                                e.toString())
+                                        : L10n.of(context)
+                                            .failedToAddRoom(e.toString()),
                                   ),
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: ThemeColors.error,
@@ -936,7 +951,9 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                           ),
                         ),
                         child: Text(
-                          isEditing ? 'Update Room' : 'Add Room',
+                          isEditing
+                              ? L10n.of(context).updateRoom
+                              : L10n.of(context).addRoom,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -1005,7 +1022,7 @@ class _RoomCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '\$${room.pricePerNight.toStringAsFixed(2)} per night',
+                          '\$${room.pricePerNight.toStringAsFixed(2)} ${L10n.of(context).pricePerNight}',
                           style: const TextStyle(
                             color: ThemeColors.textSecondary,
                           ),
@@ -1018,12 +1035,12 @@ class _RoomCard extends StatelessWidget {
                             _buildInfoChip(
                                 icon: Iconsax.profile_2user,
                                 text:
-                                    '${room.capacity} ${room.capacity == 1 ? 'guest' : 'guests'}'),
+                                    '${room.capacity} ${L10n.of(context).guest(room.capacity)}'),
                             _buildInfoChip(
                                 icon: Iconsax.calendar,
                                 text: room.availability.isAvailable
-                                    ? 'Available'
-                                    : 'Unavailable',
+                                    ? L10n.of(context).available
+                                    : L10n.of(context).unavailable,
                                 color: room.availability.isAvailable
                                     ? ThemeColors.primary
                                     : ThemeColors.error),
@@ -1031,7 +1048,7 @@ class _RoomCard extends StatelessWidget {
                               _buildInfoChip(
                                   icon: Iconsax.gallery,
                                   text:
-                                      '${room.images.length} photo${room.images.length > 1 ? 's' : ''}'),
+                                      '${room.images.length} ${L10n.of(context).photoCount(room.images.length)}'),
                           ],
                         ),
                       ],
@@ -1042,9 +1059,9 @@ class _RoomCard extends StatelessWidget {
               ),
               if (room.amenities.isNotEmpty) ...[
                 const Divider(height: 24),
-                const Text(
-                  'Amenities',
-                  style: TextStyle(
+                Text(
+                  L10n.of(context).amenities,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: ThemeColors.textPrimary,
                   ),
@@ -1064,7 +1081,7 @@ class _RoomCard extends StatelessWidget {
                         .icon;
                     return Chip(
                       label: Text(
-                        amenity,
+                        AmenityIcon.getLocalizedLabel(amenity, context),
                         style: const TextStyle(color: ThemeColors.textPrimary),
                       ),
                       avatar:
@@ -1078,7 +1095,7 @@ class _RoomCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
-                      '+${room.amenities.length - 3} more',
+                      '+${room.amenities.length - 3} ${L10n.of(context).seeAll}',
                       style: const TextStyle(
                         color: ThemeColors.textSecondary,
                       ),
@@ -1130,29 +1147,29 @@ class _RoomCard extends StatelessWidget {
       ),
       itemBuilder: (context) => [
         PopupMenuItem(
-          child: const Text(
-            'Edit',
-            style: TextStyle(color: ThemeColors.textPrimary),
-          ),
           onTap: onEdit,
-        ),
-        PopupMenuItem(
           child: Text(
-            room.availability.isAvailable
-                ? 'Mark Unavailable'
-                : 'Mark Available',
+            L10n.of(context).edit,
             style: const TextStyle(color: ThemeColors.textPrimary),
           ),
-          onTap: onToggleAvailability,
         ),
         PopupMenuItem(
-          child: const Text(
-            'Delete',
-            style: TextStyle(
+          onTap: onToggleAvailability,
+          child: Text(
+            room.availability.isAvailable
+                ? L10n.of(context).markUnavailable
+                : L10n.of(context).markAvailable,
+            style: const TextStyle(color: ThemeColors.textPrimary),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: onDelete,
+          child: Text(
+            L10n.of(context).delete,
+            style: const TextStyle(
               color: ThemeColors.error,
             ),
           ),
-          onTap: onDelete,
         ),
       ],
     );

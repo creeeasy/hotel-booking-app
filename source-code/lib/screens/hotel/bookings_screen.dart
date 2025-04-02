@@ -1,5 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/room.dart';
@@ -22,12 +23,6 @@ class HotelBookingsPage extends StatefulWidget {
 
 class _HotelBookingsPageState extends State<HotelBookingsPage> {
   final ValueNotifier<String> _filterStatus = ValueNotifier('All');
-  final List<String> _statusFilters = [
-    'All',
-    'pending',
-    'cancelled',
-    'completed'
-  ];
 
   late Hotel _hotel;
   late Future<List<Booking>> _bookingsFuture;
@@ -70,7 +65,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
     return SafeArea(
       child: Scaffold(
         appBar: CustomBackAppBar(
-          title: 'Bookings',
+          title: L10n.of(context).bookingsTitle,
           actions: [
             IconButton(
               icon: const Icon(Iconsax.filter, color: ThemeColors.primary),
@@ -192,14 +187,14 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             scrollDirection: Axis.horizontal,
             children: [
               _buildSummaryCard(
-                title: 'Total',
+                title: L10n.of(context).summaryTotal,
                 value: bookings.length,
                 icon: Iconsax.book,
                 color: ThemeColors.primary,
               ),
               const SizedBox(width: 12),
               _buildSummaryCard(
-                title: 'Pending',
+                title: L10n.of(context).summaryPending,
                 value: bookings
                     .where((b) => b.status == BookingStatus.pending)
                     .length,
@@ -208,7 +203,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
               ),
               const SizedBox(width: 12),
               _buildSummaryCard(
-                title: 'Completed',
+                title: L10n.of(context).summaryCompleted,
                 value: bookings
                     .where((b) => b.status == BookingStatus.completed)
                     .length,
@@ -217,7 +212,7 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
               ),
               const SizedBox(width: 12),
               _buildSummaryCard(
-                title: 'Revenue',
+                title: L10n.of(context).summaryRevenue,
                 value: bookings.fold(0.0, (sum, b) => sum + b.totalPrice),
                 icon: Iconsax.dollar_circle,
                 color: ThemeColors.accentPurple,
@@ -246,8 +241,6 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
         final data = snapshot.data!;
         final visitor = data['visitor'] as Visitor?;
         final room = data['room'] as Room?;
-        final nights =
-            booking.checkOutDate.difference(booking.checkInDate).inDays;
 
         return Card(
           elevation: 0,
@@ -335,7 +328,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                             ),
                           ),
                           Text(
-                            '$nights ${nights == 1 ? 'night' : 'nights'}',
+                            L10n.of(context).nights(booking.checkOutDate
+                                .difference(booking.checkInDate)
+                                .inDays),
                             style: const TextStyle(
                               fontSize: 12,
                               color: ThemeColors.textSecondary,
@@ -363,9 +358,10 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                               side:
                                   const BorderSide(color: ThemeColors.primary),
                             ),
-                            child: const Text(
-                              'Complete',
-                              style: TextStyle(color: ThemeColors.primary),
+                            child: Text(
+                              L10n.of(context).complete,
+                              style:
+                                  const TextStyle(color: ThemeColors.primary),
                             ),
                           ),
                         ),
@@ -383,9 +379,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                               ),
                               side: const BorderSide(color: ThemeColors.error),
                             ),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(color: ThemeColors.error),
+                            child: Text(
+                              L10n.of(context).cancel,
+                              style: const TextStyle(color: ThemeColors.error),
                             ),
                           ),
                         ),
@@ -473,14 +469,17 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   Widget _buildStatusBadge(BookingStatus status) {
     final statusInfo = {
-      BookingStatus.pending: {'color': ThemeColors.warning, 'label': 'Pending'},
+      BookingStatus.pending: {
+        'color': ThemeColors.warning,
+        'label': L10n.of(context).pending
+      },
       BookingStatus.completed: {
         'color': ThemeColors.success,
-        'label': 'Completed'
+        'label': L10n.of(context).completed
       },
       BookingStatus.cancelled: {
         'color': ThemeColors.error,
-        'label': 'Cancelled'
+        'label': L10n.of(context).cancelled
       },
     };
 
@@ -549,45 +548,62 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
     required Color color,
     bool isCurrency = false,
   }) {
-    return Container(
-      width: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: 120,
+        maxWidth: 160,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 20, color: color),
+      child: AspectRatio(
+        aspectRatio: 1.2,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withOpacity(0.2)),
           ),
-          const Spacer(),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              color: ThemeColors.textSecondary,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 20, color: color),
+              ),
+              const SizedBox(height: 8),
+              Flexible(
+                // Makes the title text flexible
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: ThemeColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: 4),
+              FittedBox(
+                // Ensures the value text fits
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  isCurrency
+                      ? '\$${(value as double).toStringAsFixed(2)}'
+                      : value.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            isCurrency
-                ? '\$${(value as double).toStringAsFixed(2)}'
-                : value.toString(),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: color,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -635,9 +651,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
           color: ThemeColors.border,
         ),
         const SizedBox(height: 16),
-        const Text(
-          "No Bookings Found",
-          style: TextStyle(
+        Text(
+          L10n.of(context).noBookingsFound,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: ThemeColors.textPrimary,
@@ -646,8 +662,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
         const SizedBox(height: 8),
         Text(
           filterValue == 'All'
-              ? "You don't have any bookings yet"
-              : "No $filterValue bookings found",
+              ? L10n.of(context).noBookingsDefault
+              : L10n.of(context).noFilteredBookings(filterValue),
           style: const TextStyle(
             fontSize: 14,
             color: ThemeColors.textSecondary,
@@ -667,9 +683,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
           color: ThemeColors.error,
         ),
         const SizedBox(height: 16),
-        const Text(
-          "Failed to load bookings",
-          style: TextStyle(
+        Text(
+          L10n.of(context).failedToLoadBookings,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: ThemeColors.textPrimary,
@@ -681,9 +697,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             backgroundColor: ThemeColors.primary,
           ),
           onPressed: _refreshBookings,
-          child: const Text(
-            "Retry",
-            style: TextStyle(color: ThemeColors.textOnPrimary),
+          child: Text(
+            L10n.of(context).retry,
+            style: const TextStyle(color: ThemeColors.textOnPrimary),
           ),
         ),
       ],
@@ -691,21 +707,29 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
   }
 
   void _showFilterDialog() {
+    final List<String> statusFilters = [
+      L10n.of(context).all,
+      L10n.of(context).pending,
+      L10n.of(context).cancelled,
+      L10n.of(context).completed,
+    ];
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: ThemeColors.card,
-        title: const Text(
-          'Filter Bookings',
-          style: TextStyle(color: ThemeColors.textPrimary),
+        title: Text(
+          L10n.of(context).filterBookingsTitle,
+          // ...,
+          style: const TextStyle(color: ThemeColors.textPrimary),
         ),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
             shrinkWrap: true,
-            itemCount: _statusFilters.length,
+            itemCount: statusFilters.length,
             itemBuilder: (context, index) {
-              final status = _statusFilters[index];
+              final status = statusFilters[index];
               return RadioListTile(
                 title: Text(
                   status,
@@ -761,9 +785,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             ),
             Row(
               children: [
-                const Text(
-                  'Booking Details',
-                  style: TextStyle(
+                Text(
+                  L10n.of(context).bookingDetailsTitle,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: ThemeColors.textPrimary,
@@ -775,8 +799,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             ),
             const SizedBox(height: 24),
             if (room != null) ...[
-              const Text('Room Information',
-                  style: TextStyle(
+              Text(L10n.of(context).roomInformation,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: ThemeColors.textSecondary,
                   )),
@@ -801,15 +825,16 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                   style: const TextStyle(color: ThemeColors.textPrimary),
                 ),
                 subtitle: Text(
-                  '\$${room.pricePerNight.toStringAsFixed(2)} per night',
+                  L10n.of(context)
+                      .perNight('\$${room.pricePerNight.toStringAsFixed(2)}'),
                   style: const TextStyle(color: ThemeColors.textSecondary),
                 ),
               ),
               const SizedBox(height: 16),
             ],
             if (visitor != null) ...[
-              const Text('Guest Information',
-                  style: TextStyle(
+              Text(L10n.of(context).guestInformation,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: ThemeColors.textSecondary,
                   )),
@@ -863,8 +888,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
               ),
               const SizedBox(height: 16),
             ],
-            const Text('Booking Dates',
-                style: TextStyle(
+            Text(L10n.of(context).bookingDates,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   color: ThemeColors.textSecondary,
                 )),
@@ -874,22 +899,22 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                 Expanded(
                   child: _buildDateInfo(
                     icon: Iconsax.calendar_1,
-                    title: 'Check-in',
+                    title: L10n.of(context).checkIn,
                     date: booking.checkInDate,
                   ),
                 ),
                 Expanded(
                   child: _buildDateInfo(
                     icon: Iconsax.calendar_tick,
-                    title: 'Check-out',
+                    title: L10n.of(context).checkOut,
                     date: booking.checkOutDate,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Payment Information',
-                style: TextStyle(
+            Text(L10n.of(context).paymentInformation,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   color: ThemeColors.textSecondary,
                 )),
@@ -897,9 +922,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Total Amount',
-                  style: TextStyle(color: ThemeColors.textPrimary),
+                Text(
+                  L10n.of(context).totalAmount,
+                  style: const TextStyle(color: ThemeColors.textPrimary),
                 ),
                 Text(
                   '\$${booking.totalPrice.toStringAsFixed(2)}',
@@ -914,9 +939,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Payment Status',
-                  style: TextStyle(color: ThemeColors.textSecondary),
+                Text(
+                  L10n.of(context).paymentStatus,
+                  style: const TextStyle(color: ThemeColors.textSecondary),
                 ),
                 Container(
                   padding:
@@ -925,9 +950,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                     color: ThemeColors.success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Paid',
-                    style: TextStyle(
+                  child: Text(
+                    L10n.of(context).paid,
+                    style: const TextStyle(
                       color: ThemeColors.success,
                       fontWeight: FontWeight.w500,
                     ),
@@ -951,9 +976,9 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
                     _updateBookingStatus(booking, BookingStatus.completed);
                     Navigator.pop(context);
                   },
-                  child: const Text(
-                    'Mark as Completed',
-                    style: TextStyle(color: ThemeColors.textOnPrimary),
+                  child: Text(
+                    L10n.of(context).markCompleted,
+                    style: const TextStyle(color: ThemeColors.textOnPrimary),
                   ),
                 ),
               ),

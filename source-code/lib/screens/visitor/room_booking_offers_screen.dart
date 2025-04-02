@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/room.dart';
@@ -41,9 +42,8 @@ class _RoomBookingOffersPageState extends State<RoomBookingOffersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       appBar: CustomBackAppBar(
-        title: 'Explore room offers',
+        title: L10n.of(context).exploreRoomOffers,
         onBack: () => Navigator.pop(context),
       ),
       backgroundColor: ThemeColors.background,
@@ -155,7 +155,7 @@ class _RoomContentState extends State<RoomContent> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Confirm Booking',
+                L10n.of(context).confirmBooking,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: ThemeColors.textPrimary,
@@ -164,26 +164,27 @@ class _RoomContentState extends State<RoomContent> {
               const SizedBox(height: 20),
               _buildBookingDetailRow(
                 icon: Iconsax.house_2,
-                label: 'Room Type',
+                label: L10n.of(context).roomType,
                 value: _selectedRoom.name,
               ),
               const SizedBox(height: 12),
               _buildBookingDetailRow(
                 icon: Iconsax.calendar,
-                label: 'Dates',
+                label: L10n.of(context).dates,
                 value: '${DateFormat('MMM d, y').format(dateRange.start)} - '
                     '${DateFormat('MMM d, y').format(dateRange.end)}',
               ),
               const SizedBox(height: 12),
               _buildBookingDetailRow(
                 icon: Iconsax.moon,
-                label: 'Duration',
-                value: '$duration night${duration > 1 ? 's' : ''}',
+                label: L10n.of(context).duration,
+                value:
+                    '$duration ${L10n.of(context).night}${duration > 1 ? 's' : ''}',
               ),
               const SizedBox(height: 12),
               _buildBookingDetailRow(
                 icon: Iconsax.receipt,
-                label: 'Total Price',
+                label: L10n.of(context).totalPrice,
                 value: '\$${totalPrice.toStringAsFixed(2)}',
                 valueStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -200,7 +201,7 @@ class _RoomContentState extends State<RoomContent> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: const BorderSide(color: ThemeColors.border),
                       ),
-                      child: const Text('Cancel'),
+                      child: Text(L10n.of(context).cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -211,9 +212,9 @@ class _RoomContentState extends State<RoomContent> {
                         backgroundColor: ThemeColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text(
-                        'Confirm',
-                        style: TextStyle(color: ThemeColors.white),
+                      child: Text(
+                        L10n.of(context).confirm,
+                        style: const TextStyle(color: ThemeColors.white),
                       ),
                     ),
                   ),
@@ -224,11 +225,11 @@ class _RoomContentState extends State<RoomContent> {
         ),
       ),
     );
-
     if (confirmed == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Successfully booked ${_selectedRoom.name}!'),
+          content: Text(
+              '${L10n.of(context).successfullyBooked} ${_selectedRoom.name}!'),
           backgroundColor: ThemeColors.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -330,7 +331,6 @@ class RoomCarousel extends StatelessWidget {
   final Room selectedRoom;
   final ValueChanged<Room> onRoomSelected;
   final ScrollController scrollController;
-
   const RoomCarousel({
     super.key,
     required this.rooms,
@@ -368,7 +368,6 @@ class RoomCard extends StatelessWidget {
   final Room room;
   final bool isSelected;
   final VoidCallback onTap;
-
   const RoomCard({
     super.key,
     required this.room,
@@ -416,7 +415,7 @@ class RoomCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '${room.capacity} Guests',
+                  '${room.capacity} ${L10n.of(context).guests}',
                   style: const TextStyle(
                     fontSize: 13,
                     color: ThemeColors.textSecondary,
@@ -428,9 +427,9 @@ class RoomCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Per night',
-                  style: TextStyle(
+                Text(
+                  L10n.of(context).perNightSimple,
+                  style: const TextStyle(
                     fontSize: 11,
                     color: ThemeColors.textSecondary,
                   ),
@@ -481,7 +480,7 @@ class _RoomHeader extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              '${room.capacity} Guests',
+              '${room.capacity} ${L10n.of(context).guests}',
               style: const TextStyle(
                 fontSize: 14,
                 color: ThemeColors.textSecondary,
@@ -520,9 +519,9 @@ class RoomAmenities extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (amenities.isEmpty) {
-      return const _EmptyState(
+      return _EmptyState(
         icon: Iconsax.close_circle,
-        message: "No amenities listed",
+        message: L10n.of(context).noAmenitiesListed,
         color: ThemeColors.warning,
       );
     }
@@ -561,7 +560,8 @@ class RoomAmenities extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                amenityData?.label ?? amenities[index],
+                AmenityIcon.getLocalizedLabel(
+                    amenityData?.label ?? amenities[index], context),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 12,
@@ -587,8 +587,8 @@ class RoomAvailabilityCard extends StatelessWidget {
     final color = isAvailable ? ThemeColors.success : ThemeColors.error;
     final icon = isAvailable ? Iconsax.calendar_tick : Iconsax.calendar_remove;
     final message = isAvailable
-        ? "Available from ${DateFormat('MMM d, y').format(availability.nextAvailableDate!)}"
-        : "Not currently available";
+        ? "${L10n.of(context).availableFrom} ${DateFormat('MMM d, y').format(availability.nextAvailableDate!)}"
+        : L10n.of(context).notCurrentlyAvailable;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -604,7 +604,9 @@ class RoomAvailabilityCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isAvailable ? "Available" : "Unavailable",
+                isAvailable
+                    ? L10n.of(context).available
+                    : L10n.of(context).unavailable,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -738,9 +740,9 @@ class RoomErrorView extends StatelessWidget {
               color: ThemeColors.error,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Failed to load rooms',
-              style: TextStyle(
+            Text(
+              L10n.of(context).failedToLoadRooms,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -759,9 +761,9 @@ class RoomErrorView extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
-              child: const Text(
-                'Try Again',
-                style: TextStyle(color: ThemeColors.white),
+              child: Text(
+                L10n.of(context).tryAgain,
+                style: const TextStyle(color: ThemeColors.white),
               ),
             ),
           ],
@@ -788,9 +790,9 @@ class RoomEmptyView extends StatelessWidget {
               color: ThemeColors.grey400,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No rooms available',
-              style: TextStyle(
+            Text(
+              L10n.of(context).noRoomsAvailable,
+              style: const TextStyle(
                 fontSize: 18,
                 color: ThemeColors.textSecondary,
               ),
@@ -820,9 +822,9 @@ class BookNowButton extends StatelessWidget {
           backgroundColor: ThemeColors.primary,
           minimumSize: const Size(double.infinity, 50),
         ),
-        child: const Text(
-          'Book Now',
-          style: TextStyle(
+        child: Text(
+          L10n.of(context).bookNow,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: ThemeColors.white,

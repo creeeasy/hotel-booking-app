@@ -1,7 +1,9 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/helpers/auth_helper.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
+import 'package:fatiel/providers/locale_provider.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -10,9 +12,10 @@ import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/utils/multi_value_listenable_builder.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HotelProfileView extends StatefulWidget {
   const HotelProfileView({super.key});
@@ -70,9 +73,11 @@ class _HotelProfileViewState extends State<HotelProfileView> {
         context.read<AuthBloc>().add(const AuthEventInitialize());
       }
       _isEditing.value = false;
-      _showSnackbar('Profile updated successfully', isError: false);
+      _showSnackbar(L10n.of(context).profileUpdatedSuccessfully,
+          isError: false);
     } catch (e) {
-      _showSnackbar('Error updating profile: $e', isError: true);
+      _showSnackbar('${L10n.of(context).errorUpdatingProfile}: $e',
+          isError: true);
     } finally {
       _isLoading.value = false;
     }
@@ -93,9 +98,10 @@ class _HotelProfileViewState extends State<HotelProfileView> {
       if (imageUrl == null) throw Exception("Image upload failed");
 
       _tempImages.value = [..._tempImages.value, imageUrl];
-      _showSnackbar('Image uploaded successfully', isError: false);
+      _showSnackbar(L10n.of(context).imageUploadedSuccessfully, isError: false);
     } catch (e) {
-      _showSnackbar('Error uploading image: $e', isError: true);
+      _showSnackbar('${L10n.of(context).errorUploadingImage}: $e',
+          isError: true);
     } finally {
       _isImageLoading.value = false;
     }
@@ -112,9 +118,10 @@ class _HotelProfileViewState extends State<HotelProfileView> {
       }
 
       _tempImages.value = List.from(_tempImages.value)..removeAt(index);
-      _showSnackbar('Image removed successfully', isError: false);
+      _showSnackbar(L10n.of(context).imageRemovedSuccessfully, isError: false);
     } catch (e) {
-      _showSnackbar('Error removing image: $e', isError: true);
+      _showSnackbar('${L10n.of(context).errorRemovingImage}: $e',
+          isError: true);
     } finally {
       _isImageLoading.value = false;
     }
@@ -162,19 +169,18 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               ),
             ),
             ListTile(
-              leading:
-                  const Icon(Iconsax.setting_2, color: ThemeColors.primary),
-              title: const Text('Settings',
-                  style: TextStyle(color: ThemeColors.textPrimary)),
+              leading: const Icon(Iconsax.global, color: ThemeColors.primary),
+              title: Text(L10n.of(context).changeLanguage,
+                  style: const TextStyle(color: ThemeColors.textPrimary)),
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to settings page if you have one
+                _showLanguagePopup(context);
               },
             ),
             ListTile(
               leading: const Icon(Iconsax.logout, color: ThemeColors.error),
-              title: const Text('Log Out',
-                  style: TextStyle(color: ThemeColors.error)),
+              title: Text(L10n.of(context).logOut,
+                  style: const TextStyle(color: ThemeColors.error)),
               onTap: () => handleLogout(context),
             ),
             const SizedBox(height: 16),
@@ -185,12 +191,75 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                   side: const BorderSide(color: ThemeColors.primary),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel',
-                    style: TextStyle(color: ThemeColors.primary)),
+                child: Text(L10n.of(context).cancel,
+                    style: const TextStyle(color: ThemeColors.primary)),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showLanguagePopup(BuildContext context) {
+    final currentLocale =
+        Provider.of<LocaleProvider>(context, listen: false).locale ??
+            const Locale('en');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ThemeColors.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          L10n.of(context).selectLanguage,
+          style: const TextStyle(
+            color: ThemeColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: L10n.supportedLocales.map((locale) {
+            final isSelected =
+                locale.languageCode == currentLocale.languageCode;
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: isSelected
+                  ? const Icon(Iconsax.tick_circle, color: ThemeColors.primary)
+                  : const SizedBox(width: 24),
+              title: Text(
+                L10n.getLanguageName(locale.languageCode),
+                style: TextStyle(
+                  color: isSelected
+                      ? ThemeColors.primary
+                      : ThemeColors.textPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('languageCode', locale.languageCode);
+                if (context.mounted) {
+                  Provider.of<LocaleProvider>(context, listen: false)
+                      .setLocale(locale);
+                }
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              L10n.of(context).cancel,
+              style: const TextStyle(color: ThemeColors.primary),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -201,7 +270,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: 'Profile',
+          title: L10n.of(context).profile,
           actions: [
             IconButton(
               icon:
@@ -291,7 +360,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
               children: [
                 _buildSectionHeader(
                   icon: Iconsax.gallery,
-                  title: 'Hotel Photos',
+                  title: L10n.of(context).hotelPhotos,
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -303,10 +372,10 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                           ),
                         )
                       : images.isEmpty && !isEditing
-                          ? const Center(
+                          ? Center(
                               child: Text(
-                                'No photos added',
-                                style: TextStyle(
+                                L10n.of(context).noPhotosAdded,
+                                style: const TextStyle(
                                   color: ThemeColors.textSecondary,
                                 ),
                               ),
@@ -363,12 +432,13 @@ class _HotelProfileViewState extends State<HotelProfileView> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: ThemeColors.primary.withOpacity(0.3)),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.add, size: 24, color: ThemeColors.primary),
-            SizedBox(height: 8),
-            Text('Add Photo', style: TextStyle(color: ThemeColors.primary)),
+            const Icon(Iconsax.add, size: 24, color: ThemeColors.primary),
+            const SizedBox(height: 8),
+            Text(L10n.of(context).addPhoto,
+                style: const TextStyle(color: ThemeColors.primary)),
           ],
         ),
       ),
@@ -438,16 +508,17 @@ class _HotelProfileViewState extends State<HotelProfileView> {
       builder: (context, isEditing, _) {
         return _buildSectionCard(
           icon: Iconsax.info_circle,
-          title: 'Basic Information',
+          title: L10n.of(context).basicInformation,
           children: [
             TextFormField(
               initialValue: _currentHotel.hotelName,
               decoration: _buildInputDecoration(
-                label: 'Hotel Name',
+                label: L10n.of(context).hotelName,
                 icon: Iconsax.building,
               ),
               enabled: isEditing,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+              validator: (value) =>
+                  value?.isEmpty ?? true ? L10n.of(context).required : null,
               onSaved: (value) => _currentHotel =
                   _currentHotel.copyWith(hotelName: value ?? ''),
               style: const TextStyle(color: ThemeColors.textPrimary),
@@ -456,7 +527,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
             TextFormField(
               initialValue: _currentHotel.description,
               decoration: _buildInputDecoration(
-                label: 'Description',
+                label: L10n.of(context).description,
                 icon: Iconsax.note_text,
               ),
               enabled: isEditing,
@@ -477,17 +548,18 @@ class _HotelProfileViewState extends State<HotelProfileView> {
       builder: (context, isEditing, _) {
         return _buildSectionCard(
           icon: Iconsax.call,
-          title: 'Contact Information',
+          title: L10n.of(context).contactInformation,
           children: [
             TextFormField(
               initialValue: _currentHotel.contactInfo,
               decoration: _buildInputDecoration(
-                label: 'Phone Number',
+                label: L10n.of(context).phoneNumber,
                 icon: Iconsax.call,
               ),
               enabled: isEditing,
               keyboardType: TextInputType.phone,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+              validator: (value) =>
+                  value?.isEmpty ?? true ? L10n.of(context).required : null,
               onSaved: (value) => _currentHotel =
                   _currentHotel.copyWith(contactInfo: value ?? ''),
               style: const TextStyle(color: ThemeColors.textPrimary),
@@ -507,12 +579,12 @@ class _HotelProfileViewState extends State<HotelProfileView> {
           builder: (context, isEditing, _) {
             return _buildSectionCard(
               icon: Iconsax.location,
-              title: 'Location',
+              title: L10n.of(context).location,
               children: [
                 DropdownButtonFormField<int>(
                   value: selectedWilaya,
                   decoration: _buildInputDecoration(
-                    label: 'Wilaya',
+                    label: L10n.of(context).wilaya,
                     icon: Iconsax.map,
                   ),
                   dropdownColor: ThemeColors.card,
@@ -534,7 +606,7 @@ class _HotelProfileViewState extends State<HotelProfileView> {
                 TextFormField(
                   initialValue: _currentHotel.mapLink,
                   decoration: _buildInputDecoration(
-                    label: 'Map Link',
+                    label: L10n.of(context).mapLink,
                     icon: Iconsax.link,
                   ),
                   enabled: isEditing,

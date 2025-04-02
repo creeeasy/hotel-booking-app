@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/ratings.dart';
 import 'package:fatiel/models/rating.dart';
@@ -68,7 +69,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: "Guest Reviews",
+          title: L10n.of(context).guestReviews,
           onBack: () => Navigator.of(context).pop(),
         ),
         body: FutureBuilder<Map<String, dynamic>>(
@@ -85,7 +86,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Error loading reviews: ${snapshot.error}',
+                    '${L10n.of(context).errorLoadingReviews}: ${snapshot.error}',
                     style: const TextStyle(color: ThemeColors.error),
                     textAlign: TextAlign.center,
                   ),
@@ -94,10 +95,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             }
 
             if (!snapshot.hasData) {
-              return const Center(
+              return Center(
                 child: Text(
-                  'No reviews data available',
-                  style: TextStyle(color: ThemeColors.textSecondary),
+                  L10n.of(context).noReviewsDataAvailable,
+                  style: const TextStyle(color: ThemeColors.textSecondary),
                 ),
               );
             }
@@ -181,9 +182,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Guest Favorite',
-            style: TextStyle(
+          Text(
+            L10n.of(context).guestFavorite,
+            style: const TextStyle(
               fontSize: 23,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
@@ -192,7 +193,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Based on $totalRatings reviews',
+            L10n.of(context).basedOnReviews( totalRatings),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
@@ -236,12 +237,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           const SizedBox(width: 16),
           _buildRatingFilterItem(
             value: null,
-            label: 'All',
+            label: L10n.of(context).all,
             isSelected: selectedRating == null,
           ),
           ...ratingFilters.skip(1).map((rating) => _buildRatingFilterItem(
                 value: rating.value,
-                label: rating.isAll ? "All" : "${rating.label} Stars",
+                label: rating.isAll
+                    ? L10n.of(context).all
+                    : L10n.of(context).starsCount( rating.label),
                 isSelected: selectedRating == rating.value,
               )),
           const SizedBox(width: 16),

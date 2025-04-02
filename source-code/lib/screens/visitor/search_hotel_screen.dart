@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'dart:async';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/services/hotel/hotel_service.dart';
@@ -64,7 +65,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: "Search Hotels",
+          title: L10n.of(context).searchHotels,
           onBack: () => Navigator.of(context).pop(),
         ),
         body: Padding(
@@ -106,8 +107,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
         decoration: InputDecoration(
           filled: true,
           fillColor: ThemeColors.white,
-          hintText: "Search hotels, locations...",
-          hintStyle: TextStyle(
+          hintText: L10n.of(context).searchHotelsLocations,
+          hintStyle: const TextStyle(
             fontSize: 14,
             color: ThemeColors.textSecondary,
           ),
@@ -118,7 +119,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Iconsax.close_circle,
                     color: ThemeColors.primary,
                     size: 20,
@@ -136,7 +137,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: ThemeColors.primary, width: 1.5),
+            borderSide:
+                const BorderSide(color: ThemeColors.primary, width: 1.5),
           ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -156,7 +158,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicatorWidget(),
             );
           }
@@ -187,8 +189,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           ),
           const SizedBox(height: 24),
           Text(
-            "Search for hotels",
-            style: TextStyle(
+            L10n.of(context).searchForHotels,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
               color: ThemeColors.textPrimary,
@@ -198,8 +200,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              "Enter hotel name, location or amenities to find your perfect stay",
-              style: TextStyle(
+              L10n.of(context).enterHotelNameLocation,
+              style: const TextStyle(
                 fontSize: 14,
                 color: ThemeColors.textSecondary,
               ),
@@ -216,15 +218,15 @@ class _SearchHotelViewState extends State<SearchHotelView> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Iconsax.warning_2,
             size: 48,
             color: ThemeColors.error,
           ),
           const SizedBox(height: 16),
           Text(
-            "Search failed",
-            style: TextStyle(
+            L10n.of(context).searchFailed,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ThemeColors.textPrimary,
@@ -233,7 +235,7 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           const SizedBox(height: 8),
           Text(
             error,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: ThemeColors.textSecondary,
             ),
@@ -256,8 +258,8 @@ class _SearchHotelViewState extends State<SearchHotelView> {
               elevation: 2,
             ),
             child: Text(
-              "Try Again",
-              style: TextStyle(
+              L10n.of(context).tryAgain,
+              style: const TextStyle(
                 color: ThemeColors.textOnPrimary,
                 fontWeight: FontWeight.w500,
               ),

@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/enum/hotel_list_type.dart';
@@ -188,8 +189,8 @@ class _ExploreViewState extends State<ExploreView> {
                 child: Center(
                   child: Text(
                     tab == HotelListType.recommended
-                        ? 'Recommended'
-                        : 'Near Me',
+                        ? L10n.of(context).recommended
+                        : L10n.of(context).nearMe,
                     style: TextStyle(
                       color: isSelected
                           ? ThemeColors.textOnPrimary
@@ -219,8 +220,8 @@ class _ExploreViewState extends State<ExploreView> {
 
   String _getSectionTitle(int count) {
     return _selectedTab == HotelListType.recommended
-        ? 'Recommended Hotels ($count)'
-        : 'Hotels Near You ($count)';
+        ? L10n.of(context).recommendedHotelsCount(count)
+        : L10n.of(context).hotelsNearYouCount(count);
   }
 
   void _navigateToHotelBrowse() {
@@ -230,8 +231,8 @@ class _ExploreViewState extends State<ExploreView> {
         builder: (context) => HotelBrowseView(
           useUserLocationOnly: _selectedTab == HotelListType.nearMe,
           appBackTitle: _selectedTab == HotelListType.recommended
-              ? 'Recommended Hotels'
-              : 'Hotels Near You',
+              ? L10n.of(context).recommendedHotels
+              : L10n.of(context).hotelsNearYou,
           initialFilters: _currentFilters,
           filterFunction: (params) => _selectedTab == HotelListType.recommended
               ? HotelService.getRecommendedHotels(params: params)
@@ -251,7 +252,7 @@ class _ExploreViewState extends State<ExploreView> {
       );
     } else if (snapshot.hasError) {
       return ErrorWidgetWithRetry(
-        errorMessage: 'Failed to load hotels',
+        errorMessage: L10n.of(context).failedToLoadHotels,
         onRetry: () => setState(() {}),
       );
     } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -300,7 +301,7 @@ class _ExploreViewState extends State<ExploreView> {
           const Icon(Iconsax.house, size: 72, color: ThemeColors.grey400),
           const SizedBox(height: 16),
           Text(
-            "No Hotels Available",
+            L10n.of(context).noHotelsAvailable,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: ThemeColors.textPrimary,
@@ -308,7 +309,7 @@ class _ExploreViewState extends State<ExploreView> {
           ),
           const SizedBox(height: 8),
           Text(
-            "We couldn't find any hotels matching your criteria.",
+            L10n.of(context).weCouldntFindAnyHotels,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: ThemeColors.textSecondary,
@@ -327,7 +328,7 @@ class _ExploreViewState extends State<ExploreView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SectionHeader(
-              title: "Find hotels in cities",
+              title: L10n.of(context).findHotelsInCities,
               onSeeAllTap: () =>
                   Navigator.pushNamed(context, allWilayaViewRoute),
             ),
@@ -344,14 +345,14 @@ class _ExploreViewState extends State<ExploreView> {
                   );
                 } else if (snapshot.hasError) {
                   return ErrorWidgetWithRetry(
-                    errorMessage: 'Failed to load city data',
+                    errorMessage: L10n.of(context).failedToLoadCityData,
                     onRetry: () => setState(() {}),
                   );
                 } else if (snapshot.hasData) {
                   return _buildCitiesCarousel(snapshot.data!);
                 } else {
-                  return const NoDataWidget(
-                    message: "No hotels are currently listed in these cities.",
+                  return NoDataWidget(
+                    message: L10n.of(context).noHotelsListedInCities,
                   );
                 }
               },
@@ -438,19 +439,19 @@ class SectionHeader extends StatelessWidget {
             padding: EdgeInsets.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'See all',
-                style: TextStyle(
+                L10n.of(context).seeAll,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: ThemeColors.primary,
                 ),
               ),
-              SizedBox(width: 4),
-              Icon(
+              const SizedBox(width: 4),
+              const Icon(
                 Iconsax.arrow_right_3,
                 size: 16,
                 color: ThemeColors.primary,
@@ -550,7 +551,7 @@ class ExploreCityWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(height * 0.075),
                       ),
                       child: Text(
-                        '$count Hotels',
+                        '$count ${L10n.of(context).hotels}',
                         style: TextStyle(
                           color: ThemeColors.white,
                           fontWeight: FontWeight.w700,

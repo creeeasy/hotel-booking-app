@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -35,7 +36,7 @@ class ErrorWidgetWithRetry extends StatelessWidget {
                     color: ThemeColors.error.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Iconsax.warning_2,
                     size: 48,
                     color: ThemeColors.error,
@@ -45,9 +46,9 @@ class ErrorWidgetWithRetry extends StatelessWidget {
 
                 // Title
                 Text(
-                  title ?? "Oops! Something went wrong",
+                  title ?? L10n.of(context).oopsSomethingWentWrong,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: ThemeColors.textPrimary,
@@ -59,7 +60,7 @@ class ErrorWidgetWithRetry extends StatelessWidget {
                 Text(
                   errorMessage,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                     color: ThemeColors.textSecondary,
@@ -75,7 +76,7 @@ class ErrorWidgetWithRetry extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: onRetry,
                       icon: const Icon(Iconsax.refresh, size: 20),
-                      label: const Text("Try Again"),
+                      label: Text(L10n.of(context).tryAgain),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: ThemeColors.white,
                         backgroundColor: ThemeColors.primary,
@@ -100,7 +101,7 @@ class ErrorWidgetWithRetry extends StatelessWidget {
                         (route) => false,
                       ),
                       icon: const Icon(Iconsax.home, size: 20),
-                      label: const Text("Go to Home"),
+                      label: Text(L10n.of(context).goToHome),
                       style: TextButton.styleFrom(
                         foregroundColor: ThemeColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 16),

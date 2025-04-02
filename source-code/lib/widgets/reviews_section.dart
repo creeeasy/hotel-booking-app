@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/review.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
@@ -56,7 +57,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
       children: [
         _buildReviewsHeader(widget.reviews.length),
         const SizedBox(height: 10),
-        _buildReviewsList(totalPages),
+        Expanded(child: _buildReviewsList(totalPages)),
         _buildPageIndicator(totalPages),
       ],
     );
@@ -69,9 +70,9 @@ class _ReviewsSectionState extends State<ReviewsSection> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'Reviews',
-              style: TextStyle(
+            Text(
+              L10n.of(context).reviews,
+              style: const TextStyle(
                 color: ThemeColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -145,7 +146,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       child: Text(
-                        '$value per page',
+                        '${value} ${L10n.of(context).perPage}',
                         style: const TextStyle(
                           color: ThemeColors.textPrimary,
                           fontSize: 13,
@@ -177,7 +178,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     child: Center(
                       child: Text(
-                        '$value per page',
+                        '$value ${L10n.of(context).perPage}',
                         style: const TextStyle(
                           color: ThemeColors.textPrimary,
                           fontSize: 13,
@@ -196,71 +197,67 @@ class _ReviewsSectionState extends State<ReviewsSection> {
   }
 
   Widget _buildReviewsList(int totalPages) {
-    return Expanded(
-      child: widget.reviews.isEmpty
-          ? const NoReviewsUI()
-          : PageView.builder(
-              controller: _pageController,
-              itemCount: totalPages,
-              onPageChanged: (index) {
-                setState(() => currentPage = index + 1);
-                widget.onPageChanged?.call(index + 1);
-              },
-              itemBuilder: (context, pageIndex) {
-                final startIndex = pageIndex * _selectedLimit;
-                final endIndex =
-                    min(startIndex + _selectedLimit, widget.reviews.length);
-                final pageReviews =
-                    widget.reviews.sublist(startIndex, endIndex);
+    return widget.reviews.isEmpty
+        ? const NoReviewsUI()
+        : PageView.builder(
+            controller: _pageController,
+            itemCount: totalPages,
+            onPageChanged: (index) {
+              setState(() => currentPage = index + 1);
+              widget.onPageChanged?.call(index + 1);
+            },
+            itemBuilder: (context, pageIndex) {
+              final startIndex = pageIndex * _selectedLimit;
+              final endIndex =
+                  min(startIndex + _selectedLimit, widget.reviews.length);
+              final pageReviews = widget.reviews.sublist(startIndex, endIndex);
 
-                return ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 16),
-                  itemCount: pageReviews.length,
-                  itemBuilder: (context, index) {
-                    final review = pageReviews[index];
-                    return FutureBuilder<Map<String, dynamic>?>(
-                      future: VisitorService.fetchVisitorDetails(
-                          userId: review.visitorId),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 24.0),
-                            child: Center(
-                              child: SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: CircularProgressIndicatorWidget(
-                                  size: 20,
-                                  strockWidth: 1.9,
-                                ),
+              return ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 16),
+                itemCount: pageReviews.length,
+                itemBuilder: (context, index) {
+                  final review = pageReviews[index];
+                  return FutureBuilder<Map<String, dynamic>?>(
+                    future: VisitorService.fetchVisitorDetails(
+                        userId: review.visitorId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24.0),
+                          child: Center(
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: CircularProgressIndicatorWidget(
+                                size: 20,
+                                strockWidth: 1.9,
                               ),
                             ),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return const _ReviewErrorWidget();
-                        }
-                        final responseData = snapshot.data ?? {};
-                        final avatarUrl = responseData["avatarURL"] as String?;
-                        final firstName =
-                            responseData["firstName"] as String? ?? "";
-                        final lastName =
-                            responseData["lastName"] as String? ?? "";
-                        final fullName = "$firstName $lastName".trim();
-                        return _ReviewCard(
-                          review: review,
-                          avatarUrl: avatarUrl,
-                          fullName: fullName,
+                          ),
                         );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-    );
+                      }
+                      if (snapshot.hasError) {
+                        return const _ReviewErrorWidget();
+                      }
+                      final responseData = snapshot.data ?? {};
+                      final avatarUrl = responseData["avatarURL"] as String?;
+                      final firstName =
+                          responseData["firstName"] as String? ?? "";
+                      final lastName =
+                          responseData["lastName"] as String? ?? "";
+                      final fullName = "$firstName $lastName".trim();
+                      return _ReviewCard(
+                        review: review,
+                        avatarUrl: avatarUrl,
+                        fullName: fullName,
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
   }
 
   Widget _buildPageIndicator(int totalPages) {
@@ -287,13 +284,13 @@ class _ReviewErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
-      margin: EdgeInsets.only(bottom: 12),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Text(
-          'Failed to load reviewer details',
-          style: TextStyle(color: ThemeColors.error),
+          L10n.of(context).failedToLoadReviewerDetails,
+          style: const TextStyle(color: ThemeColors.error),
         ),
       ),
     );
@@ -356,15 +353,15 @@ class _ReviewCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _buildComment(),
+                  _buildComment(context),
                   if (fullName.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     RichText(
                       text: TextSpan(
                         children: [
-                          const TextSpan(
-                            text: 'Reviewed by: ',
-                            style: TextStyle(
+                          TextSpan(
+                            text: '${L10n.of(context).reviewedBy}: ',
+                            style: const TextStyle(
                               color: ThemeColors.textSecondary,
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
@@ -434,9 +431,11 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildComment() {
+  Widget _buildComment(BuildContext context) {
     return Text(
-      review.comment.isNotEmpty ? review.comment : 'No comment provided',
+      review.comment.isNotEmpty
+          ? review.comment
+          : L10n.of(context).noCommentProvided,
       style: const TextStyle(
         color: ThemeColors.textPrimary,
         fontSize: 14,

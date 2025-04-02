@@ -8,6 +8,7 @@ import 'package:fatiel/screens/hotel/rooms_screen.dart';
 import 'package:fatiel/screens/visitor/widget/bottom_navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:fatiel/l10n/l10n.dart';
 
 class HotelHomeView extends StatefulWidget {
   const HotelHomeView({
@@ -87,15 +88,15 @@ class _HotelHomeViewState extends State<HotelHomeView> {
           getTabLabel: (tab) {
             switch (tab) {
               case HotelNavBar.home:
-                return 'Home';
+                return L10n.of(context).home;
               case HotelNavBar.rooms:
-                return 'Rooms';
+                return L10n.of(context).rooms;
               case HotelNavBar.bookings:
-                return 'Bookings';
+                return L10n.of(context).bookings;
               case HotelNavBar.reviews:
-                return 'Reviews';
+                return L10n.of(context).reviews;
               case HotelNavBar.profile:
-                return 'Profile';
+                return L10n.of(context).profile;
             }
           },
           elevation: 12.0,

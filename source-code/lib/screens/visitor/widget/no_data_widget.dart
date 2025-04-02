@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,15 +32,15 @@ class NoDataWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              FaIcon(
+              const FaIcon(
                 FontAwesomeIcons.boxOpen,
                 color: ThemeColors.grey400,
                 size: 64,
               ),
               const SizedBox(height: 16),
               Text(
-                "No Data Found",
-                style: TextStyle(
+                L10n.of(context).noDataFound,
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -50,7 +51,7 @@ class NoDataWidget extends StatelessWidget {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

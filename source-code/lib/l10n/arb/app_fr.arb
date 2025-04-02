@@ -1,7 +1,14 @@
 {
   "@@locale": "fr",
   "loginTitle": "Connexion",
-  "welcomeBack": "Content de te revoir",
+  "welcomeBackSimple": "Content de vous revoir",
+  "welcomeBack": "Content de vous revoir, {hotelName} !",
+  "@welcomeBack": {
+    "description": "Message de bienvenue pour le tableau de bord de l'hôtel",
+    "placeholders": {
+      "hotelName": {}
+    }
+  },
   "signInToAccount": "Connectez-vous pour accéder à votre compte",
   "emailAddress": "Adresse e-mail",
   "emailHint": "votre@email.com",
@@ -18,5 +25,633 @@
   "invalidEmail": "E-mail invalide",
   "missingPassword": "Mot de passe manquant",
   "wrongCredentials": "Identifiants incorrects",
-  "authError": "Erreur d'authentification"
+  "authError": "Erreur d'authentification",
+  "bookings": "Réservations",
+  "noHotelsFound": "Aucun hôtel trouvé",
+  "roomCapacity": "{count, plural, one {# invité} other {# invités}}",
+  "completed": "Terminé",
+  "tryAgain": "Réessayer",
+  "filterRating": "Note",
+  "@filterRating": {
+    "description": "Option de filtre pour la note"
+  },
+  "filterPrice": "Prix",
+  "@filterPrice": {
+    "description": "Option de filtre pour le prix"
+  },
+  "filterMinPeople": "Nb. min. de personnes",
+  "@filterMinPeople": {
+    "description": "Option de filtre pour le nombre minimum de personnes"
+  },
+  "filterLocation": "Localisation",
+  "@filterLocation": {
+    "description": "Option de filtre pour la localisation"
+  },
+  
+  "logoutTitle": "Déconnexion",
+  "@logoutTitle": {
+    "description": "Titre de la boîte de dialogue de déconnexion"
+  },
+  "logoutContent": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "@logoutContent": {
+    "description": "Contenu de la boîte de dialogue de déconnexion"
+  },
+  "cancel": "Annuler",
+  "@cancel": {
+    "description": "Texte du bouton Annuler"
+  },
+  "logout": "Se déconnecter",
+  "@logout": {
+    "description": "Texte du bouton Déconnexion"
+  },
+  
+  "justNow": "À l'instant",
+  "@justNow": {
+    "description": "Texte pour un temps très récent"
+  },
+  "minutesAgo": "Il y a {minutes} minutes",
+  "@minutesAgo": {
+    "description": "Texte pour il y a X minutes",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "hoursAgo": "Il y a {hours} heures",
+  "@hoursAgo": {
+    "description": "Texte pour il y a X heures",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "daysAgo": "Il y a {days} jours",
+  "@daysAgo": {
+    "description": "Texte pour il y a X jours",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  
+  "amenityWifi": "WiFi",
+  "amenityPool": "Piscine",
+  "amenityGym": "Salle de sport",
+  "amenityRestaurant": "Restaurant",
+  "amenitySpa": "Spa",
+  "amenityParking": "Parking",
+  "amenityRoomService": "Service en chambre",
+  "amenityPlayground": "Aire de jeux",
+  "amenityBar": "Bar",
+  "amenityConcierge": "Conciergerie",
+  "amenityBusinessCenter": "Centre d'affaires",
+  "amenityLaundry": "Blanchisserie",
+  "amenityAirportShuttle": "Navette aéroport",
+  "amenityPetFriendly": "Animaux acceptés",
+  "amenityAccessible": "Accessible",
+  "amenitySmokeFree": "Non-fumeur",
+  "amenityBeachAccess": "Accès à la plage",
+  "amenityTv": "TV",
+  "amenityAc": "Climatisation",
+  "amenityHeating": "Chauffage",
+  "amenitySafe": "Coffre-fort",
+  "amenityKitchen": "Cuisine",
+  "amenityMinibar": "Minibar",
+  "amenityBathtub": "Baignoire",
+  "amenityToiletries": "Articles de toilette",
+  
+  "noHotelsTitle": "Aucun hôtel trouvé",
+  "@noHotelsTitle": {
+    "description": "Titre affiché lorsqu'aucun hôtel n'est trouvé"
+  },
+  "noHotelsDefaultMessage": "Nous n'avons trouvé aucun hôtel correspondant à vos critères. Essayez d'ajuster vos filtres de recherche ou explorez les lieux à proximité.",
+  "@noHotelsDefaultMessage": {
+    "description": "Message par défaut lorsqu'aucun hôtel n'est trouvé"
+  },
+  
+  "bookingsTitle": "Réservations",
+  "@bookingsTitle": {
+    "description": "Titre de la page des réservations"
+  },
+  "bookingsNavTitle": "Réservations",
+  "@bookingsNavTitle": {
+    "description": "Titre de la vignette de navigation des réservations"
+  },
+  "filterBookingsTitle": "Filtrer les réservations",
+  "@filterBookingsTitle": {
+    "description": "Titre de la boîte de dialogue de filtre"
+  },
+  "bookingDetailsTitle": "Détails de la réservation",
+  "@bookingDetailsTitle": {
+    "description": "Titre de la fiche des détails de réservation"
+  },
+  "roomInformation": "Informations sur la chambre",
+  "@roomInformation": {
+    "description": "En-tête de section pour les infos de la chambre"
+  },
+  "guestInformation": "Informations sur l'invité",
+  "@guestInformation": {
+    "description": "En-tête de section pour les infos de l'invité"
+  },
+  "bookingDates": "Dates de réservation",
+  "@bookingDates": {
+    "description": "En-tête de section pour les dates de réservation"
+  },
+  "paymentInformation": "Informations de paiement",
+  "@paymentInformation": {
+    "description": "En-tête de section pour les infos de paiement"
+  },
+  "totalAmount": "Montant total",
+  "@totalAmount": {
+    "description": "Libellé du montant total"
+  },
+  "paymentStatus": "Statut du paiement",
+  "@paymentStatus": {
+    "description": "Libellé du statut de paiement"
+  },
+  "paid": "Payé",
+  "@paid": {
+    "description": "Texte affiché lorsque le paiement est complet"
+  },
+  "markCompleted": "Marquer comme terminé",
+  "@markCompleted": {
+    "description": "Texte du bouton pour terminer la réservation"
+  },
+  "checkIn": "Arrivée",
+  "@checkIn": {
+    "description": "Libellé pour la date d'arrivée"
+  },
+  "checkOut": "Départ",
+  "@checkOut": {
+    "description": "Libellé pour la date de départ"
+  },
+  "perNight": "{price} par nuit",
+  "@perNight": {
+    "description": "Texte du prix par nuit",
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "noBookingsFound": "Aucune réservation trouvée",
+  "@noBookingsFound": {
+    "description": "Titre lorsqu'aucune réservation n'existe"
+  },
+  "noBookingsDefault": "Vous n'avez pas encore de réservations",
+  "@noBookingsDefault": {
+    "description": "Message par défaut lorsqu'aucune réservation n'existe"
+  },
+  "noFilteredBookings": "Aucune réservation {status} trouvée",
+  "@noFilteredBookings": {
+    "description": "Message lorsqu'aucune réservation filtrée n'existe",
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "failedToLoadBookings": "Échec du chargement des réservations",
+  "@failedToLoadBookings": {
+    "description": "Message d'erreur lorsque le chargement des réservations échoue"
+  },
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Texte du bouton Réessayer"
+  },
+  "summaryTotal": "Total",
+  "@summaryTotal": {
+    "description": "Titre de la carte de synthèse pour le total des réservations"
+  },
+  "summaryPending": "En attente",
+  "@summaryPending": {
+    "description": "Titre de la carte de synthèse pour les réservations en attente"
+  },
+  "summaryCompleted": "Terminé",
+  "@summaryCompleted": {
+    "description": "Titre de la carte de synthèse pour les réservations terminées"
+  },
+  "summaryRevenue": "Revenu",
+  "@summaryRevenue": {
+    "description": "Titre de la carte de synthèse pour le revenu"
+  },
+  "complete": "Terminer",
+  "@complete": {
+    "description": "Texte du bouton pour terminer la réservation"
+  },
+  "nights": "{count, plural, =1{nuit} other{nuits}}",
+  "@nights": {
+    "description": "Décompte des nuits au pluriel",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  
+  "dashboardSubtitle": "Voici ce qui se passe aujourd'hui",
+  "@dashboardSubtitle": {
+    "description": "Sous-titre du tableau de bord de l'hôtel"
+  },
+  "activeBookings": "Réservations actives",
+  "@activeBookings": {
+    "description": "Libellé pour la métrique des réservations actives"
+  },
+  "roomsAvailable": "Chambres disponibles",
+  "@roomsAvailable": {
+    "description": "Libellé pour la métrique des chambres disponibles"
+  },
+  "totalReviews": "Total des avis",
+  "@totalReviews": {
+    "description": "Libellé pour la métrique des avis"
+  },
+  "pendingBookings": "Réservations en attente",
+  "@pendingBookings": {
+    "description": "Libellé pour la métrique des réservations en attente"
+  },
+  "quickAccess": "Accès rapide",
+  "@quickAccess": {
+    "description": "Titre de section pour les boutons d'accès rapide"
+  },
+  "recentActivity": "Activité récente",
+  "@recentActivity": {
+    "description": "Titre de section pour l'activité récente"
+  },
+  "noRecentActivity": "Aucune activité récente",
+  "@noRecentActivity": {
+    "description": "Message affiché lorsqu'il n'y a pas d'activité"
+  },
+  
+  "roomsTitle": "Chambres",
+  "@roomsTitle": {
+    "description": "Titre de la vignette de navigation des chambres"
+  },
+  "roomsDescription": "Gérer les détails des chambres",
+  "@roomsDescription": {
+    "description": "Description de la vignette de navigation des chambres"
+  },
+  "bookingsDescription": "Voir toutes les réservations",
+  "@bookingsDescription": {
+    "description": "Description de la vignette de navigation des réservations"
+  },
+  "reviewsTitle": "Avis",
+  "@reviewsTitle": {
+    "description": "Titre de la vignette de navigation des avis"
+  },
+  "reviewsDescription": "Consulter les retours des clients",
+  "@reviewsDescription": {
+    "description": "Description de la vignette de navigation des avis"
+  },
+  "profileTitle": "Profil",
+  "@profileTitle": {
+    "description": "Titre de la vignette de navigation du profil"
+  },
+  "profileDescription": "Profil de l'hôtel",
+  "@profileDescription": {
+    "description": "Description de la vignette de navigation du profil"
+  },
+  
+  "validUrl": "Saisissez une URL valide !",
+  "emptyInput": "Le champ ne peut pas être vide !",
+  "updateLocation": "Mettre à jour l'emplacement",
+  "updateDescription": "Mettre à jour la description",
+  "updateMapLink": "Mettre à jour le lien de la carte",
+  "updateContactInfo": "Mettre à jour les informations de contact",
+  "completeHotelProfile": "Complétez votre profil d'hôtel",
+  "selectWilaya": "Sélectionnez une wilaya",
+  "back": "Retour",
+  "finish": "Terminer",
+  "next": "Suivant",
+  "loadingPlaceholder": "Chargement",
+  "inputEmpty": "Le champ ne peut pas être vide !",
+  "updateContactInformation": "Mettre à jour les informations de contact",
+  "enterField": "Entrez {field}...",
+  "@enterField": {
+    "description": "Texte indicatif pour les champs de saisie",
+    "placeholders": {
+      "field": {}
+    }
+  },
+  
+  "profile": "Profil",
+  "settings": "Paramètres",
+  "logOut": "Déconnexion",
+  "hotelPhotos": "Photos de l'hôtel",
+  "noPhotosAdded": "Aucune photo ajoutée",
+  "addPhoto": "Ajouter une photo",
+  "basicInformation": "Informations de base",
+  "hotelName": "Nom de l'hôtel",
+  "required": "Requis",
+  "description": "Description",
+  "contactInformation": "Informations de contact",
+  "phoneNumber": "Numéro de téléphone",
+  "location": "Emplacement",
+  "wilaya": "Wilaya",
+  "mapLink": "Lien de la carte",
+  "profileUpdatedSuccessfully": "Profil mis à jour avec succès",
+  "errorUpdatingProfile": "Erreur lors de la mise à jour du profil",
+  "imageUploadedSuccessfully": "Image téléchargée avec succès",
+  "errorUploadingImage": "Erreur lors du téléchargement de l'image",
+  "imageRemovedSuccessfully": "Image supprimée avec succès",
+  "errorRemovingImage": "Erreur lors de la suppression de l'image",
+  
+  "guestReviews": "Avis des clients",
+  "all": "Tous",
+  "stars": "{count} étoiles",
+  "@stars": {
+    "description": "Libellé de la note en étoiles",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "reviewsCount": "{count} avis",
+  "@reviewsCount": {
+    "description": "Libellé du nombre d'avis",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "errorLoadingReviews": "Erreur lors du chargement des avis",
+  
+  "home": "Accueil",
+  "rooms": "Chambres",
+  "reviews": "Avis",
+  
+  "hotelRegistration": "Enregistrement de l'hôtel",
+  "registerHotel": "Enregistrez votre hôtel",
+  "email": "E-mail",
+  "confirmPassword": "Confirmer le mot de passe",
+  "registerHotelButton": "Enregistrer l'hôtel",
+  "enterHotelName": "Veuillez entrer le nom de votre hôtel.",
+  "validEmail": "Veuillez entrer une adresse e-mail valide.",
+  "passwordLength": "Le mot de passe doit contenir au moins 6 caractères.",
+  "passwordMatch": "Les mots de passe ne correspondent pas.",
+  "weakPassword": "Mot de passe faible",
+  "emailInUse": "L'e-mail est déjà utilisé",
+  "registerFailed": "Échec de l'enregistrement",
+  
+  "createAccount": "Créer un compte",
+  "joinFatiel": "Rejoindre Fatiel",
+  "firstName": "Prénom",
+  "lastName": "Nom",
+  "createAccountButton": "Créer un compte",
+  "firstNameLastNameRequired": "Veuillez entrer votre prénom et votre nom.",
+  
+  "confirmBooking": "Confirmer la réservation",
+  "checkInDate": "Date d'arrivée",
+  "checkOutDate": "Date de départ",
+  "totalNights": "Nombre total de nuits",
+  "confirmAndPay": "Confirmer et payer",
+  "selectCheckInDate": "Sélectionner la date d'arrivée",
+  "selectCheckOutDate": "Sélectionner la date de départ",
+  "confirm": "Confirmer",
+  "bookingConfirmed": "Réservation confirmée avec succès !",
+  "from": "À partir de",
+  "night": "nuit",
+  "bookNow": "Réserver maintenant",
+  "unavailable": "Indisponible",
+  
+  "oopsSomethingWentWrong": "Oups ! Quelque chose s'est mal passé",
+  "goToHome": "Retour à l'accueil",
+  
+  "removeFromFavorites": "Retirer des favoris",
+  "removeHotelFromFavoritesConfirmation": "Êtes-vous sûr de vouloir retirer cet hôtel de vos favoris ?",
+  "remove": "Retirer",
+  "addedToFavorites": "Ajouté aux favoris",
+  "removedFromFavorites": "Retiré des favoris",
+  "failedToUpdateFavorites": "Échec de la mise à jour des favoris",
+  "removeFromFavoritesSemantic": "Retirer des favoris",
+  "addToFavoritesSemantic": "Ajouter aux favoris",
+  "imageNotAvailable": "Image non disponible",
+  "locationNotSpecified": "Emplacement non spécifié",
+  "noImageAvailable": "Aucune image disponible",
+  
+  "hotel": "hôtel",
+  "hotels": "hôtels",
+  "tryAdjustingSearchFilters": "Essayez d'ajuster vos filtres de recherche",
+  "noDataFound": "Aucune donnée trouvée",
+  "noPopularDestinationsAvailable": "Aucune destination populaire disponible pour le moment.",
+  "error": "Erreur",
+  "guests": "Invités",
+  "available": "Disponible",
+  "seeAll": "Voir tout",
+  "allWilayas": "Toutes les wilayas",
+  "failedToLoadWilayaData": "Échec du chargement des données de la wilaya",
+  "noHotelsListedInAnyWilaya": "Aucun hôtel actuellement listé dans aucune wilaya",
+  "discoveringAmazingPlaces": "Découvrez des endroits incroyables pour vous",
+  
+  "bookingSummary": "Récapitulatif de la réservation",
+  "priceSummary": "Récapitulatif des prix",
+  "roomRate": "Tarif de la chambre",
+  "duration": "Durée",
+  "roomDetails": "Détails de la chambre",
+  "capacity": "Capacité",
+  "exploreHotel": "Explorer l'hôtel",
+  "bookingError": "Erreur de réservation",
+  "goBack": "Retour",
+  "noBookingFound": "Aucune réservation trouvée",
+  "noBookingDetails": "Nous n'avons trouvé aucun détail de réservation",
+  "myBookings": "Mes réservations",
+  "failedToLoadBookingDetails": "Échec du chargement des détails de la réservation",
+  "bookingDetailsNotAvailable": "Détails de réservation non disponibles",
+  "unknownLocation": "Emplacement inconnu",
+  "cancelled": "Annulé",
+  "viewDetails": "Voir les détails",
+  "writeAReview": "Écrire un avis",
+  "editReview": "Modifier l'avis",
+  "shareYourExperience": "Partagez votre expérience...",
+  "pleaseWriteAComment": "Veuillez écrire un commentaire",
+  "submit": "Soumettre",
+  "update": "Mettre à jour",
+  "deleteReview": "Supprimer l'avis",
+  "areYouSureDeleteReview": "Êtes-vous sûr de vouloir supprimer cet avis ?",
+  "delete": "Supprimer",
+  "cancelBooking": "Annuler la réservation",
+  "areYouSureCancelBooking": "Êtes-vous sûr de vouloir annuler cette réservation ?",
+  "no": "Non",
+  "yesCancel": "Oui, annuler",
+  "exploreHotels": "Explorer les hôtels",
+  "noPendingBookings": "Aucune réservation en attente !",
+  "noCompletedBookings": "Aucune réservation terminée !",
+  "noCancelledBookings": "Aucune réservation annulée !",
+  "startYourJourney": "Commencez votre voyage aujourd'hui ! Trouvez les meilleurs hôtels\net réservez votre séjour de rêve en toute simplicité.",
+  "completedBookingsAppearHere": "Vos réservations terminées apparaîtront ici.\nPartagez votre expérience en laissant des avis !",
+  "cancelledBookingsAppearHere": "Vos réservations annulées apparaîtront ici.\nVous pouvez toujours réserver à nouveau !",
+  "pending": "En attente",
+  "amenities": "Équipements",
+  "recommended": "Recommandé",
+  "nearMe": "Près de moi",
+  "recommendedHotels": "Hôtels recommandés",
+  "hotelsNearYou": "Hôtels près de chez vous",
+  "success": "Succès",
+  "failedToLoadHotels": "Échec du chargement des hôtels",
+  "noHotelsAvailable": "Aucun hôtel disponible",
+  "noHotelsMatchingCriteria": "Nous n'avons trouvé aucun hôtel correspondant à vos critères.",
+  "findHotelsInCities": "Trouver des hôtels dans les villes",
+  "failedToLoadCityData": "Échec du chargement des données de la ville",
+  "noHotelsListedInCities": "Aucun hôtel n'est actuellement listé dans ces villes.",
+  "loadingYourFavorites": "Chargement de vos favoris",
+  "couldntLoadFavorites": "Impossible de charger les favoris",
+  "checkConnectionAndTryAgain": "Veuillez vérifier votre connexion et réessayer",
+  "noFavoritesYet": "Aucun favori pour le moment",
+  "saveFavoritesMessage": "Enregistrez vos hôtels préférés en appuyant sur l'icône cœur lors de la navigation",
+  "browseHotels": "Parcourir les hôtels",
+  "recommendedHotelsCount": "Hôtels recommandés ({count})",
+  "hotelsNearYouCount": "Hôtels près de chez vous ({count})",
+  "weCouldntFindAnyHotels": "Nous n'avons trouvé aucun hôtel correspondant à vos critères.",
+  "noReviewsDataAvailable": "Aucune donnée d'avis disponible",
+  "guestFavorite": "Préféré des clients",
+  "basedOnReviews": "Basé sur {totalRatings} avis",
+  "starsCount": "{ratingCount} étoiles",
+  "exploreRoomOffers": "Découvrir les offres de chambres",
+  "perNightSimple": "Par nuit",
+  "roomType": "Type de chambre",
+  "dates": "Dates",
+  "totalPrice": "Prix total",
+  "successfullyBooked": "Réservé avec succès",
+  "noAmenitiesListed": "Aucun équipement listé",
+  "availableFrom": "Disponible à partir du",
+  "notCurrentlyAvailable": "Actuellement indisponible",
+  "failedToLoadRooms": "Échec du chargement des chambres",
+  "noRoomsAvailable": "Aucune chambre disponible",
+  "searchHotels": "Rechercher des hôtels",
+  "searchHotelsLocations": "Rechercher des hôtels, lieux...",
+  "searchForHotels": "Rechercher des hôtels",
+  "enterHotelNameLocation": "Entrez le nom de l'hôtel, le lieu ou les équipements pour trouver votre séjour parfait",
+  "searchFailed": "Échec de la recherche",
+  "inputCantBeEmpty": "Le champ ne peut pas être vide !",
+  "profileUpdatedSuccessfully": "Vos données de profil ont été mises à jour avec succès.",
+  "anErrorOccurred": "Une erreur est survenue",
+  "updateFirstName": "Mettre à jour le prénom",
+  "updateLastName": "Mettre à jour le nom",
+  "selectLocation": "Sélectionner l'emplacement",
+  "updateYourInformation": "Mettre à jour vos informations",
+  "selectAWilaya": "Sélectionner une wilaya",
+  "enter": "Entrer",
+  "passwordUpdatedSuccessfully": "Votre mot de passe a été mis à jour avec succès",
+  "updatePassword": "Mettre à jour le mot de passe",
+  "currentPassword": "Mot de passe actuel",
+  "pleaseEnterCurrentPassword": "Veuillez entrer votre mot de passe actuel",
+  "newPassword": "Nouveau mot de passe",
+  "pleaseEnterNewPassword": "Veuillez entrer un nouveau mot de passe",
+  "passwordMustBeAtLeast6Characters": "Le mot de passe doit contenir au moins 6 caractères",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+  "weakPassword": "Le mot de passe fourni est trop faible.",
+  "wrongPassword": "Votre mot de passe actuel est incorrect.",
+  "requiresRecentLogin": "Veuillez vous réauthentifier pour mettre à jour votre mot de passe.",
+  "genericError": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+  "failedToUpdatePassword": "Échec de la mise à jour du mot de passe. Veuillez réessayer.",
+  "passwordMismatch": "Incompatibilité des mots de passe",
+  "explore": "Explorer",
+  "favorites": "Favoris",
+  "profileSettings": "Paramètres du profil",
+  "imageUploadFailed": "Échec du téléchargement de l'image",
+  "profileImageUpdatedSuccessfully": "Image de profil mise à jour avec succès",
+  "failedToUploadImage": "Échec du téléchargement de l'image",
+  "removeProfileImage": "Supprimer l'image de profil",
+  "removeProfileImageConfirmation": "Êtes-vous sûr de vouloir supprimer votre image de profil ?",
+  "profileImageRemoved": "Image de profil supprimée",
+  "failedToRemoveImage": "Échec de la suppression de l'image",
+  "ok": "OK",
+  "uploading": "Téléchargement en cours...",
+  "removePhoto": "Supprimer la photo",
+  "accountSettings": "Paramètres du compte",
+  "updateProfile": "Mettre à jour le profil",
+  "changePassword": "Changer le mot de passe",
+  "wilayaNotFound": "Wilaya non trouvée",
+  "wilayaDataNotAvailable": "Données de wilaya non disponibles",
+  "failedToLoadImage": "Échec du chargement de l'image",
+  "rooms": "chambres",
+  "noHotelsRegistered": "Aucun hôtel n'est actuellement enregistré dans {wilayaName}",
+  "pleaseWaitAMoment": "Veuillez patienter un moment",
+  "pressBackAgainToExit": "Appuyez à nouveau sur retour pour quitter",
+  "passwordReset": "Réinitialisation du mot de passe",
+  "passwordResetSentMessage": "Nous vous avons envoyé un lien de réinitialisation de mot de passe.",
+  "invalidEmail": "E-mail invalide",
+  "userNotFound": "Utilisateur non trouvé",
+  "forgotPasswordGenericError": "Nous n'avons pas pu traiter votre demande. Veuillez vous assurer que vous êtes un utilisateur enregistré, ou sinon, inscrivez-vous maintenant en revenant d'une étape.",
+  "resetPassword": "Réinitialiser le mot de passe",
+  "forgotPasswordInstructions": "Entrez votre adresse e-mail enregistrée pour recevoir un lien de réinitialisation de mot de passe",
+  "enterYourEmail": "Veuillez entrer votre e-mail",
+  "enterValidEmail": "Veuillez entrer un e-mail valide",
+  "sendResetLink": "Envoyer le lien de réinitialisation",
+  "backToLogin": "Retour à la connexion",
+  "failedToLoadHotelDetails": "Échec du chargement des détails de l'hôtel",
+  "noHotelInformationAvailable": "Aucune information sur l'hôtel disponible",
+  "room": "Chambre",
+  "noDescriptionAvailable": "Aucune description disponible",
+  "noContactInformationAvailable": "Aucune information de contact disponible",
+  "ratingsAndReviews": "Notes et avis",
+  "viewAll": "Voir tout",
+  "reviews": "avis",
+  "noReviewsYet": "Aucun avis pour le moment",
+  "averageRating": "Note moyenne",
+  "locationOnMap": "Emplacement sur la carte",
+  "openInMaps": "Ouvrir dans les cartes",
+  "mapLocationNotAvailable": "Emplacement sur carte non disponible",
+  "roomOffers": "Offres de chambres",
+  "viewRoomOffers": "Voir les offres de chambres",
+  "selectAccountType": "Sélectionnez votre type de compte pour commencer",
+  "traveler": "Voyageur",
+  "travelerSubtitle": "Découvrez et réservez des séjours de luxe dans le monde entier",
+  "hotelPartner": "Partenaire hôtelier",
+  "hotelPartnerSubtitle": "Listez et gérez vos propriétés de luxe",
+  "alreadyHaveAccount": "Vous avez déjà un compte ? ",
+  "hotelInformationNotAvailable": "Informations sur l'hôtel non disponibles",
+  "roomAvailable": "chambre disponible",
+  "premium": "PREMIUM",
+  "perPage": "par page",
+  "failedToLoadReviewerDetails": "Échec du chargement des détails du critique",
+  "reviewedBy": "Critiqué par",
+  "noCommentProvided": "Aucun commentaire fourni",
+  "roomsTitle": "Chambres",
+  "noRoomsAvailable": "Aucune chambre disponible",
+  "addRoom": "Ajouter une chambre",
+  "failedToLoadRooms": "Échec du chargement des chambres",
+  "retry": "Réessayer",
+  "roomMarkedAsUnavailable": "Chambre marquée comme indisponible",
+  "roomMarkedAsAvailable": "Chambre marquée comme disponible",
+  "failedToUpdateRoom": "Échec de la mise à jour de la chambre : {error}",
+  "deleteRoom": "Supprimer la chambre",
+  "deleteRoomConfirmation": "Cette action est irréversible. Êtes-vous sûr ?",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "roomDeletedSuccessfully": "Chambre supprimée avec succès",
+  "failedToDeleteRoom": "Échec de la suppression de la chambre : {error}",
+  "editRoom": "Modifier la chambre",
+  "addNewRoom": "Ajouter une nouvelle chambre",
+  "roomName": "Nom de la chambre",
+  "description": "Description",
+  "pricePerNight": "Prix par nuit",
+  "capacity": "Capacité",
+  "availableForBooking": "Disponible pour la réservation",
+  "roomPhotos": "Photos de la chambre",
+  "addPhoto": "Ajouter une photo",
+  "amenities": "Équipements",
+  "imageUploadedSuccessfully": "Image téléchargée avec succès",
+  "errorUploadingImage": "Erreur lors du téléchargement de l'image : {error}",
+  "imageRemovedSuccessfully": "Image supprimée avec succès",
+  "errorRemovingImage": "Erreur lors de la suppression de l'image : {error}",
+  "updateRoom": "Mettre à jour la chambre",
+  "roomUpdatedSuccessfully": "Chambre mise à jour avec succès",
+  "roomAddedSuccessfully": "Chambre ajoutée avec succès",
+  "failedToAddRoom": "Échec de l'ajout de la chambre : {error}",
+  "failedToUpdateRoomGeneric": "Échec de la mise à jour de la chambre : {error}",
+  "guest": "{count, plural, =1{invité} other{invités}}",
+  "available": "Disponible",
+  "unavailable": "Indisponible",
+  "photoCount": "{count, plural, =1{photo} other{photos}}",
+  "edit": "Modifier",
+  "markUnavailable": "Marquer comme indisponible",
+  "markAvailable": "Marquer comme disponible",
+  "basicInformation": "Informations de base",
+  "pricingAvailability": "Tarification et disponibilité",
+   "changeLanguage": "Changer de langue",
+  "selectLanguage": "Sélectionner la langue",
+  "filterLocation": "Localisation",
+  "filterPrice": "Prix",
+  "filterRating": "Note",
+  "filterMinPeople": "Invités",
+  "resetFiltersTitle": "Réinitialiser les filtres",
+  "resetFiltersContent": "Êtes-vous sûr de vouloir réinitialiser tous les filtres ?",
+  "resetFiltersCancel": "Annuler",
+  "resetFiltersConfirm": "Réinitialiser",
+  "applyFilters": "Appliquer les filtres",
+  "filterByMinGuests": "Nombre minimum d'invités",
+  "filterByPriceRange": "Fourchette de prix",
+  "filterByCustomerRating": "Note des clients",
+  "filterByLocation": "Localisation (Wilaya)",
+  "allHotels": "Tous les hôtels",
+   "favoritesTitle": "Favoris"
 }

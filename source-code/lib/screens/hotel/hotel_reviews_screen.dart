@@ -10,6 +10,7 @@ import 'package:fatiel/widgets/circular_progress_indicator_widget.dart';
 import 'package:fatiel/widgets/reviews_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fatiel/l10n/l10n.dart';
 
 class HotelReviewsScreen extends StatefulWidget {
   const HotelReviewsScreen({super.key});
@@ -62,8 +63,8 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: const CustomBackAppBar(
-          title: 'Guest Reviews',
+        appBar: CustomBackAppBar(
+          title: L10n.of(context).guestReviews,
         ),
         backgroundColor: ThemeColors.background,
         body: FutureBuilder<Map<String, dynamic>>(
@@ -73,7 +74,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
               return const CircularProgressIndicatorWidget();
             } else if (snapshot.hasError) {
               return Center(
-                child: Text('Error: ${snapshot.error}',
+                child: Text(L10n.of(context).errorLoadingReviews,
                     style: const TextStyle(color: ThemeColors.error)),
               );
             }
@@ -118,13 +119,15 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
         children: [
           _buildRatingFilterItem(
             value: null,
-            label: 'All',
+            label: L10n.of(context).all,
             isSelected: selectedRating == null,
           ),
           ...ratingFilters.skip(1).map((rating) => _buildRatingFilterItem(
                 value: rating.value,
-                label: rating.isAll ? "All" : "${rating.label} Stars",
-                isSelected: selectedRating == rating.value,
+                label: rating.isAll 
+                    ? L10n.of(context).all 
+                    : L10n.of(context).stars(rating.label),
+                isSelected: _ratingFilterNotifier.value == rating.value,
               )),
         ],
       ),
@@ -212,7 +215,7 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
           ),
           const SizedBox(width: 20),
           Text(
-            '$totalRatings Reviews',
+            L10n.of(context).reviewsCount(totalRatings),
             style: const TextStyle(
               color: ThemeColors.textSecondary,
               fontSize: 14,

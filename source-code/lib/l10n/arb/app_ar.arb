@@ -1,3 +1,642 @@
 {
-    
+  "@@locale": "ar",
+  "loginTitle": "تسجيل الدخول",
+  "welcomeBackSimple": "أهلاً بعودتك",
+  "welcomeBack": "أهلاً بعودتك، {hotelName}!",
+  "@welcomeBack": {
+    "description": "رسالة الترحيب للوحة معلومات الفندق",
+    "placeholders": {
+      "hotelName": {}
+    }
+  },
+  "signInToAccount": "سجل الدخول للوصول إلى حسابك",
+  "emailAddress": "عنوان البريد الإلكتروني",
+  "emailHint": "your@email.com",
+  "emailValidationError": "الرجاء إدخال بريدك الإلكتروني",
+  "password": "كلمة المرور",
+  "passwordHint": "••••••••",
+  "passwordValidationError": "الرجاء إدخال كلمة المرور",
+  "forgotPassword": "هل نسيت كلمة المرور؟",
+  "signIn": "تسجيل الدخول",
+  "orDivider": "أو",
+  "noAccountPrompt": "ليس لديك حساب؟ ",
+  "register": "تسجيل",
+  "userNotFound": "المستخدم غير موجود",
+  "invalidEmail": "بريد إلكتروني غير صالح",
+  "missingPassword": "كلمة المرور مفقودة",
+  "wrongCredentials": "بيانات اعتماد خاطئة",
+  "authError": "خطأ في المصادقة",
+  "bookings": "الحجوزات",
+  "noHotelsFound": "لم يتم العثور على فنادق",
+  "roomCapacity": "{count, plural, one {# ضيف} other {# ضيوف}}",
+  "completed": "مكتمل",
+  "tryAgain": "حاول مرة أخرى",
+  "filterRating": "التقييم",
+  "@filterRating": {
+    "description": "خيار التصفية للتقييم"
+  },
+  "filterPrice": "السعر",
+  "@filterPrice": {
+    "description": "خيار التصفية للسعر"
+  },
+  "filterMinPeople": "الحد الأدنى للأشخاص",
+  "@filterMinPeople": {
+    "description": "خيار التصفية للحد الأدنى للأشخاص"
+  },
+  "filterLocation": "الموقع",
+  "@filterLocation": {
+    "description": "خيار التصفية للموقع"
+  },
+  "logoutTitle": "تسجيل الخروج",
+  "@logoutTitle": {
+    "description": "عنوان مربع حوار تسجيل الخروج"
+  },
+  "logoutContent": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "@logoutContent": {
+    "description": "محتوى مربع حوار تسجيل الخروج"
+  },
+  "cancel": "إلغاء",
+  "@cancel": {
+    "description": "نص زر الإلغاء"
+  },
+  "logout": "تسجيل الخروج",
+  "@logout": {
+    "description": "نص زر تسجيل الخروج"
+  },
+  "justNow": "الآن",
+  "@justNow": {
+    "description": "نص للوقت الحديث جداً"
+  },
+  "minutesAgo": "منذ {minutes} دقيقة",
+  "@minutesAgo": {
+    "description": "نص للدقائق الماضية",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "hoursAgo": "منذ {hours} ساعة",
+  "@hoursAgo": {
+    "description": "نص للساعات الماضية",
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "daysAgo": "منذ {days} يوم",
+  "@daysAgo": {
+    "description": "نص للأيام الماضية",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "amenityWifi": "واي فاي",
+  "amenityPool": "مسبح",
+  "amenityGym": "صالة رياضية",
+  "amenityRestaurant": "مطعم",
+  "amenitySpa": "منتجع صحي",
+  "amenityParking": "موقف سيارات",
+  "amenityRoomService": "خدمة الغرف",
+  "amenityPlayground": "ملعب للأطفال",
+  "amenityBar": "بار",
+  "amenityConcierge": "خدمة الكونسيرج",
+  "amenityBusinessCenter": "مركز أعمال",
+  "amenityLaundry": "غسيل الملابس",
+  "amenityAirportShuttle": "خدمة نقل المطار",
+  "amenityPetFriendly": "صديق للحيوانات الأليفة",
+  "amenityAccessible": "يمكن الوصول إليه",
+  "amenitySmokeFree": "ممنوع التدخين",
+  "amenityBeachAccess": "الوصول إلى الشاطئ",
+  "amenityTv": "تلفزيون",
+  "amenityAc": "تكييف",
+  "amenityHeating": "تدفئة",
+  "amenitySafe": "خزنة",
+  "amenityKitchen": "مطبخ",
+  "amenityMinibar": "ميني بار",
+  "amenityBathtub": "حوض استحمام",
+  "amenityToiletries": "أدوات استحمام",
+  "noHotelsTitle": "لم يتم العثور على فنادق",
+  "@noHotelsTitle": {
+    "description": "العنوان المعروض عند عدم العثور على فنادق"
+  },
+  "noHotelsDefaultMessage": "لم نتمكن من العثور على أي فنادق تطابق معاييرك. حاول تعديل عوامل تصفية البحث أو استكشاف المواقع القريبة.",
+  "@noHotelsDefaultMessage": {
+    "description": "الرسالة الافتراضية المعروضة عند عدم العثور على فنادق"
+  },
+  "bookingsTitle": "الحجوزات",
+  "@bookingsTitle": {
+    "description": "عنوان صفحة الحجوزات"
+  },
+  "bookingsNavTitle": "الحجوزات",
+  "@bookingsNavTitle": {
+    "description": "عنوان لوحة تنقل الحجوزات"
+  },
+  "filterBookingsTitle": "تصفية الحجوزات",
+  "@filterBookingsTitle": {
+    "description": "عنوان مربع حوار التصفية"
+  },
+  "bookingDetailsTitle": "تفاصيل الحجز",
+  "@bookingDetailsTitle": {
+    "description": "عنوان ورقة تفاصيل الحجز"
+  },
+  "roomInformation": "معلومات الغرفة",
+  "@roomInformation": {
+    "description": "عنوان قسم معلومات الغرفة"
+  },
+  "guestInformation": "معلومات الضيف",
+  "@guestInformation": {
+    "description": "عنوان قسم معلومات الضيف"
+  },
+  "bookingDates": "تواريخ الحجز",
+  "@bookingDates": {
+    "description": "عنوان قسم تواريخ الحجز"
+  },
+  "paymentInformation": "معلومات الدفع",
+  "@paymentInformation": {
+    "description": "عنوان قسم معلومات الدفع"
+  },
+  "totalAmount": "المبلغ الإجمالي",
+  "@totalAmount": {
+    "description": "تسمية المبلغ الإجمالي"
+  },
+  "paymentStatus": "حالة الدفع",
+  "@paymentStatus": {
+    "description": "تسمية حالة الدفع"
+  },
+  "paid": "مدفوع",
+  "@paid": {
+    "description": "النص المعروض عند اكتمال الدفع"
+  },
+  "markCompleted": "وضع علامة كمكتمل",
+  "@markCompleted": {
+    "description": "نص زر إكمال الحجز"
+  },
+  "checkIn": "تسجيل الوصول",
+  "@checkIn": {
+    "description": "تسمية تاريخ تسجيل الوصول"
+  },
+  "checkOut": "تسجيل المغادرة",
+  "@checkOut": {
+    "description": "تسمية تاريخ تسجيل المغادرة"
+  },
+  "perNight": "{price} لليلة الواحدة",
+  "@perNight": {
+    "description": "نص السعر لليلة الواحدة",
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "noBookingsFound": "لم يتم العثور على حجوزات",
+  "@noBookingsFound": {
+    "description": "العنوان عند عدم وجود حجوزات"
+  },
+  "noBookingsDefault": "ليس لديك أي حجوزات حتى الآن",
+  "@noBookingsDefault": {
+    "description": "رسالة عدم وجود حجوزات افتراضية"
+  },
+  "noFilteredBookings": "لم يتم العثور على حجوزات {status}",
+  "@noFilteredBookings": {
+    "description": "رسالة عند عدم وجود حجوزات مفلترة",
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "failedToLoadBookings": "فشل تحميل الحجوزات",
+  "@failedToLoadBookings": {
+    "description": "رسالة خطأ عند فشل تحميل الحجوزات"
+  },
+  "retry": "إعادة المحاولة",
+  "@retry": {
+    "description": "نص زر إعادة المحاولة"
+  },
+  "summaryTotal": "الإجمالي",
+  "@summaryTotal": {
+    "description": "عنوان بطاقة الملخص لإجمالي الحجوزات"
+  },
+  "summaryPending": "قيد الانتظار",
+  "@summaryPending": {
+    "description": "عنوان بطاقة الملخص للحجوزات قيد الانتظار"
+  },
+  "summaryCompleted": "مكتمل",
+  "@summaryCompleted": {
+    "description": "عنوان بطاقة الملخص للحجوزات المكتملة"
+  },
+  "summaryRevenue": "الإيرادات",
+  "@summaryRevenue": {
+    "description": "عنوان بطاقة الملخص للإيرادات"
+  },
+  "complete": "إكمال",
+  "@complete": {
+    "description": "نص زر إكمال الحجز"
+  },
+  "nights": "{count, plural, =1{ليلة} other{ليالي}}",
+  "@nights": {
+    "description": "عدد الليالي بصيغة الجمع",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "dashboardSubtitle": "إليك ما يحدث اليوم",
+  "@dashboardSubtitle": {
+    "description": "عنوان فرعي للوحة معلومات الفندق"
+  },
+  "activeBookings": "الحجوزات النشطة",
+  "@activeBookings": {
+    "description": "تسمية مقياس الحجوزات النشطة"
+  },
+  "roomsAvailable": "الغرف المتاحة",
+  "@roomsAvailable": {
+    "description": "تسمية مقياس الغرف المتاحة"
+  },
+  "totalReviews": "إجمالي التقييمات",
+  "@totalReviews": {
+    "description": "تسمية مقياس التقييمات"
+  },
+  "pendingBookings": "الحجوزات قيد الانتظار",
+  "@pendingBookings": {
+    "description": "تسمية مقياس الحجوزات قيد الانتظار"
+  },
+  "quickAccess": "الوصول السريع",
+  "@quickAccess": {
+    "description": "عنوان قسم أزرار الوصول السريع"
+  },
+  "recentActivity": "النشاط الأخير",
+  "@recentActivity": {
+    "description": "عنوان قسم النشاط الأخير"
+  },
+  "noRecentActivity": "لا يوجد نشاط أخير",
+  "@noRecentActivity": {
+    "description": "الرسالة المعروضة عند عدم وجود نشاط"
+  },
+  "roomsTitle": "الغرف",
+  "@roomsTitle": {
+    "description": "عنوان لوحة تنقل الغرف"
+  },
+  "roomsDescription": "إدارة تفاصيل الغرف",
+  "@roomsDescription": {
+    "description": "وصف لوحة تنقل الغرف"
+  },
+  "bookingsDescription": "عرض جميع الحجوزات",
+  "@bookingsDescription": {
+    "description": "وصف لوحة تنقل الحجوزات"
+  },
+  "reviewsTitle": "التقييمات",
+  "@reviewsTitle": {
+    "description": "عنوان لوحة تنقل التقييمات"
+  },
+  "reviewsDescription": "تحقق من ملاحظات الضيوف",
+  "@reviewsDescription": {
+    "description": "وصف لوحة تنقل التقييمات"
+  },
+  "profileTitle": "الملف الشخصي",
+  "@profileTitle": {
+    "description": "عنوان لوحة تنقل الملف الشخصي"
+  },
+  "profileDescription": "الملف الشخصي للفندق",
+  "@profileDescription": {
+    "description": "وصف لوحة تنقل الملف الشخصي"
+  },
+  "validUrl": "اكتب عنوان URL صالحًا!",
+  "emptyInput": "لا يمكن أن يكون الإدخال فارغًا!",
+  "updateLocation": "تحديث الموقع",
+  "updateDescription": "تحديث الوصف",
+  "updateMapLink": "تحديث رابط الخريطة",
+  "updateContactInfo": "تحديث معلومات الاتصال",
+  "completeHotelProfile": "أكمل ملف تعريف فندقك",
+  "selectWilaya": "اختر ولاية",
+  "back": "رجوع",
+  "finish": "إنهاء",
+  "next": "التالي",
+  "loadingPlaceholder": "جاري التحميل",
+  "inputEmpty": "لا يمكن أن يكون الإدخال فارغًا!",
+  "updateContactInformation": "تحديث معلومات الاتصال",
+  "enterField": "أدخل {field}...",
+  "@enterField": {
+    "description": "نص تلميح لحقول الإدخال",
+    "placeholders": {
+      "field": {}
+    }
+  },
+  "profile": "الملف الشخصي",
+  "settings": "الإعدادات",
+  "logOut": "تسجيل الخروج",
+  "hotelPhotos": "صور الفندق",
+  "noPhotosAdded": "لم تتم إضافة صور",
+  "addPhoto": "إضافة صورة",
+  "basicInformation": "المعلومات الأساسية",
+  "hotelName": "اسم الفندق",
+  "required": "مطلوب",
+  "description": "الوصف",
+  "contactInformation": "معلومات الاتصال",
+  "phoneNumber": "رقم الهاتف",
+  "location": "الموقع",
+  "wilaya": "الولاية",
+  "mapLink": "رابط الخريطة",
+  "profileUpdatedSuccessfully": "تم تحديث الملف الشخصي بنجاح",
+  "errorUpdatingProfile": "خطأ في تحديث الملف الشخصي",
+  "imageUploadedSuccessfully": "تم تحميل الصورة بنجاح",
+  "errorUploadingImage": "خطأ في تحميل الصورة",
+  "imageRemovedSuccessfully": "تمت إزالة الصورة بنجاح",
+  "errorRemovingImage": "خطأ في إزالة الصورة",
+  "guestReviews": "تقييمات الضيوف",
+  "all": "الكل",
+  "stars": "{count} نجوم",
+  "@stars": {
+    "description": "تسمية تقييم النجوم",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "reviewsCount": "{count} تقييمات",
+  "@reviewsCount": {
+    "description": "تسمية عدد التقييمات",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "errorLoadingReviews": "خطأ في تحميل التقييمات",
+  "home": "الرئيسية",
+  "rooms": "الغرف",
+  "reviews": "التقييمات",
+  "hotelRegistration": "تسجيل الفندق",
+  "registerHotel": "سجل فندقك",
+  "email": "البريد الإلكتروني",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "registerHotelButton": "تسجيل الفندق",
+  "enterHotelName": "الرجاء إدخال اسم فندقك.",
+  "validEmail": "الرجاء إدخال عنوان بريد إلكتروني صالح.",
+  "passwordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
+  "passwordMatch": "كلمات المرور غير متطابقة.",
+  "weakPassword": "كلمة مرور ضعيفة",
+  "emailInUse": "البريد الإلكتروني قيد الاستخدام بالفعل",
+  "registerFailed": "فشل التسجيل",
+  "createAccount": "إنشاء حساب",
+  "joinFatiel": "انضم إلى فتيل",
+  "firstName": "الاسم الأول",
+  "lastName": "اسم العائلة",
+  "createAccountButton": "إنشاء حساب",
+  "firstNameLastNameRequired": "الرجاء إدخال اسمك الأول واسم عائلتك.",
+  "confirmBooking": "تأكيد الحجز",
+  "checkInDate": "تاريخ تسجيل الوصول",
+  "checkOutDate": "تاريخ تسجيل المغادرة",
+  "totalNights": "إجمالي الليالي",
+  "totalPrice": "السعر الإجمالي",
+  "confirmAndPay": "تأكيد والدفع",
+  "selectCheckInDate": "حدد تاريخ تسجيل الوصول",
+  "selectCheckOutDate": "حدد تاريخ تسجيل المغادرة",
+  "confirm": "تأكيد",
+  "bookingConfirmed": "تم تأكيد الحجز بنجاح!",
+  "from": "من",
+  "night": "ليلة",
+  "bookNow": "احجز الآن",
+  "unavailable": "غير متاح",
+  "oopsSomethingWentWrong": "عفوًا! حدث خطأ ما",
+  "goToHome": "الذهاب إلى الرئيسية",
+  "removeFromFavorites": "إزالة من المفضلة",
+  "removeHotelFromFavoritesConfirmation": "هل أنت متأكد من أنك تريد إزالة هذا الفندق من مفضلاتك؟",
+  "remove": "إزالة",
+  "addedToFavorites": "تمت الإضافة إلى المفضلة",
+  "removedFromFavorites": "تمت الإزالة من المفضلة",
+  "failedToUpdateFavorites": "فشل تحديث المفضلة",
+  "removeFromFavoritesSemantic": "إزالة من المفضلة",
+  "addToFavoritesSemantic": "إضافة إلى المفضلة",
+  "imageNotAvailable": "الصورة غير متوفرة",
+  "locationNotSpecified": "الموقع غير محدد",
+  "noImageAvailable": "لا توجد صورة متاحة",
+  "hotel": "فندق",
+  "hotels": "فنادق",
+  "tryAdjustingSearchFilters": "حاول تعديل عوامل تصفية البحث",
+  "noDataFound": "لم يتم العثور على بيانات",
+  "noPopularDestinationsAvailable": "لا توجد وجهات شهيرة متاحة في الوقت الحالي.",
+  "error": "خطأ",
+  "guests": "ضيوف",
+  "available": "متاح",
+  "seeAll": "عرض الكل",
+  "allWilayas": "جميع الولايات",
+  "failedToLoadWilayaData": "فشل تحميل بيانات الولاية",
+  "noHotelsListedInAnyWilaya": "لا توجد فنادق مدرجة حاليًا في أي ولاية",
+  "discoveringAmazingPlaces": "اكتشاف أماكن رائعة لك",
+  "bookingSummary": "ملخص الحجز",
+  "priceSummary": "ملخص السعر",
+  "roomRate": "سعر الغرفة",
+  "duration": "المدة",
+  "roomDetails": "تفاصيل الغرفة",
+  "capacity": "السعة",
+  "exploreHotel": "استكشاف الفندق",
+  "bookingError": "خطأ في الحجز",
+  "goBack": "العودة",
+  "noBookingFound": "لم يتم العثور على حجز",
+  "noBookingDetails": "لم نتمكن من العثور على أي تفاصيل حجز",
+  "myBookings": "حجوزاتي",
+  "failedToLoadBookingDetails": "فشل تحميل تفاصيل الحجز",
+  "bookingDetailsNotAvailable": "تفاصيل الحجز غير متوفرة",
+  "unknownLocation": "موقع غير معروف",
+  "cancelled": "ملغى",
+  "viewDetails": "عرض التفاصيل",
+  "writeAReview": "اكتب تقييمًا",
+  "editReview": "تعديل التقييم",
+  "shareYourExperience": "شارك تجربتك...",
+  "pleaseWriteAComment": "الرجاء كتابة تعليق",
+  "submit": "إرسال",
+  "update": "تحديث",
+  "deleteReview": "حذف التقييم",
+  "areYouSureDeleteReview": "هل أنت متأكد من أنك تريد حذف هذا التقييم؟",
+  "delete": "حذف",
+  "cancelBooking": "إلغاء الحجز",
+  "areYouSureCancelBooking": "هل أنت متأكد من أنك تريد إلغاء هذا الحجز؟",
+  "no": "لا",
+  "yesCancel": "نعم، إلغاء",
+  "exploreHotels": "استكشاف الفنادق",
+  "noPendingBookings": "لا توجد حجوزات قيد الانتظار!",
+  "noCompletedBookings": "لا توجد حجوزات مكتملة!",
+  "noCancelledBookings": "لا توجد حجوزات ملغاة!",
+  "startYourJourney": "ابدأ رحلتك اليوم! ابحث عن أفضل الفنادق\nواحجز إقامتك التي تحلم بها بسهولة.",
+  "completedBookingsAppearHere": "ستظهر حجوزاتك المكتملة هنا.\nشارك تجربتك بترك التقييمات!",
+  "cancelledBookingsAppearHere": "ستظهر حجوزاتك الملغاة هنا.\nيمكنك دائمًا الحجز مرة أخرى!",
+  "pending": "قيد الانتظار",
+  "amenities": "وسائل الراحة",
+  "recommended": "موصى به",
+  "nearMe": "بالقرب مني",
+  "recommendedHotels": "الفنادق الموصى بها",
+  "hotelsNearYou": "الفنادق القريبة منك",
+  "success": "نجاح",
+  "failedToLoadHotels": "فشل تحميل الفنادق",
+  "noHotelsAvailable": "لا توجد فنادق متاحة",
+  "noHotelsMatchingCriteria": "لم نتمكن من العثور على أي فنادق تطابق معاييرك.",
+  "findHotelsInCities": "ابحث عن فنادق في المدن",
+  "failedToLoadCityData": "فشل تحميل بيانات المدينة",
+  "noHotelsListedInCities": "لا توجد فنادق مدرجة حاليًا في هذه المدن.",
+  "loadingYourFavorites": "جارٍ تحميل مفضلاتك",
+  "couldntLoadFavorites": "تعذر تحميل المفضلة",
+  "checkConnectionAndTryAgain": "يرجى التحقق من اتصالك والمحاولة مرة أخرى",
+  "noFavoritesYet": "لا توجد مفضلات حتى الآن",
+  "saveFavoritesMessage": "احفظ فنادقك المفضلة بالنقر على أيقونة القلب عند التصفح",
+  "browseHotels": "تصفح الفنادق",
+  "recommendedHotelsCount": "الفنادق الموصى بها ({count})",
+  "hotelsNearYouCount": "الفنادق القريبة منك ({count})",
+  "weCouldntFindAnyHotels": "لم نتمكن من العثور على أي فنادق تطابق معاييرك.",
+  "noReviewsDataAvailable": "لا توجد بيانات تقييمات متاحة",
+  "guestFavorite": "المفضلة لدى الضيوف",
+  "basedOnReviews": "بناءً على {totalRatings} تقييمات",
+  "starsCount": "{ratingCount} نجوم",
+  "exploreRoomOffers": "استكشف عروض الغرف",
+  "perNightSimple": "لليلة الواحدة",
+  "roomType": "نوع الغرفة",
+  "dates": "التواريخ",
+  "totalPrice": "السعر الإجمالي",
+  "successfullyBooked": "تم الحجز بنجاح",
+  "noAmenitiesListed": "لا توجد وسائل راحة مدرجة",
+  "availableFrom": "متاح من",
+  "notCurrentlyAvailable": "غير متاح حاليًا",
+  "failedToLoadRooms": "فشل تحميل الغرف",
+  "noRoomsAvailable": "لا توجد غرف متاحة",
+  "searchHotels": "البحث عن فنادق",
+  "searchHotelsLocations": "البحث عن فنادق، مواقع...",
+  "searchForHotels": "البحث عن فنادق",
+  "enterHotelNameLocation": "أدخل اسم الفندق أو الموقع أو وسائل الراحة للعثور على إقامتك المثالية",
+  "searchFailed": "فشل البحث",
+  "inputCantBeEmpty": "لا يمكن أن يكون الإدخال فارغًا!",
+  "profileUpdatedSuccessfully": "تم تحديث بيانات ملفك الشخصي بنجاح.",
+  "anErrorOccurred": "حدث خطأ",
+  "updateFirstName": "تحديث الاسم الأول",
+  "updateLastName": "تحديث اسم العائلة",
+  "selectLocation": "اختر الموقع",
+  "updateYourInformation": "تحديث معلوماتك",
+  "selectAWilaya": "اختر ولاية",
+  "enter": "أدخل",
+  "passwordUpdatedSuccessfully": "تم تحديث كلمة المرور الخاصة بك بنجاح",
+  "updatePassword": "تحديث كلمة المرور",
+  "currentPassword": "كلمة المرور الحالية",
+  "pleaseEnterCurrentPassword": "الرجاء إدخال كلمة المرور الحالية",
+  "newPassword": "كلمة المرور الجديدة",
+  "pleaseEnterNewPassword": "الرجاء إدخال كلمة مرور جديدة",
+  "passwordMustBeAtLeast6Characters": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+  "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+  "weakPassword": "كلمة المرور المقدمة ضعيفة جدًا.",
+  "wrongPassword": "كلمة المرور الحالية غير صحيحة.",
+  "requiresRecentLogin": "يرجى إعادة المصادقة لتحديث كلمة المرور الخاصة بك.",
+  "genericError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+  "failedToUpdatePassword": "فشل تحديث كلمة المرور. يرجى المحاولة مرة أخرى.",
+  "passwordMismatch": "عدم تطابق كلمة المرور",
+  "explore": "استكشاف",
+  "favorites": "المفضلة",
+  "profileSettings": "إعدادات الملف الشخصي",
+  "imageUploadFailed": "فشل تحميل الصورة",
+  "profileImageUpdatedSuccessfully": "تم تحديث صورة الملف الشخصي بنجاح",
+  "failedToUploadImage": "فشل تحميل الصورة",
+  "removeProfileImage": "إزالة صورة الملف الشخصي",
+  "removeProfileImageConfirmation": "هل أنت متأكد من أنك تريد إزالة صورة ملفك الشخصي؟",
+  "remove": "إزالة",
+  "profileImageRemoved": "تمت إزالة صورة الملف الشخصي",
+  "failedToRemoveImage": "فشل إزالة الصورة",
+  "ok": "موافق",
+  "uploading": "جاري التحميل...",
+  "removePhoto": "إزالة الصورة",
+  "accountSettings": "إعدادات الحساب",
+  "updateProfile": "تحديث الملف الشخصي",
+  "changePassword": "تغيير كلمة المرور",
+  "wilayaNotFound": "لم يتم العثور على الولاية",
+  "wilayaDataNotAvailable": "بيانات الولاية غير متوفرة",
+  "failedToLoadImage": "فشل تحميل الصورة",
+  "unknownLocation": "موقع غير معروف",
+  "rooms": "غرف",
+  "noHotelsRegistered": "لا توجد فنادق مسجلة حاليًا في {wilayaName}",
+  "pleaseWaitAMoment": "الرجاء الانتظار لحظة",
+  "pressBackAgainToExit": "اضغط على رجوع مرة أخرى للخروج",
+  "passwordReset": "إعادة تعيين كلمة المرور",
+  "passwordResetSentMessage": "لقد أرسلنا لك الآن رابط إعادة تعيين كلمة المرور.",
+  "invalidEmail": "بريد إلكتروني غير صالح",
+  "userNotFound": "المستخدم غير موجود",
+  "forgotPasswordGenericError": "لم نتمكن من معالجة طلبك. يرجى التأكد من أنك مستخدم مسجل، أو إذا لم تكن كذلك، فقم بتسجيل مستخدم الآن بالرجوع خطوة واحدة.",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "forgotPasswordInstructions": "أدخل عنوان بريدك الإلكتروني المسجل لتلقي رابط إعادة تعيين كلمة المرور",
+  "enterYourEmail": "الرجاء إدخال بريدك الإلكتروني",
+  "enterValidEmail": "الرجاء إدخال بريد إلكتروني صالح",
+  "sendResetLink": "إرسال رابط إعادة التعيين",
+  "backToLogin": "العودة إلى تسجيل الدخول",
+  "failedToLoadHotelDetails": "فشل تحميل تفاصيل الفندق",
+  "noHotelInformationAvailable": "لا تتوفر معلومات الفندق",
+  "room": "غرفة",
+  "noDescriptionAvailable": "لا يوجد وصف متاح",
+  "noContactInformationAvailable": "لا تتوفر معلومات الاتصال",
+  "ratingsAndReviews": "التقييمات والمراجعات",
+  "viewAll": "عرض الكل",
+  "reviews": "تقييمات",
+  "noReviewsYet": "لا توجد تقييمات حتى الآن",
+  "averageRating": "متوسط التقييم",
+  "locationOnMap": "الموقع على الخريطة",
+  "openInMaps": "افتح في الخرائط",
+  "mapLocationNotAvailable": "موقع الخريطة غير متوفر",
+  "roomOffers": "عروض الغرف",
+  "viewRoomOffers": "عرض عروض الغرف",
+  "selectAccountType": "حدد نوع حسابك للبدء",
+  "traveler": "مسافر",
+  "travelerSubtitle": "اكتشف واحجز إقامات فاخرة في جميع أنحاء العالم",
+  "hotelPartner": "شريك الفندق",
+  "hotelPartnerSubtitle": "قائمة وإدارة العقارات الفاخرة الخاصة بك",
+  "alreadyHaveAccount": "هل لديك حساب بالفعل؟ ",
+  "hotelInformationNotAvailable": "معلومات الفندق غير متوفرة",
+  "roomAvailable": "غرفة متاحة",
+  "premium": "ممتاز",
+  "perPage": "لكل صفحة",
+  "failedToLoadReviewerDetails": "فشل تحميل تفاصيل المراجع",
+  "reviewedBy": "تمت المراجعة بواسطة",
+  "noCommentProvided": "لم يتم تقديم تعليق",
+  "roomsTitle": "الغرف",
+  "noRoomsAvailable": "لا توجد غرف متاحة",
+  "addRoom": "إضافة غرفة",
+  "failedToLoadRooms": "فشل تحميل الغرف",
+  "retry": "إعادة المحاولة",
+  "roomMarkedAsUnavailable": "تم وضع علامة على الغرفة كغير متاحة",
+  "roomMarkedAsAvailable": "تم وضع علامة على الغرفة كمتاحة",
+  "failedToUpdateRoom": "فشل تحديث الغرفة: {error}",
+  "deleteRoom": "حذف الغرفة",
+  "deleteRoomConfirmation": "لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد؟",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "roomDeletedSuccessfully": "تم حذف الغرفة بنجاح",
+  "failedToDeleteRoom": "فشل حذف الغرفة: {error}",
+  "editRoom": "تعديل الغرفة",
+  "addNewRoom": "إضافة غرفة جديدة",
+  "roomName": "اسم الغرفة",
+  "description": "الوصف",
+  "pricePerNight": "السعر لكل ليلة",
+  "capacity": "السعة",
+  "availableForBooking": "متاح للحجز",
+  "roomPhotos": "صور الغرفة",
+  "addPhoto": "إضافة صورة",
+  "amenities": "وسائل الراحة",
+  "imageUploadedSuccessfully": "تم تحميل الصورة بنجاح",
+  "errorUploadingImage": "خطأ في تحميل الصورة: {error}",
+  "imageRemovedSuccessfully": "تمت إزالة الصورة بنجاح",
+  "errorRemovingImage": "خطأ في إزالة الصورة: {error}",
+  "updateRoom": "تحديث الغرفة",
+  "roomUpdatedSuccessfully": "تم تحديث الغرفة بنجاح",
+  "roomAddedSuccessfully": "تمت إضافة الغرفة بنجاح",
+  "failedToAddRoom": "فشل إضافة الغرفة: {error}",
+  "failedToUpdateRoomGeneric": "فشل تحديث الغرفة: {error}",
+  "guest": "{count, plural, =1{ضيف} other{ضيوف}}",
+  "available": "متاح",
+  "unavailable": "غير متاح",
+  "photoCount": "{count, plural, =1{صورة} other{صور}}",
+  "edit": "تعديل",
+  "markUnavailable": "وضع علامة كغير متاح",
+  "markAvailable": "وضع علامة كمتاح",
+  "basicInformation": "المعلومات الأساسية",
+  "pricingAvailability": "التسعير والتوافر",
+  "changeLanguage": "تغيير اللغة",
+  "selectLanguage": "اختر اللغة",
+   "filterLocation": "الموقع",
+  "filterPrice": "السعر",
+  "filterRating": "التقييم",
+  "filterMinPeople": "الضيوف",
+  "resetFiltersTitle": "إعادة تعيين الفلاتر",
+  "resetFiltersContent": "هل أنت متأكد من أنك تريد إعادة تعيين جميع الفلاتر؟",
+  "resetFiltersCancel": "إلغاء",
+  "resetFiltersConfirm": "إعادة تعيين",
+  "applyFilters": "تطبيق الفلاتر",
+  "filterByMinGuests": "الحد الأدنى للضيوف",
+  "filterByPriceRange": "نطاق السعر",
+  "filterByCustomerRating": "تقييم العملاء",
+  "filterByLocation": "الموقع (ولاية)",
+  "allHotels": "جميع الفنادق",
+   "favoritesTitle": "المفضلة"
 }

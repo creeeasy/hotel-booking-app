@@ -62,12 +62,12 @@ class CustomBottomNavigationBar<T> extends StatelessWidget {
         unselectedItemColor: ThemeColors.textSecondary,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: TextStyle(
+        selectedLabelStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: ThemeColors.primary,
         ),
-        unselectedLabelStyle: TextStyle(
+        unselectedLabelStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.normal,
           color: ThemeColors.textSecondary,

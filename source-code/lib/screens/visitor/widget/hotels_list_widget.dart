@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/widgets/hotel_card.dart';
 import 'package:flutter/material.dart';
@@ -28,18 +29,18 @@ class HotelsListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Section
-          if (title != null) _buildHeaderSection(),
+          if (title != null) _buildHeaderSection(context),
           const SizedBox(height: 16),
 
           // Hotels List
-          if (hotels.isEmpty) _buildEmptyState(),
+          if (hotels.isEmpty) _buildEmptyState(context),
           if (hotels.isNotEmpty) _buildHotelsList(),
         ],
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -79,7 +80,7 @@ class HotelsListWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              "${hotels.length} ${hotels.length == 1 ? 'hotel' : 'hotels'}",
+              "${hotels.length} ${hotels.length == 1 ? L10n.of(context).hotel : L10n.of(context).hotels}",
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -91,7 +92,7 @@ class HotelsListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Expanded(
       child: Center(
         child: Column(
@@ -103,9 +104,9 @@ class HotelsListWidget extends StatelessWidget {
               color: ThemeColors.grey400,
             ),
             const SizedBox(height: 16),
-            const Text(
-              "No Hotels Found",
-              style: TextStyle(
+            Text(
+              L10n.of(context).noHotelsFound,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: ThemeColors.textSecondary,
@@ -113,7 +114,7 @@ class HotelsListWidget extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              "Try adjusting your search filters",
+              L10n.of(context).tryAdjustingSearchFilters,
               style: TextStyle(
                 fontSize: 14,
                 color: ThemeColors.textSecondary.withOpacity(0.7),

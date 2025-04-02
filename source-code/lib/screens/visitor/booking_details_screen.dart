@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/amenity.dart';
@@ -33,7 +34,7 @@ class _BookingDetailsViewState extends State<BookingDetailsView> {
     return Scaffold(
       backgroundColor: ThemeColors.background,
       appBar: CustomBackAppBar(
-        title: "Booking Summary",
+        title: L10n.of(context).bookingSummary,
         onBack: () => Navigator.of(context).pop(),
       ),
       body: FutureBuilder<Map<String, dynamic>?>(
@@ -96,17 +97,18 @@ class _BookingDetailsContent extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          _HeaderSection(hotel: hotel),
+          _HeaderSection(hotel: hotel, context: context),
           const SizedBox(height: 24),
-          _VisitorInfoCard(visitor: visitor),
+          _VisitorInfoCard(visitor: visitor, context: context),
           const SizedBox(height: 16),
-          _BookingDatesCard(booking: booking),
+          _BookingDatesCard(booking: booking, context: context),
           const SizedBox(height: 16),
-          _RoomDetailsCard(room: room, durationDays: _durationDays),
+          _RoomDetailsCard(
+              room: room, durationDays: _durationDays, context: context),
           const SizedBox(height: 16),
-          _PriceSummaryCard(booking: booking, room: room),
+          _PriceSummaryCard(booking: booking, room: room, context: context),
           const SizedBox(height: 24),
-          _ExploreHotelButton(hotelId: hotel.id),
+          _ExploreHotelButton(hotelId: hotel.id, context: context),
         ],
       ),
     );
@@ -115,8 +117,9 @@ class _BookingDetailsContent extends StatelessWidget {
 
 class _HeaderSection extends StatelessWidget {
   final Hotel hotel;
+  final BuildContext context;
 
-  const _HeaderSection({required this.hotel});
+  const _HeaderSection({required this.hotel, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +148,7 @@ class _HeaderSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Booking Confirmed",
+                  L10n.of(context).bookingConfirmed,
                   style: TextStyle(
                     fontSize: 14,
                     color: ThemeColors.success,
@@ -163,8 +166,9 @@ class _HeaderSection extends StatelessWidget {
 
 class _VisitorInfoCard extends StatelessWidget {
   final Visitor visitor;
+  final BuildContext context;
 
-  const _VisitorInfoCard({required this.visitor});
+  const _VisitorInfoCard({required this.visitor, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -184,9 +188,9 @@ class _VisitorInfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Guest Information",
-            style: TextStyle(
+          Text(
+            L10n.of(context).guestInformation,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: ThemeColors.primaryDark,
@@ -194,19 +198,19 @@ class _VisitorInfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _InfoRow(
-            label: "First Name",
+            label: L10n.of(context).firstName,
             value: visitor.firstName,
             icon: Iconsax.user,
           ),
           const Divider(height: 24, thickness: 1, color: ThemeColors.grey200),
           _InfoRow(
-            label: "Last Name",
+            label: L10n.of(context).lastName,
             value: visitor.lastName,
             icon: Iconsax.user,
           ),
           const Divider(height: 24, thickness: 1, color: ThemeColors.grey200),
           _InfoRow(
-            label: "Email",
+            label: L10n.of(context).email,
             value: visitor.email,
             icon: Iconsax.sms,
           ),
@@ -218,8 +222,9 @@ class _VisitorInfoCard extends StatelessWidget {
 
 class _BookingDatesCard extends StatelessWidget {
   final Booking booking;
+  final BuildContext context;
 
-  const _BookingDatesCard({required this.booking});
+  const _BookingDatesCard({required this.booking, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -239,9 +244,9 @@ class _BookingDatesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Booking Dates",
-            style: TextStyle(
+          Text(
+            L10n.of(context).bookingDates,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: ThemeColors.primaryDark,
@@ -252,7 +257,7 @@ class _BookingDatesCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _DateCard(
-                  label: "Check-In",
+                  label: L10n.of(context).checkIn,
                   date: booking.checkInDate,
                   icon: Iconsax.calendar_1,
                   color: ThemeColors.primary,
@@ -261,7 +266,7 @@ class _BookingDatesCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _DateCard(
-                  label: "Check-Out",
+                  label: L10n.of(context).checkOut,
                   date: booking.checkOutDate,
                   icon: Iconsax.calendar_1,
                   color: ThemeColors.accentPink,
@@ -339,10 +344,12 @@ class _DateCard extends StatelessWidget {
 class _PriceSummaryCard extends StatelessWidget {
   final Booking booking;
   final Room room;
+  final BuildContext context;
 
   const _PriceSummaryCard({
     required this.booking,
     required this.room,
+    required this.context,
   });
 
   @override
@@ -366,9 +373,9 @@ class _PriceSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Price Summary",
-            style: TextStyle(
+          Text(
+            L10n.of(context).priceSummary,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: ThemeColors.primaryDark,
@@ -376,19 +383,19 @@ class _PriceSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _PriceRow(
-            label: "Room Rate",
+            label: L10n.of(context).roomRate,
             value: "\$${room.pricePerNight.toStringAsFixed(2)}",
-            description: "per night",
+            description: L10n.of(context).perNightSimple,
           ),
           const Divider(height: 24, thickness: 1, color: ThemeColors.grey200),
           _PriceRow(
-            label: "Duration",
+            label: L10n.of(context).duration,
             value: "$duration",
-            description: "night${duration > 1 ? 's' : ''}",
+            description: L10n.of(context).nights(duration),
           ),
           const Divider(height: 24, thickness: 1, color: ThemeColors.grey200),
           _PriceRow(
-            label: "Total Price",
+            label: L10n.of(context).totalPrice,
             value: "\$${booking.totalPrice.toStringAsFixed(2)}",
             valueStyle: const TextStyle(
               fontSize: 18,
@@ -457,10 +464,12 @@ class _PriceRow extends StatelessWidget {
 class _RoomDetailsCard extends StatelessWidget {
   final Room room;
   final int durationDays;
+  final BuildContext context;
 
   const _RoomDetailsCard({
     required this.room,
     required this.durationDays,
+    required this.context,
   });
 
   @override
@@ -481,9 +490,9 @@ class _RoomDetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Room Details",
-            style: TextStyle(
+          Text(
+            L10n.of(context).roomDetails,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: ThemeColors.primaryDark,
@@ -501,19 +510,19 @@ class _RoomDetailsCard extends StatelessWidget {
           const SizedBox(height: 8),
           _RoomDetailItem(
             icon: Iconsax.profile_2user,
-            label: "Capacity",
-            value: "${room.capacity} guest${room.capacity > 1 ? 's' : ''}",
+            label: L10n.of(context).capacity,
+            value: L10n.of(context).roomCapacity(room.capacity),
           ),
           const SizedBox(height: 8),
           _RoomDetailItem(
             icon: Iconsax.calendar_1,
-            label: "Duration",
-            value: "$durationDays night${durationDays > 1 ? 's' : ''}",
+            label: L10n.of(context).duration,
+            value: L10n.of(context).nights(durationDays),
           ),
           const SizedBox(height: 16),
-          const Text(
-            "Amenities",
-            style: TextStyle(
+          Text(
+            L10n.of(context).amenities,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: ThemeColors.primaryDark,
@@ -524,7 +533,8 @@ class _RoomDetailsCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: room.amenities
-                .map((amenity) => _AmenityChip(amenity: amenity))
+                .map((amenity) =>
+                    _AmenityChip(amenity: amenity, context: context))
                 .toList(),
           ),
         ],
@@ -573,8 +583,9 @@ class _RoomDetailItem extends StatelessWidget {
 
 class _AmenityChip extends StatelessWidget {
   final String amenity;
+  final BuildContext context;
 
-  const _AmenityChip({required this.amenity});
+  const _AmenityChip({required this.amenity, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -597,7 +608,8 @@ class _AmenityChip extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            amenityData?.label ?? amenity,
+            AmenityIcon.getLocalizedLabel(
+                amenityData?.label ?? amenity, context),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -612,8 +624,9 @@ class _AmenityChip extends StatelessWidget {
 
 class _ExploreHotelButton extends StatelessWidget {
   final String hotelId;
+  final BuildContext context;
 
-  const _ExploreHotelButton({required this.hotelId});
+  const _ExploreHotelButton({required this.hotelId, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -637,14 +650,14 @@ class _ExploreHotelButton extends StatelessWidget {
           elevation: 0,
           shadowColor: Colors.transparent,
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.house_2, size: 20),
-            SizedBox(width: 8),
+            const Icon(Iconsax.house_2, size: 20),
+            const SizedBox(width: 8),
             Text(
-              "Explore Hotel",
-              style: TextStyle(
+              L10n.of(context).exploreHotel,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -682,9 +695,9 @@ class _BookingErrorView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Booking Error',
-              style: TextStyle(
+            Text(
+              L10n.of(context).bookingError,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: ThemeColors.textPrimary,
@@ -712,7 +725,7 @@ class _BookingErrorView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Go Back'),
+                child: Text(L10n.of(context).goBack),
               ),
             ),
           ],
@@ -746,19 +759,19 @@ class _NoBookingDataView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'No Booking Found',
-              style: TextStyle(
+            Text(
+              L10n.of(context).noBookingFound,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: ThemeColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'We couldn\'t find any booking details',
+            Text(
+              L10n.of(context).noBookingDetails,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: ThemeColors.textSecondary,
               ),
@@ -776,7 +789,7 @@ class _NoBookingDataView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('Go Back'),
+                child: Text(L10n.of(context).goBack),
               ),
             ),
           ],

@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/screens/hotel/hotel_details_completion_view.dart';
 import 'package:fatiel/screens/hotel/hotel_home_screen.dart';
 import 'package:fatiel/screens/register/hotel_registration_screen.dart';
@@ -36,22 +37,22 @@ class _AuthFlowState extends State<AuthFlow> {
 
   Future<bool> _handleWillPop() async {
     final now = DateTime.now();
-    
-    if (_lastPressed != null && 
+
+    if (_lastPressed != null &&
         now.difference(_lastPressed!) < const Duration(seconds: 1)) {
       return true;
     }
-    
+
     _lastPressed = now;
     setState(() => _showExitPrompt = true);
-    
+
     _timer?.cancel();
     _timer = Timer(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() => _showExitPrompt = false);
       }
     });
-    
+
     return false;
   }
 
@@ -67,7 +68,7 @@ class _AuthFlowState extends State<AuthFlow> {
               if (state.isLoading) {
                 LoadingScreen().show(
                   context: context,
-                  text: state.loadingText ?? 'Please wait a moment',
+                  text: L10n.of(context).pleaseWaitAMoment,
                 );
               } else {
                 LoadingScreen().hide();
@@ -78,8 +79,8 @@ class _AuthFlowState extends State<AuthFlow> {
                 return const HotelHomeView();
               } else if (state is AuthStateVisitorLoggedIn) {
                 return const VisitorHomeScreen();
-              // } else if (state is AuthStateNeedsVerification) {
-              //   return const VerifyEmailView();
+                // } else if (state is AuthStateNeedsVerification) {
+                //   return const VerifyEmailView();
               } else if (state is AuthStateLoggedOut) {
                 return const LoginView();
               } else if (state is AuthStateForgotPassword) {
@@ -89,7 +90,7 @@ class _AuthFlowState extends State<AuthFlow> {
               } else if (state is AuthStateHotelRegistering) {
                 return const HotelRegistrationView();
               } else if (state is AuthStateHotelDetailsCompletion) {
-                return const HotelDetailsCompletion();
+                return HotelDetailsCompletion();
               } else if (state is AuthStateVisitorRegistering) {
                 return const VisitorRegistrationView();
               } else {
@@ -111,9 +112,9 @@ class _AuthFlowState extends State<AuthFlow> {
                     color: Colors.black.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'Press back again to exit',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  child: Text(
+                    L10n.of(context).pressBackAgainToExit,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
               ),

@@ -39,7 +39,7 @@ Future<T?> showGenericDialog<T>({
               ],
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
@@ -49,7 +49,7 @@ Future<T?> showGenericDialog<T>({
               const SizedBox(height: 12),
               Text(
                 content,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: ThemeColors.textSecondary,
@@ -82,7 +82,7 @@ Future<T?> showGenericDialog<T>({
                       ),
                       child: Text(
                         entry.key,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'Poppins',

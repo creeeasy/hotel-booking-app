@@ -79,7 +79,7 @@ class _LoginPage extends State<LoginView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      L10n.of(context).welcomeBack,
+                      L10n.of(context).welcomeBackSimple,
                       style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w800,

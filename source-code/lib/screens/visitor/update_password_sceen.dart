@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,7 +43,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     if (_newPasswordController.text != _confirmPasswordController.text) {
       await showErrorDialog(
         context,
-        'Password Mismatch',
+        L10n.of(context).passwordMismatch,
         // backgroundColor: ThemeColors.error.withOpacity(0.9),
         // textColor: ThemeColors.white,
       );
@@ -71,7 +72,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: ThemeColors.textSecondary,
           fontWeight: FontWeight.w500,
         ),
@@ -85,26 +86,26 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: ThemeColors.border,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: ThemeColors.border,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: ThemeColors.primary,
             width: 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: ThemeColors.error,
           ),
         ),
@@ -113,7 +114,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: ThemeColors.textPrimary,
@@ -133,8 +134,8 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
             if (state.exception == null && !state.isLoading) {
               await showGenericDialog<void>(
                 context: context,
-                title: 'Success',
-                content: 'Your password has been updated successfully',
+                title: L10n.of(context).success,
+                content: L10n.of(context).passwordUpdatedSuccessfully,
                 optionBuilder: () => {'OK': true},
               );
               if (mounted) {
@@ -142,7 +143,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                 context.read<AuthBloc>().add(const AuthEventInitialize());
               }
             } else if (state.exception != null) {
-              final errorMessage = _getErrorMessage(state.exception);
+              final errorMessage = _getErrorMessage(state.exception, context);
               await showErrorDialog(
                 context,
                 errorMessage,
@@ -155,7 +156,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
         child: Scaffold(
           backgroundColor: ThemeColors.background,
           appBar: CustomBackAppBar(
-            title: 'Update Password',
+            title: L10n.of(context).updatePassword,
             titleColor: ThemeColors.primary,
             iconColor: ThemeColors.primary,
             backgroundColor: ThemeColors.background,
@@ -170,14 +171,14 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                   const SizedBox(height: 16),
                   _buildPasswordField(
                     controller: _currentPasswordController,
-                    label: 'Current Password',
+                    label: L10n.of(context).currentPassword,
                     obscureText: _obscureCurrentPassword,
                     onToggleVisibility: () => setState(
                       () => _obscureCurrentPassword = !_obscureCurrentPassword,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your current password';
+                        return L10n.of(context).pleaseEnterCurrentPassword;
                       }
                       return null;
                     },
@@ -185,17 +186,18 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                   const SizedBox(height: 16),
                   _buildPasswordField(
                     controller: _newPasswordController,
-                    label: 'New Password',
+                    label: L10n.of(context).newPassword,
                     obscureText: _obscureNewPassword,
                     onToggleVisibility: () => setState(
                       () => _obscureNewPassword = !_obscureNewPassword,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a new password';
+                        return L10n.of(context).pleaseEnterNewPassword;
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return L10n.of(context)
+                            .passwordMustBeAtLeast6Characters;
                       }
                       return null;
                     },
@@ -203,14 +205,14 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                   const SizedBox(height: 16),
                   _buildPasswordField(
                     controller: _confirmPasswordController,
-                    label: 'Confirm Password',
+                    label: L10n.of(context).confirmPassword,
                     obscureText: _obscureConfirmPassword,
                     onToggleVisibility: () => setState(
                       () => _obscureConfirmPassword = !_obscureConfirmPassword,
                     ),
                     validator: (value) {
                       if (value != _newPasswordController.text) {
-                        return 'Passwords do not match';
+                        return L10n.of(context).passwordsDoNotMatch;
                       }
                       return null;
                     },
@@ -231,7 +233,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                         shadowColor: ThemeColors.shadow,
                       ),
                       child: _isLoading
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 24,
                               height: 24,
                               child: CircularProgressIndicator(
@@ -242,12 +244,12 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Iconsax.lock_1,
+                                const Icon(Iconsax.lock_1,
                                     size: 20, color: ThemeColors.white),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Update Password',
-                                  style: TextStyle(
+                                  L10n.of(context).updatePassword,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: ThemeColors.white,
@@ -266,16 +268,16 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     );
   }
 
-  String _getErrorMessage(Exception? exception) {
+  String _getErrorMessage(Exception? exception, BuildContext context) {
     if (exception is WeakPasswordException) {
-      return 'The password provided is too weak.';
+      return L10n.of(context).weakPassword;
     } else if (exception is WrongPasswordException) {
-      return 'Your current password is incorrect.';
+      return L10n.of(context).wrongPassword;
     } else if (exception is RequiresRecentLoginException) {
-      return 'Please reauthenticate to update your password.';
+      return L10n.of(context).requiresRecentLogin;
     } else if (exception is GenericException) {
-      return 'An unexpected error occurred. Please try again.';
+      return L10n.of(context).genericError;
     }
-    return 'Failed to update password. Please try again.';
+    return L10n.of(context).failedToUpdatePassword;
   }
 }

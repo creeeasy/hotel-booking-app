@@ -1,5 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/constants/hotel_price_ranges.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/hotel_filter_parameters.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/widget/hotels_list_widget.dart';
@@ -19,14 +20,14 @@ class HotelBrowseView extends StatefulWidget {
       filterFunction;
   final HotelFilterParameters? initialFilters;
   final bool useUserLocationOnly;
-  final String appBackTitle;
+  final String? appBackTitle;
 
   const HotelBrowseView(
       {super.key,
       this.filterFunction,
       this.initialFilters,
       this.useUserLocationOnly = false,
-      this.appBackTitle = "All Hotels"});
+      this.appBackTitle});
 
   @override
   State<HotelBrowseView> createState() => _HotelBrowseViewState();
@@ -100,7 +101,7 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: widget.appBackTitle,
+          title: widget.appBackTitle ?? L10n.of(context).allHotels,
           onBack: () => Navigator.of(context).pop(),
         ),
         body: Column(
@@ -222,11 +223,13 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
   void _resetFilters() async {
     final shouldReset = await showGenericDialog<bool>(
       context: context,
-      title: 'Reset Filters',
-      content: 'Are you sure you want to reset all filters?',
-      optionBuilder: () => {'Cancel': false, 'Reset': true},
+      title: L10n.of(context).resetFiltersTitle,
+      content: L10n.of(context).resetFiltersContent,
+      optionBuilder: () => {
+        L10n.of(context).resetFiltersCancel: false,
+        L10n.of(context).resetFiltersConfirm: true
+      },
     );
-
     if (shouldReset != true) return;
     setState(() {
       _selectedPrice = null;
@@ -287,9 +290,9 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: const Text(
-          'Apply Filters',
-          style: TextStyle(
+        child: Text(
+          L10n.of(context).applyFilters,
+          style: const TextStyle(
             color: ThemeColors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -310,23 +313,23 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
           if (showLocationFilter) ...[
             _filterIcon(
                 icon: Iconsax.location,
-                label: "Location",
+                label: L10n.of(context).filterLocation,
                 onFilter: () => _showFilterOptions(FilterOption.location)),
             const SizedBox(width: 8),
           ],
           _filterIcon(
               icon: Iconsax.dollar_circle,
-              label: "Price",
+              label: L10n.of(context).filterPrice,
               onFilter: () => _showFilterOptions(FilterOption.price)),
           const SizedBox(width: 8),
           _filterIcon(
               icon: Iconsax.star1,
-              label: "Rating",
+              label: L10n.of(context).filterRating,
               onFilter: () => _showFilterOptions(FilterOption.rating)),
           const SizedBox(width: 8),
           _filterIcon(
               icon: Iconsax.profile_2user,
-              label: "Guests",
+              label: L10n.of(context).filterMinPeople,
               onFilter: () => _showFilterOptions(FilterOption.minPeople)),
         ],
       ),
@@ -394,10 +397,10 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
 
   Widget _buildFilterTitle(FilterOption option) {
     final title = switch (option) {
-      FilterOption.minPeople => "Minimum Guests",
-      FilterOption.price => "Price Range",
-      FilterOption.rating => "Customer Rating",
-      FilterOption.location => "Location (Wilaya)",
+      FilterOption.minPeople => L10n.of(context).filterByMinGuests,
+      FilterOption.price => L10n.of(context).filterByPriceRange,
+      FilterOption.rating => L10n.of(context).filterByCustomerRating,
+      FilterOption.location => L10n.of(context).filterByLocation,
     };
 
     return Text(
@@ -417,7 +420,7 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
           rangeValues: const RangeValues(0, 5),
           divisions: 5,
           defaultValues: _selectedRating,
-          label: 'Rating',
+          label: L10n.of(context).filterRating,
           activeColor: ThemeColors.primary,
           onChanged: (val) {
             modalSetState(() {
@@ -432,7 +435,7 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
         return RangeSliderWidget<int>(
           defaultValues: _selectedRequiredPeople,
           divisions: 19,
-          label: 'Minimum Guests',
+          label: L10n.of(context).filterMinPeople,
           activeColor: ThemeColors.primary,
           onChanged: (val) {
             modalSetState(() {

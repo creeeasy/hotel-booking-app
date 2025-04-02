@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -26,10 +27,10 @@ class NoHotelsFoundScreen extends StatelessWidget {
               _buildAnimatedIcon(),
               const SizedBox(height: 32),
               // Title text
-              _buildTitleText(),
+              _buildTitleText(context),
               const SizedBox(height: 16),
               // Description text
-              _buildDescriptionText(),
+              _buildDescriptionText(context),
             ],
           ),
         ),
@@ -48,7 +49,7 @@ class NoHotelsFoundScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
                   ThemeColors.accentPurple,
                   ThemeColors.accentPink,
@@ -76,10 +77,10 @@ class NoHotelsFoundScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleText() {
+  Widget _buildTitleText(BuildContext context) {
     return Text(
-      "No Hotels Found",
-      style: TextStyle(
+      L10n.of(context).noHotelsTitle,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w700,
         color: ThemeColors.textPrimary,
@@ -89,14 +90,12 @@ class NoHotelsFoundScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionText() {
+  Widget _buildDescriptionText(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Text(
-        customMessage ??
-            "We couldn't find any hotels matching your criteria. "
-                "Try adjusting your search filters or exploring nearby locations.",
-        style: TextStyle(
+        customMessage ?? L10n.of(context).noHotelsDefaultMessage,
+        style: const TextStyle(
           fontSize: 16,
           color: ThemeColors.textSecondary,
           fontWeight: FontWeight.w400,

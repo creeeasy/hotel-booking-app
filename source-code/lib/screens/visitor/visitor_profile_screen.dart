@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/avatar_action.dart';
 import 'package:fatiel/helpers/auth_helper.dart';
+import 'package:fatiel/providers/locale_provider.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
@@ -14,6 +16,8 @@ import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/cloudinary/cloudinary_service.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VisitorProfileScreen extends StatefulWidget {
   const VisitorProfileScreen({super.key});
@@ -49,7 +53,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       final fileBytes = await pickedFile.readAsBytes();
       final imageUrl =
           await CloudinaryService.uploadImageWeb(fileBytes, pickedFile.name);
-      if (imageUrl == null) throw Exception("Image upload failed");
+      if (imageUrl == null) throw Exception(L10n.of(context).imageUploadFailed);
 
       final visitorId =
           (context.read<AuthBloc>().state.currentUser as Visitor).id;
@@ -63,10 +67,10 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
         _imageBytes = fileBytes;
         _imageUrl = imageUrl;
       });
-      _showSnackBar("Profile image updated successfully");
+      _showSnackBar(L10n.of(context).profileImageUpdatedSuccessfully);
       context.read<AuthBloc>().add(const AuthEventInitialize());
     } catch (e) {
-      _showSnackBar("Failed to upload image: ${e.toString()}");
+      _showSnackBar("${L10n.of(context).failedToUploadImage}: ${e.toString()}");
     } finally {
       setState(() => _isUploading = false);
     }
@@ -75,9 +79,10 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
   Future<void> _deleteProfileImage() async {
     final shouldDelete = await showGenericDialog<bool>(
       context: context,
-      title: "Remove Profile Image",
-      content: "Are you sure you want to remove your profile image?",
-      optionBuilder: () => {'Cancel': false, 'Remove': true},
+      title: L10n.of(context).removeProfileImage,
+      content: L10n.of(context).removeProfileImageConfirmation,
+      optionBuilder: () =>
+          {L10n.of(context).cancel: false, L10n.of(context).remove: true},
     ).then((value) => value ?? false);
 
     if (!shouldDelete) return;
@@ -95,9 +100,9 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
         _imageUrl = null;
       });
 
-      _showSnackBar("Profile image removed");
+      _showSnackBar(L10n.of(context).profileImageRemoved);
     } catch (e) {
-      _showSnackBar("Failed to remove image: ${e.toString()}");
+      _showSnackBar("${L10n.of(context).failedToRemoveImage}: ${e.toString()}");
     }
   }
 
@@ -106,7 +111,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       SnackBar(
         content: Text(
           message,
-          style: TextStyle(color: ThemeColors.textOnDark),
+          style: const TextStyle(color: ThemeColors.textOnDark),
         ),
         backgroundColor: ThemeColors.primaryDark,
         behavior: SnackBarBehavior.floating,
@@ -114,7 +119,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         action: SnackBarAction(
-          label: 'OK',
+          label: L10n.of(context).ok,
           textColor: ThemeColors.textOnDark,
           onPressed: () {},
         ),
@@ -128,7 +133,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: "Profile Settings",
+          title: L10n.of(context).profileSettings,
           titleColor: ThemeColors.primary,
           iconColor: ThemeColors.primary,
           backgroundColor: ThemeColors.background,
@@ -217,7 +222,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
           ],
         ),
         child: _isUploading
-            ? SizedBox(
+            ? const SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
@@ -225,7 +230,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
                   color: ThemeColors.white,
                 ),
               )
-            : Icon(
+            : const Icon(
                 Iconsax.camera,
                 color: ThemeColors.white,
                 size: 20,
@@ -239,8 +244,8 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       children: [
         const SizedBox(height: 8),
         Text(
-          'Uploading...',
-          style: TextStyle(
+          L10n.of(context).uploading,
+          style: const TextStyle(
             fontSize: 14,
             color: ThemeColors.primary,
             fontWeight: FontWeight.w500,
@@ -263,10 +268,10 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        icon: Icon(Iconsax.trash, size: 18, color: ThemeColors.error),
+        icon: const Icon(Iconsax.trash, size: 18, color: ThemeColors.error),
         label: Text(
-          "Remove Photo",
-          style: TextStyle(
+          L10n.of(context).removePhoto,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             color: ThemeColors.error,
           ),
@@ -279,24 +284,21 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'ACCOUNT SETTINGS',
-          style: TextStyle(
-            fontSize: 12,
-            color: ThemeColors.textSecondary,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
+        _buildSettingsOption(
+          icon: Iconsax.global,
+          title: L10n.of(context).changeLanguage,
+          onTap: () {
+            _showLanguagePopup(context);
+          },
         ),
-        const SizedBox(height: 16),
         _buildSettingsOption(
           icon: Iconsax.user_edit,
-          title: "Update Profile",
+          title: L10n.of(context).updateProfile,
           onTap: () => Navigator.pushNamed(context, updateInformationRoute),
         ),
         _buildSettingsOption(
           icon: Iconsax.lock,
-          title: "Change Password",
+          title: L10n.of(context).changePassword,
           onTap: () => Navigator.pushNamed(context, updatePasswordRoute),
         ),
       ],
@@ -321,7 +323,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: ThemeColors.textPrimary,
@@ -351,17 +353,80 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.logout, size: 20, color: ThemeColors.error),
+            const Icon(Iconsax.logout, size: 20, color: ThemeColors.error),
             const SizedBox(width: 8),
             Text(
-              "Log Out",
-              style: TextStyle(
+              L10n.of(context).logOut,
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: ThemeColors.error,
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showLanguagePopup(BuildContext context) {
+    final currentLocale =
+        Provider.of<LocaleProvider>(context, listen: false).locale ??
+            const Locale('en');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ThemeColors.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          L10n.of(context).selectLanguage,
+          style: const TextStyle(
+            color: ThemeColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: L10n.supportedLocales.map((locale) {
+            final isSelected =
+                locale.languageCode == currentLocale.languageCode;
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: isSelected
+                  ? const Icon(Iconsax.tick_circle, color: ThemeColors.primary)
+                  : const SizedBox(width: 24),
+              title: Text(
+                L10n.getLanguageName(locale.languageCode),
+                style: TextStyle(
+                  color: isSelected
+                      ? ThemeColors.primary
+                      : ThemeColors.textPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('languageCode', locale.languageCode);
+                if (context.mounted) {
+                  Provider.of<LocaleProvider>(context, listen: false)
+                      .setLocale(locale);
+                }
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              L10n.of(context).cancel,
+              style: const TextStyle(color: ThemeColors.primary),
+            ),
+          ),
+        ],
       ),
     );
   }

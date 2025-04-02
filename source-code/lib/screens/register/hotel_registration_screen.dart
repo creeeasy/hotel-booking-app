@@ -1,3 +1,4 @@
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/services/auth/auth_exceptions.dart';
@@ -35,19 +36,19 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
     final confirmPassword = _confirmPasswordController.text.trim();
 
     if (hotelName.isEmpty) {
-      _showSnackBar("Please enter your hotel's name.");
+      _showSnackBar(L10n.of(context).enterHotelName);
       return;
     }
     if (email.isEmpty || !email.contains('@')) {
-      _showSnackBar("Please enter a valid email address.");
+      _showSnackBar(L10n.of(context).validEmail);
       return;
     }
     if (password.length < 6) {
-      _showSnackBar("Password must be at least 6 characters long.");
+      _showSnackBar(L10n.of(context).passwordLength);
       return;
     }
     if (password != confirmPassword) {
-      _showSnackBar("Passwords do not match.");
+      _showSnackBar(L10n.of(context).passwordMatch);
       return;
     }
 
@@ -89,7 +90,7 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
         child: Scaffold(
           backgroundColor: ThemeColors.background,
           appBar: CustomBackAppBar(
-            title: 'Hotel Registration',
+            title: L10n.of(context).hotelRegistration,
             onBack: () =>
                 context.read<AuthBloc>().add(const AuthEventShouldRegister()),
           ),
@@ -103,7 +104,7 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Register Your Hotel",
+                      L10n.of(context).registerHotel,
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -132,24 +133,24 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
                 _buildInputField(
                   controller: _hotelNameController,
                   icon: Iconsax.building,
-                  label: 'Hotel Name',
+                  label: L10n.of(context).hotelName,
                 ),
                 const SizedBox(height: 20),
                 _buildInputField(
                   controller: _emailController,
                   icon: Iconsax.sms,
-                  label: 'Email',
+                  label: L10n.of(context).email,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
                 _buildPasswordField(
                   controller: _passwordController,
-                  label: 'Password',
+                  label: L10n.of(context).password,
                 ),
                 const SizedBox(height: 20),
                 _buildPasswordField(
                   controller: _confirmPasswordController,
-                  label: 'Confirm Password',
+                  label: L10n.of(context).confirmPassword,
                 ),
                 const SizedBox(height: 40),
                 SizedBox(
@@ -177,9 +178,9 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
-                            "Register Hotel",
-                            style: TextStyle(
+                        : Text(
+                            L10n.of(context).registerHotelButton,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.5,
@@ -355,13 +356,19 @@ class _HotelRegistrationViewState extends State<HotelRegistrationView> {
   }
 
   String? _getErrorMessage(Exception? exception) {
-    if (exception is WeakPasswordException) return 'Weak password';
-    if (exception is MissingPasswordException) return 'Missing password';
-    if (exception is EmailAlreadyInUseException) {
-      return 'Email is already in use';
+    if (exception is WeakPasswordException) {
+      return L10n.of(context).weakPassword;
     }
-    if (exception is InvalidEmailException) return 'Invalid email';
-    if (exception is GenericException) return 'Failed to register';
+    if (exception is MissingPasswordException) {
+      return L10n.of(context).missingPassword;
+    }
+    if (exception is EmailAlreadyInUseException) {
+      return L10n.of(context).emailInUse;
+    }
+    if (exception is InvalidEmailException) {
+      return L10n.of(context).invalidEmail;
+    }
+    if (exception is GenericException) return L10n.of(context).registerFailed;
     return null;
   }
 }

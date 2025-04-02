@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:flutter/gestures.dart';
@@ -23,8 +24,8 @@ class _RegisterViewState extends State<RegisterView> {
             // Enhanced Background with better gradient
             Positioned.fill(
               child: Container(
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
                     image: AssetImage('assets/images/hotel.jpg'),
                     fit: BoxFit.cover,
                     alignment: Alignment.bottomCenter,
@@ -84,8 +85,8 @@ class _RegisterViewState extends State<RegisterView> {
                         Column(
                           children: [
                             Text(
-                              'Create Account',
-                              style: TextStyle(
+                              L10n.of(context).createAccount,
+                              style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w800,
                                 color: ThemeColors.primaryDark,
@@ -99,7 +100,7 @@ class _RegisterViewState extends State<RegisterView> {
                               width: 100,
                               height: 4,
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
+                                gradient: const LinearGradient(
                                   colors: [
                                     ThemeColors.primaryLight,
                                     ThemeColors.primary,
@@ -110,7 +111,7 @@ class _RegisterViewState extends State<RegisterView> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Select your account type to begin',
+                              L10n.of(context).selectAccountType,
                               style: TextStyle(
                                 fontSize: 16,
                                 color:
@@ -126,9 +127,9 @@ class _RegisterViewState extends State<RegisterView> {
                         // Account Type Cards with improved styling
                         _buildAccountTypeCard(
                           icon: Iconsax.user,
-                          title: 'Traveler',
-                          subtitle: 'Discover and book luxury stays worldwide',
-                          gradient: LinearGradient(
+                          title: L10n.of(context).traveler,
+                          subtitle: L10n.of(context).travelerSubtitle,
+                          gradient: const LinearGradient(
                             colors: [
                               ThemeColors.primaryLight,
                               ThemeColors.primary,
@@ -145,9 +146,9 @@ class _RegisterViewState extends State<RegisterView> {
                         const SizedBox(height: 24),
                         _buildAccountTypeCard(
                           icon: Iconsax.building_3,
-                          title: 'Hotel Partner',
-                          subtitle: 'List and manage your luxury properties',
-                          gradient: LinearGradient(
+                          title: L10n.of(context).hotelPartner,
+                          subtitle: L10n.of(context).hotelPartnerSubtitle,
+                          gradient: const LinearGradient(
                             colors: [
                               ThemeColors.secondaryLight,
                               ThemeColors.secondary,
@@ -173,9 +174,10 @@ class _RegisterViewState extends State<RegisterView> {
                               height: 1.5,
                             ),
                             children: [
-                              const TextSpan(text: 'Already have an account? '),
                               TextSpan(
-                                text: 'Sign In',
+                                  text: L10n.of(context).alreadyHaveAccount),
+                              TextSpan(
+                                text: L10n.of(context).signIn,
                                 style: TextStyle(
                                   color: ThemeColors.primary,
                                   fontWeight: FontWeight.w700,
