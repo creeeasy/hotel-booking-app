@@ -2,7 +2,7 @@
     <application
         android:label="fatiel"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+         android:icon="@drawable/fatiel_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

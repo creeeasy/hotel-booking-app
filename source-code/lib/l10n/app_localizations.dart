@@ -2506,6 +2506,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Favorites'**
   String get favoritesTitle;
+
+  /// No description provided for @selectDatesFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select dates first'**
+  String get selectDatesFirst;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

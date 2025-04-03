@@ -638,5 +638,6 @@
   "filterByCustomerRating": "تقييم العملاء",
   "filterByLocation": "الموقع (ولاية)",
   "allHotels": "جميع الفنادق",
-   "favoritesTitle": "المفضلة"
+   "favoritesTitle": "المفضلة",
+   "selectDatesFirst":"اختر التواريخ أولًا"
 }

@@ -33,14 +33,77 @@ class _BookingNavigationButtonWidgetState
   DateTime? _endDate;
   bool _isConfirming = false;
   double _totalPrice = 0.0;
-  late Room room;
-  late double pricePerNight;
+  late final Room _room;
+  late final double _pricePerNight;
 
   @override
   void initState() {
     super.initState();
-    room = widget.room;
-    pricePerNight = room.pricePerNight;
+    _room = widget.room;
+    _pricePerNight = _room.pricePerNight;
+  }
+
+  bool get _isRoomAvailable =>
+      _room.availability.isAvailable &&
+      (_room.availability.nextAvailableDate == null ||
+          _room.availability.nextAvailableDate!.isBefore(DateTime.now()));
+
+  DateTime get _initialDate {
+    final today = DateTime.now();
+    return _room.availability.nextAvailableDate?.isAfter(today) ?? false
+        ? _room.availability.nextAvailableDate!
+        : today;
+  }
+
+  Widget _datePickerTheme(Widget? child) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: ColorScheme.light(
+          primary: ThemeColors.primary,
+          onPrimary: ThemeColors.white,
+          surface: ThemeColors.white,
+          onSurface: ThemeColors.textPrimary,
+        ),
+        dialogBackgroundColor: ThemeColors.white,
+      ),
+      child: child!,
+    );
+  }
+
+  Future<void> _selectDates() async {
+    final pickedStartDate = await showDatePicker(
+      context: context,
+      initialDate: _initialDate,
+      firstDate: _initialDate,
+      lastDate: DateTime(2100),
+      helpText: L10n.of(context).selectCheckInDate,
+      cancelText: L10n.of(context).cancel,
+      confirmText: L10n.of(context).next,
+      builder: (context, child) => _datePickerTheme(child),
+    );
+
+    if (pickedStartDate == null || !mounted) return;
+
+    final pickedEndDate = await showDatePicker(
+      context: context,
+      initialDate: pickedStartDate.add(const Duration(days: 1)),
+      firstDate: pickedStartDate.add(const Duration(days: 1)),
+      lastDate: DateTime(2100),
+      helpText: L10n.of(context).selectCheckOutDate,
+      cancelText: L10n.of(context).cancel,
+      confirmText: L10n.of(context).confirm,
+      builder: (context, child) => _datePickerTheme(child),
+    );
+
+    if (pickedEndDate != null && mounted) {
+      setState(() {
+        _startDate = pickedStartDate;
+        _endDate = pickedEndDate;
+        _isConfirming = true;
+        _totalPrice =
+            _pricePerNight * pickedEndDate.difference(pickedStartDate).inDays;
+      });
+    }
   }
 
   Future<bool> _showTotalPriceDialog() async {
@@ -59,223 +122,182 @@ class _BookingNavigationButtonWidgetState
     ).then((value) => value ?? false);
   }
 
-  Future<void> _selectDates() async {
-    final today = DateTime.now();
-    final initialDate = room.availability.nextAvailableDate != null &&
-            room.availability.nextAvailableDate!.isAfter(today)
-        ? room.availability.nextAvailableDate!
-        : today;
-
-    final pickedStartDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: initialDate,
-      lastDate: DateTime(2100),
-      helpText: L10n.of(context).selectCheckInDate,
-      cancelText: L10n.of(context).cancel,
-      confirmText: L10n.of(context).next,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: ThemeColors.primary,
-              onPrimary: ThemeColors.white,
-              surface: ThemeColors.white,
-              onSurface: ThemeColors.textPrimary,
-            ),
-            dialogBackgroundColor: ThemeColors.white,
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (pickedStartDate == null || !mounted) return;
-
-    final minEndDate = pickedStartDate.add(const Duration(days: 1));
-
-    final pickedEndDate = await showDatePicker(
-      context: context,
-      initialDate: minEndDate,
-      firstDate: minEndDate,
-      lastDate: DateTime(2100),
-      helpText: L10n.of(context).selectCheckOutDate,
-      cancelText: L10n.of(context).cancel,
-      confirmText: L10n.of(context).confirm,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: ThemeColors.primary,
-              onPrimary: ThemeColors.white,
-              surface: ThemeColors.white,
-              onSurface: ThemeColors.textPrimary,
-            ),
-            dialogBackgroundColor: ThemeColors.white,
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (pickedEndDate != null && mounted) {
-      setState(() {
-        _startDate = pickedStartDate;
-        _endDate = pickedEndDate;
-        _isConfirming = true;
-        _totalPrice =
-            pricePerNight * pickedEndDate.difference(pickedStartDate).inDays;
-      });
-    }
-  }
-
   Future<void> _confirmBooking({required String visitorId}) async {
-    if (_startDate == null || _endDate == null) return;
+    if (_startDate == null || _endDate == null) {
+      if (mounted) {
+        _showErrorMessage(L10n.of(context).selectDatesFirst);
+      }
+      return;
+    }
 
-    final confirmBooking = await _showTotalPriceDialog();
+    try {
+      final confirmed = await _showTotalPriceDialog();
+      if (!confirmed) return;
 
-    if (confirmBooking) {
       final result = await BookingService.createBooking(
-        hotelId: room.hotelId,
-        roomId: room.id,
+        hotelId: _room.hotelId,
+        roomId: _room.id,
         visitorId: visitorId,
         checkInDate: _startDate!,
         checkOutDate: _endDate!,
         totalPrice: _totalPrice,
       );
 
-      if (result is BookingSuccess) {
-        log("Booking confirmed: ${result.booking}");
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(L10n.of(context).bookingConfirmed),
-              backgroundColor: ThemeColors.success,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
-
-          widget.onBookingSuccess?.call();
-        }
-
-        setState(() {
-          _startDate = null;
-          _endDate = null;
-          _isConfirming = false;
-          _totalPrice = 0.0;
-        });
+      if (result is BookingSuccess && mounted) {
+        _showSuccessMessage();
+        widget.onBookingSuccess?.call();
+        _resetState();
       } else if (result is BookingFailure && mounted) {
-        log("Booking failed: ${result.message}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.message),
-            backgroundColor: ThemeColors.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
+        _showErrorMessage(result.message);
+      }
+    } catch (e) {
+      log("Booking error: $e");
+      if (mounted) {
+        _showErrorMessage(L10n.of(context).bookingError);
       }
     }
   }
 
+  void _showSuccessMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(L10n.of(context).bookingConfirmed),
+        backgroundColor: ThemeColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: ThemeColors.error,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _resetState() {
+    if (mounted) {
+      setState(() {
+        _startDate = null;
+        _endDate = null;
+        _isConfirming = false;
+        _totalPrice = 0.0;
+      });
+    }
+  }
+
+  Widget _buildPriceInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          "${L10n.of(context).from} \$${_pricePerNight.toStringAsFixed(2)}",
+          style: const TextStyle(
+            fontSize: 14,
+            color: ThemeColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          "\$${_pricePerNight.toStringAsFixed(2)} / ${L10n.of(context).night}",
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: ThemeColors.primary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBookButton(String visitorId) {
+    return ElevatedButton(
+      onPressed: _isRoomAvailable
+          ? (_isConfirming
+              ? () => _confirmBooking(visitorId: visitorId)
+              : _selectDates)
+          : null,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _isRoomAvailable
+            ? (_isConfirming ? ThemeColors.accentPink : ThemeColors.primary)
+            : ThemeColors.grey400,
+        foregroundColor: ThemeColors.white,
+        minimumSize: const Size(140, 50),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _isConfirming ? Iconsax.tick_circle : Iconsax.calendar,
+            size: 20,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _isRoomAvailable
+                ? (_isConfirming
+                    ? L10n.of(context).confirm
+                    : L10n.of(context).bookNow)
+                : L10n.of(context).unavailable,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isAvailable = room.availability.isAvailable &&
-        room.availability.nextAvailableDate != null;
-
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        final currentVisitorId = (state.currentUser as Visitor).id;
-
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          decoration: BoxDecoration(
-            color: ThemeColors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: ThemeColors.grey400.withOpacity(0.1),
-                blurRadius: 16,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${L10n.of(context).from} \$${room.pricePerNight.toStringAsFixed(2)}",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: ThemeColors.textSecondary,
-                    ),
-                  ),
-                  Text(
-                    "\$${room.pricePerNight.toStringAsFixed(2)} / ${L10n.of(context).night}",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: ThemeColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: isAvailable
-                    ? (_isConfirming
-                        ? () => _confirmBooking(visitorId: currentVisitorId)
-                        : _selectDates)
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isAvailable
-                      ? _isConfirming
-                          ? ThemeColors.accentPink
-                          : ThemeColors.primary
-                      : ThemeColors.grey400,
-                  foregroundColor: ThemeColors.white,
-                  minimumSize: const Size(140, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _isConfirming ? Iconsax.tick_circle : Iconsax.calendar,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isAvailable
-                          ? (_isConfirming
-                              ? L10n.of(context).confirm
-                              : L10n.of(context).bookNow)
-                          : L10n.of(context).unavailable,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+        final visitorId = (state.currentUser as Visitor).id;
+        return _buildBookingBar(visitorId);
       },
+    );
+  }
+
+  Widget _buildBookingBar(String visitorId) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      decoration: BoxDecoration(
+        color: ThemeColors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildPriceInfo(),
+            _buildBookButton(visitorId),
+          ],
+        ),
+      ),
     );
   }
 }

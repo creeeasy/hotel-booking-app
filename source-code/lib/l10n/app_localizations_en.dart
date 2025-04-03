@@ -1283,4 +1283,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get favoritesTitle => 'Favorites';
+
+  @override
+  String get selectDatesFirst => 'Select dates first';
 }

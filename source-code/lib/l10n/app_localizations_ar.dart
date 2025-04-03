@@ -1283,4 +1283,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get favoritesTitle => 'المفضلة';
+
+  @override
+  String get selectDatesFirst => 'اختر التواريخ أولًا';
 }

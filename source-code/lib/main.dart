@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/providers/locale_provider.dart';
 import 'package:fatiel/screens/auth_flow.dart';
@@ -47,7 +45,6 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
   final localeProvider = LocaleProvider();
-  log(localeProvider.locale.toString());
   await localeProvider.loadSavedLocale();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -55,8 +52,8 @@ void main() async {
   ]);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => LocaleProvider(),
+    ChangeNotifierProvider.value(
+      value: localeProvider,
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => AuthBloc(FirebaseAuthProvider())),
@@ -81,13 +78,8 @@ class MyApp extends StatelessWidget {
         supportedLocales: L10n.supportedLocales,
         locale: context.watch<LocaleProvider>().locale,
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.light().copyWith(
-          textTheme: ThemeData.light().textTheme.apply(
-                fontFamily: 'Barlow',
-              ),
-          primaryTextTheme: ThemeData.light().textTheme.apply(
-                fontFamily: 'Barlow',
-              ),
+        theme: ThemeData(
+          fontFamily: 'Barlow',
         ),
         routes: {
           loginViewRoute: (context) => const LoginView(),

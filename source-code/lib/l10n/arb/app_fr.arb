@@ -653,5 +653,7 @@
   "filterByCustomerRating": "Note des clients",
   "filterByLocation": "Localisation (Wilaya)",
   "allHotels": "Tous les hôtels",
-   "favoritesTitle": "Favoris"
+  "favoritesTitle": "Favoris",
+  "selectDatesFirst":"Sélectionnez d'abord les dates"
+
 }

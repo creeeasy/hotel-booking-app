@@ -3,8 +3,10 @@ import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/models/room_availability.dart';
+import 'package:fatiel/screens/visitor/widget/booking_navigation_button_widget.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:fatiel/screens/visitor/widget/image_gallery.dart';
+import 'package:fatiel/screens/visitor/widget/section_title_widget.dart';
 import 'package:fatiel/services/room/room_service.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -244,8 +246,9 @@ class _RoomContentState extends State<RoomContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeColors.background,
-      bottomNavigationBar: BookNowButton(
-        onPressed: _bookRoom,
+      bottomNavigationBar: BookingNavigationButtonWidget(
+        key: ValueKey(_selectedRoom),
+        room: _selectedRoom,
       ),
       body: CustomScrollView(
         slivers: [
@@ -651,34 +654,6 @@ class _SectionDivider extends StatelessWidget {
   }
 }
 
-class SectionTitle extends StatelessWidget {
-  final String title;
-  final IconData icon;
-
-  const SectionTitle({
-    super.key,
-    required this.title,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: ThemeColors.primary),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String message;
@@ -798,37 +773,6 @@ class RoomEmptyView extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class BookNowButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const BookNowButton({
-    super.key,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ThemeColors.primary,
-          minimumSize: const Size(double.infinity, 50),
-        ),
-        child: Text(
-          L10n.of(context).bookNow,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: ThemeColors.white,
-          ),
         ),
       ),
     );
