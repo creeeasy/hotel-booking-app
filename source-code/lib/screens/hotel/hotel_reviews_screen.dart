@@ -48,7 +48,9 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
         currentRatingStar: _ratingFilterNotifier.value,
       );
       currentPage = 1;
-      _pageController.jumpToPage(0);
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(0);
+      }
     });
   }
 
@@ -61,75 +63,91 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: CustomBackAppBar(
-          title: L10n.of(context).guestReviews,
-        ),
-        backgroundColor: ThemeColors.background,
-        body: FutureBuilder<Map<String, dynamic>>(
-          future: _reviewsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicatorWidget();
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(L10n.of(context).errorLoadingReviews,
-                    style: const TextStyle(color: ThemeColors.error)),
-              );
-            }
+    return Scaffold(
+      appBar: CustomBackAppBar(
+        title: L10n.of(context).guestReviews,
+      ),
+      backgroundColor: ThemeColors.background,
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _reviewsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicatorWidget();
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(L10n.of(context).errorLoadingReviews,
+                  style: const TextStyle(color: ThemeColors.error)),
+            );
+          }
 
-            final reviews = snapshot.data!["reviews"] as List<Review>;
-            final ratings = (snapshot.data!["ratings"] as Rating);
+          final reviews = snapshot.data!["reviews"] as List<Review>;
+          final ratings = (snapshot.data!["ratings"] as Rating);
 
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildRatingSummary(ratings),
-                  const SizedBox(height: 20),
-                  _buildRatingFilters(),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: ReviewsSection(
-                      reviews: reviews,
-                      itemsPerPage: selectedLimit,
-                      onPageChanged: (page) {
-                        setState(() => currentPage = page);
-                      },
-                      onItemsPerPageChanged: (limit) {
-                        setState(() => selectedLimit = limit);
-                      },
+          return Column(
+            children: [
+              // Top section with fixed height
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildRatingSummary(ratings),
+                        const SizedBox(height: 20),
+                        _buildRatingFilters(),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            );
-          },
-        ),
+              // Reviews section that takes remaining space
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ReviewsSection(
+                    reviews: reviews,
+                    itemsPerPage: selectedLimit,
+                    onPageChanged: (page) {
+                      setState(() => currentPage = page);
+                    },
+                    onItemsPerPageChanged: (limit) {
+                      setState(() => selectedLimit = limit);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildRatingFilters() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _buildRatingFilterItem(
-            value: null,
-            label: L10n.of(context).all,
-            isSelected: selectedRating == null,
-          ),
-          ...ratingFilters.skip(1).map((rating) => _buildRatingFilterItem(
-                value: rating.value,
-                label: rating.isAll 
-                    ? L10n.of(context).all 
-                    : L10n.of(context).stars(rating.label),
-                isSelected: _ratingFilterNotifier.value == rating.value,
-              )),
-        ],
+    return SizedBox(
+      height: 100, // Fixed height for the filter row
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            const SizedBox(width: 4),
+            _buildRatingFilterItem(
+              value: null,
+              label: L10n.of(context).all,
+              isSelected: selectedRating == null,
+            ),
+            ...ratingFilters.skip(1).map((rating) => _buildRatingFilterItem(
+                  value: rating.value,
+                  label: rating.isAll
+                      ? L10n.of(context).all
+                      : L10n.of(context).stars(rating.label),
+                  isSelected: _ratingFilterNotifier.value == rating.value,
+                )),
+            const SizedBox(width: 4),
+          ],
+        ),
       ),
     );
   }
@@ -139,52 +157,56 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
     required String label,
     required bool isSelected,
   }) {
-    return GestureDetector(
-      onTap: () => setState(() {
-        selectedRating = value;
-        currentPage = 1;
-        if (_pageController.hasClients) {
-          _pageController.jumpToPage(0);
-        }
-        _ratingFilterNotifier.value = value;
-      }),
-      child: Container(
-        width: 100,
-        height: 100,
-        padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? ThemeColors.primary.withOpacity(0.15)
-              : ThemeColors.primary.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: GestureDetector(
+        onTap: () => setState(() {
+          selectedRating = value;
+          currentPage = 1;
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(0);
+          }
+          _ratingFilterNotifier.value = value;
+        }),
+        child: Container(
+          width: 90,
+          height: 90,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
             color: isSelected
-                ? ThemeColors.primary
-                : ThemeColors.primary.withOpacity(0.2),
-            width: 1.6,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (value != null)
-              const Icon(
-                Icons.star,
-                color: ThemeColors.primary,
-                size: 24,
-              ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: ThemeColors.primary,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+                ? ThemeColors.primary.withOpacity(0.15)
+                : ThemeColors.primary.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? ThemeColors.primary
+                  : ThemeColors.primary.withOpacity(0.2),
+              width: 1.2,
             ),
-          ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (value != null)
+                const Icon(
+                  Icons.star,
+                  color: ThemeColors.primary,
+                  size: 20,
+                ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: ThemeColors.primary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -214,12 +236,16 @@ class _HotelReviewsScreenState extends State<HotelReviewsScreen> {
             ),
           ),
           const SizedBox(width: 20),
-          Text(
-            L10n.of(context).reviewsCount(totalRatings),
-            style: const TextStyle(
-              color: ThemeColors.textSecondary,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
+          Flexible(
+            child: Text(
+              L10n.of(context).reviewsCount(totalRatings),
+              style: const TextStyle(
+                color: ThemeColors.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

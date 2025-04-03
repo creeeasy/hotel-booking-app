@@ -9,7 +9,6 @@ import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/hotel_browse_view.dart';
 import 'package:fatiel/screens/visitor/widget/featured_hotel_card.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
-import 'package:fatiel/screens/visitor/widget/no_data_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/services/hotel/hotel_service.dart';
@@ -87,14 +86,7 @@ class _ExploreViewState extends State<ExploreView> {
                   onTap: () =>
                       Navigator.pushNamed(context, visitorProfileRoute),
                   borderRadius: BorderRadius.circular(24),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border:
-                          Border.all(color: ThemeColors.primaryLight, width: 2),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const UserProfile(),
-                  ),
+                  child: const UserProfile(),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -290,34 +282,7 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Widget _buildNoHotelsFound() {
-    return Container(
-      decoration: BoxDecoration(
-        color: ThemeColors.grey50,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-      child: Column(
-        children: [
-          const Icon(Iconsax.house, size: 72, color: ThemeColors.grey400),
-          const SizedBox(height: 16),
-          Text(
-            L10n.of(context).noHotelsAvailable,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: ThemeColors.textPrimary,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            L10n.of(context).weCouldntFindAnyHotels,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: ThemeColors.textSecondary,
-                ),
-          ),
-        ],
-      ),
-    );
+    return CheerfulEmptyState.forHotels();
   }
 
   SliverPadding _buildCitiesSection() {
@@ -325,7 +290,7 @@ class _ExploreViewState extends State<ExploreView> {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
       sliver: SliverToBoxAdapter(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SectionHeader(
               title: L10n.of(context).findHotelsInCities,
@@ -351,9 +316,7 @@ class _ExploreViewState extends State<ExploreView> {
                 } else if (snapshot.hasData) {
                   return _buildCitiesCarousel(snapshot.data!);
                 } else {
-                  return NoDataWidget(
-                    message: L10n.of(context).noHotelsListedInCities,
-                  );
+                  return CheerfulEmptyState.forCities();
                 }
               },
             ),
@@ -370,9 +333,7 @@ class _ExploreViewState extends State<ExploreView> {
         .toList();
 
     if (filteredWilayas.isEmpty) {
-      return const NoDataWidget(
-        message: "No hotels are currently listed in these cities.",
-      );
+      return CheerfulEmptyState.forCities();
     }
 
     return CarouselSlider.builder(
@@ -566,6 +527,96 @@ class ExploreCityWidget extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class CheerfulEmptyState extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+  final double iconSize;
+  final Color iconColor;
+
+  const CheerfulEmptyState({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.icon,
+    this.iconSize = 48,
+    this.iconColor = ThemeColors.textSecondary,
+  });
+
+  // Hotel-specific empty state
+  factory CheerfulEmptyState.forHotels({
+    Key? key,
+    String? title,
+    String? description,
+  }) {
+    return CheerfulEmptyState(
+      key: key,
+      title: title ?? '', // Empty string, to be set in build method
+      description: description ?? '', // Empty string, to be set in build method
+      icon: Icons.hotel_outlined,
+      iconColor: ThemeColors.primary,
+    );
+  }
+
+  // City-specific empty state
+  factory CheerfulEmptyState.forCities({
+    Key? key,
+    String? title,
+    String? description,
+  }) {
+    return CheerfulEmptyState(
+      key: key,
+      title: title ?? '',
+      description: description ?? '',
+      icon: Icons.location_city_outlined,
+      iconColor: ThemeColors.secondary,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Access localized strings here
+    final String localizedTitle =
+        title.isEmpty ? L10n.of(context).noHotelsFound : title;
+    final String localizedDescription = description.isEmpty
+        ? L10n.of(context).noHotelsDescription
+        : description;
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: iconSize,
+            color: iconColor,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            localizedTitle,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: ThemeColors.textPrimary,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            localizedDescription,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: ThemeColors.textSecondary,
+                  height: 1.4,
+                ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -33,7 +33,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         return AuthUser(
           id: user.id,
           email: user.email,
-          isEmailVerified:true,
+          isEmailVerified: true,
           role: userRole,
         );
       } else {
@@ -224,6 +224,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         description: hotel.description,
         mapLink: hotel.mapLink,
         contactInfo: hotel.contactInfo,
+        searchKeywords: hotel.searchKeywords,
       );
       final isCompleted = [
         hotel.location,

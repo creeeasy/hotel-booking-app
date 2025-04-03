@@ -80,8 +80,8 @@ class _UpdateUserInformationState extends State<UpdateUserInformation> {
           optionBuilder: () => {'OK': true},
         );
         if (context.mounted) {
-          Navigator.of(context).pop();
           context.read<AuthBloc>().add(const AuthEventInitialize());
+          Navigator.of(context).pop();
         }
       }
     } catch (e) {

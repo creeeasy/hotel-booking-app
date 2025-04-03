@@ -639,5 +639,10 @@
   "filterByLocation": "الموقع (ولاية)",
   "allHotels": "جميع الفنادق",
    "favoritesTitle": "المفضلة",
-   "selectDatesFirst":"اختر التواريخ أولًا"
+   "selectDatesFirst":"اختر التواريخ أولًا",
+  "refresh": "تحديث",
+  "noItemsToDisplay": "لا توجد عناصر لعرضها",
+  "noDataAvailable": "لا توجد بيانات متاحة",
+"noHotelsDescription": "لم نتمكن من العثور على فنادق في هذه المنطقة. يرجى~ محاولة تعديل معايير البحث الخاصة بك."
+,"reset": "إعادة الضبط"
 }

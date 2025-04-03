@@ -660,5 +660,10 @@
   "filterByLocation": "Location (Wilaya)",
   "allHotels": "All Hotels",
   "favoritesTitle": "Favorites",
-  "selectDatesFirst":"Select dates first"
+  "selectDatesFirst":"Select dates first",
+  "refresh": "Refresh",
+  "noItemsToDisplay": "No items to display",
+  "noDataAvailable": "No data available",
+  "noHotelsDescription": "We couldn't find any hotels in this area. Try adjusting your search criteria.",
+  "reset":"Reset"
 }

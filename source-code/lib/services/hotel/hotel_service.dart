@@ -12,6 +12,7 @@ import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/services/room/room_service.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utils/generate_search_keywords.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HotelService {
@@ -339,7 +340,7 @@ class HotelService {
           .docs
           .map((doc) => Hotel.fromFirestore(doc))
           .toList();
-
+      if (hotels.isEmpty) return [];
       return paramsWithoutLocation != null
           ? await _filterHotelsByRoomAvailability(hotels, paramsWithoutLocation)
           : hotels;
@@ -452,6 +453,7 @@ class HotelService {
       }
 
       final snapshot = await query.get();
+      if (snapshot.docs.isEmpty) return [];
       List<Hotel> hotels = snapshot.docs.map(Hotel.fromFirestore).toList();
 
       if (params != null && _needsRoomFiltering(params)) {
@@ -460,6 +462,7 @@ class HotelService {
 
       return hotels;
     } catch (e) {
+      print(e);
       log('Error fetching all hotels: $e');
       return [];
     }

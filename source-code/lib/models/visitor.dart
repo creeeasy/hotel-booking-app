@@ -20,6 +20,27 @@ class Visitor {
     this.location,
     this.avatarURL,
   });
+  Visitor copyWith({
+    String? id,
+    String? email,
+    String? firstName,
+    String? lastName,
+    List<String>? favorites,
+    List<String>? bookings,
+    int? location,
+    String? avatarURL,
+  }) {
+    return Visitor(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      favorites: favorites ?? this.favorites,
+      bookings: bookings ?? this.bookings,
+      location: location ?? this.location,
+      avatarURL: avatarURL ?? this.avatarURL,
+    );
+  }
 
   factory Visitor.fromFirebaseUser({
     required String id,

@@ -383,9 +383,9 @@ class _FilterHotelWidgetState extends State<FilterHotelWidget> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
-          "Reset",
-          style: TextStyle(
+        Text(
+          L10n.of(context).reset,
+          style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
             color: ThemeColors.textPrimary,

@@ -2512,6 +2512,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select dates first'**
   String get selectDatesFirst;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @noItemsToDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'No items to display'**
+  String get noItemsToDisplay;
+
+  /// No description provided for @noDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noDataAvailable;
+
+  /// No description provided for @noHotelsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find any hotels in this area. Try adjusting your search criteria.'**
+  String get noHotelsDescription;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

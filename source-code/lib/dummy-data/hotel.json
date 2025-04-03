@@ -1,0 +1,156 @@
+[{
+        "id": "hotel_alg_001",
+        "email": "contact@el-aurassi.com",
+        "hotelName": "Hôtel El Aurassi",
+        "location": "ALG",
+        "ratings": {
+            "average": 4.5,
+            "count": 1247
+        },
+        "images": [
+            "https://example.com/elaurassi1.jpg",
+            "https://example.com/elaurassi2.jpg"
+        ],
+        "totalRooms": 295,
+        "description": "Hôtel 5 étoiles avec vue imprenable sur la baie d'Alger. Piscine, spa et restaurants gastronomiques.",
+        "mapLink": "https://goo.gl/maps/XYZ123",
+        "contactInfo": "+213 21 23 45 67",
+        "searchKeywords": [
+            "luxe",
+            "baie d'Alger",
+            "5 étoiles"
+        ]
+    },
+    {
+        "id": "hotel_alg_002",
+        "email": "reservation@mazafran-oran.com",
+        "hotelName": "Mazafran Oran",
+        "location": "ORN",
+        "ratings": {
+            "average": 4.2,
+            "count": 892
+        },
+        "images": [
+            "https://example.com/mazafran1.jpg"
+        ],
+        "totalRooms": 120,
+        "description": "Hôtel 4 étoiles au cœur d'Oran, à proximité de la plage et du centre-ville.",
+        "contactInfo": "+213 41 34 56 78",
+        "searchKeywords": [
+            "plage",
+            "centre-ville",
+            "Oran"
+        ]
+    },
+    {
+        "id": "hotel_alg_003",
+        "email": "info@hotel-tlemcen.com",
+        "hotelName": "Hôtel Renaissance Tlemcen",
+        "location": "TLM",
+        "ratings": {
+            "average": 4.7,
+            "count": 653
+        },
+        "images": [
+            "https://example.com/tlemcen1.jpg",
+            "https://example.com/tlemcen2.jpg"
+        ],
+        "totalRooms": 180,
+        "description": "Établissement 5 étoiles niché dans les collines de Tlemcen, avec vue sur les montagnes.",
+        "mapLink": "https://goo.gl/maps/ABC456",
+        "contactInfo": "+213 43 45 67 89",
+        "searchKeywords": [
+            "montagne",
+            "nature",
+            "Tlemcen"
+        ]
+    },
+    {
+        "id": "hotel_alg_004",
+        "email": "contact@hotel-sahara.com",
+        "hotelName": "Hôtel Le Sahara",
+        "location": "BSK",
+        "ratings": {
+            "average": 3.9,
+            "count": 421
+        },
+        "images": [
+            "https://example.com/sahara1.jpg"
+        ],
+        "totalRooms": 85,
+        "description": "Hôtel 3 étoiles typique de Biskra, porte d'entrée du Sahara algérien.",
+        "contactInfo": "+213 33 23 45 67",
+        "searchKeywords": [
+            "désert",
+            "Sahara",
+            "Biskra"
+        ]
+    },
+    {
+        "id": "hotel_alg_005",
+        "email": "accueil@hotel-bejaia.com",
+        "hotelName": "Hôtel La Corniche Béjaïa",
+        "location": "BJA",
+        "ratings": {
+            "average": 4.1,
+            "count": 587
+        },
+        "images": [
+            "https://example.com/bejaia1.jpg",
+            "https://example.com/bejaia2.jpg"
+        ],
+        "totalRooms": 110,
+        "description": "Hôtel face à la mer avec une vue exceptionnelle sur la baie de Béjaïa.",
+        "contactInfo": "+213 34 56 78 90",
+        "searchKeywords": [
+            "mer",
+            "baie",
+            "Béjaïa"
+        ]
+    },
+    {
+        "id": "hotel_sba_006",
+        "email": "reservation@hotel-benitala.com",
+        "hotelName": "Hôtel Beni Tala",
+        "location": "SBA",
+        "ratings": {
+            "average": 4.3,
+            "count": 421
+        },
+        "images": [
+            "https://example.com/benitala1.jpg",
+            "https://example.com/benitala2.jpg"
+        ],
+        "totalRooms": 72,
+        "description": "Hôtel de charme situé dans un quartier résidentiel calme, avec jardin paysager.",
+        "mapLink": "https://goo.gl/maps/DEF789",
+        "contactInfo": "+213 48 78 90 12",
+        "searchKeywords": [
+            "quartier calme",
+            "jardin",
+            "charme"
+        ]
+    },
+    {
+        "id": "hotel_sba_007",
+        "email": "contact@hotel-eden.com",
+        "hotelName": "Hôtel Eden",
+        "location": "SBA",
+        "ratings": {
+            "average": 3.8,
+            "count": 387
+        },
+        "images": [
+            "https://example.com/eden1.jpg",
+            "https://example.com/eden2.jpg"
+        ],
+        "totalRooms": 95,
+        "description": "Hôtel moderne avec salle de conférence et espace bien-être, idéal pour séjours professionnels.",
+        "contactInfo": "+213 48 89 01 23",
+        "searchKeywords": [
+            "conférence",
+            "bien-être",
+            "professionnel"
+        ]
+    }
+]

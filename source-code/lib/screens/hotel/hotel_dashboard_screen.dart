@@ -79,7 +79,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
       children: [
         Text(
           L10n.of(context).welcomeBack(hotel.hotelName),
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: ThemeColors.textPrimary,
               ),
@@ -87,7 +87,7 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
         const SizedBox(height: 8),
         Text(
           L10n.of(context).dashboardSubtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: ThemeColors.textSecondary,
               ),
         ),

@@ -9,7 +9,6 @@ import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:fatiel/constants/routes/routes.dart';
 import 'package:fatiel/models/visitor.dart';
@@ -67,10 +66,15 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
         _imageBytes = fileBytes;
         _imageUrl = imageUrl;
       });
-      _showSnackBar(L10n.of(context).profileImageUpdatedSuccessfully);
-      context.read<AuthBloc>().add(const AuthEventInitialize());
+      if (context.mounted) {
+        _showSnackBar(L10n.of(context).profileImageUpdatedSuccessfully);
+        context.read<AuthBloc>().add(const AuthEventInitialize());
+      }
     } catch (e) {
-      _showSnackBar("${L10n.of(context).failedToUploadImage}: ${e.toString()}");
+      if (context.mounted) {
+        _showSnackBar(
+            "${L10n.of(context).failedToUploadImage}: ${e.toString()}");
+      }
     } finally {
       setState(() => _isUploading = false);
     }
@@ -177,31 +181,34 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: ThemeColors.grey200,
-            image: _buildProfileImage(),
             border: Border.all(
               color: ThemeColors.primary.withOpacity(0.3),
               width: 2,
             ),
           ),
+          child: _buildUserProfileWidget(),
         ),
         _buildEditPhotoButton(),
       ],
     );
   }
 
-  DecorationImage? _buildProfileImage() {
+  Widget _buildUserProfileWidget() {
     if (_imageBytes != null) {
-      return DecorationImage(
-        image: MemoryImage(_imageBytes!),
-        fit: BoxFit.cover,
-      );
-    } else if (_imageUrl != null) {
-      return DecorationImage(
-        image: NetworkImage(_imageUrl!),
-        fit: BoxFit.cover,
+      return ClipOval(
+        child: Image.memory(
+          _imageBytes!,
+          width: 136,
+          height: 136,
+          fit: BoxFit.cover,
+        ),
       );
     }
-    return null;
+
+    final visitor = context.read<AuthBloc>().state.currentUser as Visitor;
+    return VisitorProfile(
+      visitor: visitor.copyWith(avatarURL: _imageUrl ?? visitor.avatarURL),
+    );
   }
 
   Widget _buildEditPhotoButton() {
@@ -285,6 +292,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSettingsOption(
+          isLanguage: true,
           icon: Iconsax.global,
           title: L10n.of(context).changeLanguage,
           onTap: () {
@@ -305,11 +313,11 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
     );
   }
 
-  Widget _buildSettingsOption({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildSettingsOption(
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap,
+      bool isLanguage = false}) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Container(
@@ -329,10 +337,12 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
           color: ThemeColors.textPrimary,
         ),
       ),
-      trailing: Icon(
-        Iconsax.arrow_right_3,
-        color: ThemeColors.textSecondary.withOpacity(0.5),
-      ),
+      trailing: !isLanguage
+          ? Icon(
+              Iconsax.arrow_right_3,
+              color: ThemeColors.textSecondary.withOpacity(0.5),
+            )
+          : null,
       onTap: onTap,
     );
   }
@@ -412,8 +422,8 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
                 if (context.mounted) {
                   Provider.of<LocaleProvider>(context, listen: false)
                       .setLocale(locale);
+                  Navigator.pop(context);
                 }
-                Navigator.pop(context);
               },
             );
           }).toList(),
@@ -427,6 +437,79 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class VisitorProfile extends StatelessWidget {
+  final Visitor visitor;
+
+  const VisitorProfile({
+    Key? key,
+    required this.visitor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final avatarURL = visitor.avatarURL;
+    final hasAvatar = avatarURL?.isNotEmpty == true;
+
+    return Container(
+      width: 136,
+      height: 136,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: ThemeColors.primaryLight,
+          width: 2,
+        ),
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (hasAvatar)
+            ClipOval(
+              child: SizedBox(
+                width: 132,
+                height: 132,
+                child: Image.network(
+                  avatarURL!,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: ThemeColors.primary,
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                (loadingProgress.expectedTotalBytes ?? 1)
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, _, __) => _buildFallbackIcon(),
+                ),
+              ),
+            )
+          else
+            _buildFallbackIcon(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFallbackIcon() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: ThemeColors.primary.withOpacity(0.1),
+      ),
+      child: const Icon(
+        Iconsax.user,
+        size: 48,
+        color: ThemeColors.primary,
       ),
     );
   }

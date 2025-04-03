@@ -42,10 +42,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           password: password,
           hotelName: hotelName,
         );
-        // await provider.sendEmailVerification();
-        // emit(const AuthStateNeedsVerification(
-        //   isLoading: false,
-        // ));
+        final authenticatedUser = await provider.getUser();
+        final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+        return emit(AuthStateHotelDetailsCompletion(
+          isLoading: false,
+          exception: null,
+          hotel: hotel,
+        ));
       } on Exception catch (e) {
         emit(AuthStateHotelRegistering(
           exception: e,
@@ -74,10 +77,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           firstName: firstName,
           lastName: lastName,
         );
-        // await provider.sendEmailVerification();
-        // emit(const AuthStateNeedsVerification(
-        //   isLoading: false,
-        // ));
+        final authenticatedUser = await provider.getUser();
+        VisitorBookingsStream.listenToBookings(null);
+        VisitorFavoritesStream.listenToFavorites();
+
+        return emit(AuthStateVisitorLoggedIn(
+          isLoading: false,
+          user: authenticatedUser,
+        ));
       } on Exception catch (e) {
         emit(AuthStateVisitorRegistering(
           exception: e,

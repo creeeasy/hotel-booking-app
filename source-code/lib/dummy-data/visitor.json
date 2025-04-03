@@ -1,0 +1,10 @@
+{
+    "id": "vis_alg_001",
+    "email": "karim.belhadj@example.com",
+    "firstName": "Karim",
+    "lastName": "Belhadj",
+    "favorites": ["hotel_alg_001", "hotel_alg_003"],
+    "bookings": ["hotel_alg_002"],
+    "location": "ALG",
+    "avatarURL": "https://example.com/avatars/karim.jpg"
+}

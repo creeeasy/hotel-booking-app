@@ -129,45 +129,33 @@ class _ImageGalleryState extends State<ImageGallery> {
   }
 
   Widget _buildSmartImage(int index) {
-    final imageAspectRatio = _imageAspectRatios[index];
-
-    return Image.network(
-      widget.images[index],
-      fit: imageAspectRatio != null
-          ? _getOptimalFit(imageAspectRatio)
-          : BoxFit.cover,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (frame == null && !wasSynchronouslyLoaded) {
-          return _buildLoadingIndicator();
-        }
-        return child;
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return _buildLoadingIndicator();
-      },
-      errorBuilder: (context, error, stackTrace) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            setState(() => _imageErrorStates[index] = true);
-          }
-        });
-        return _buildNoImagePlaceholder();
-      },
-      cacheWidth: (MediaQuery.of(context).size.width * 2).toInt(),
-      cacheHeight: (MediaQuery.of(context).size.height * 2).toInt(),
+    return Container(
+      color: ThemeColors.grey100,
+      child: Center(
+        child: Image.network(
+          widget.images[index],
+          fit: BoxFit.contain,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (frame == null && !wasSynchronouslyLoaded) {
+              return _buildLoadingIndicator();
+            }
+            return child;
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return _buildLoadingIndicator();
+          },
+          errorBuilder: (context, error, stackTrace) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() => _imageErrorStates[index] = true);
+              }
+            });
+            return _buildNoImagePlaceholder();
+          },
+        ),
+      ),
     );
-  }
-
-  BoxFit _getOptimalFit(double imageAspectRatio) {
-    final containerAspectRatio = widget.containerAspectRatio;
-
-    // If image is wider than container relative to their heights
-    if (imageAspectRatio > containerAspectRatio) {
-      return BoxFit.fitHeight; // Show full height, crop sides
-    } else {
-      return BoxFit.fitWidth; // Show full width, crop top/bottom
-    }
   }
 
   Widget _buildLoadingIndicator() {

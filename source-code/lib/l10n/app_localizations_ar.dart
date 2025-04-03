@@ -1286,4 +1286,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get selectDatesFirst => 'اختر التواريخ أولًا';
+
+  @override
+  String get refresh => 'تحديث';
+
+  @override
+  String get noItemsToDisplay => 'لا توجد عناصر لعرضها';
+
+  @override
+  String get noDataAvailable => 'لا توجد بيانات متاحة';
+
+  @override
+  String get noHotelsDescription => 'لم نتمكن من العثور على فنادق في هذه المنطقة. يرجى~ محاولة تعديل معايير البحث الخاصة بك.';
+
+  @override
+  String get reset => 'إعادة الضبط';
 }
