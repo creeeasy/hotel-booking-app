@@ -1,5 +1,5 @@
 [{
-        "id": "hotel_alg_001",
+        "id": "zrH68k8YOTSTrL9U2gBiPtP4pz92",
         "email": "contact@el-aurassi.com",
         "hotelName": "Hôtel El Aurassi",
         "location": "ALG",
@@ -22,7 +22,7 @@
         ]
     },
     {
-        "id": "hotel_alg_002",
+        "id": "fyLASm25imNcjnkh3dT18BLq2vI3",
         "email": "reservation@mazafran-oran.com",
         "hotelName": "Mazafran Oran",
         "location": "ORN",
@@ -43,7 +43,7 @@
         ]
     },
     {
-        "id": "hotel_alg_003",
+        "id": "VcwsgzfcZ4bsAsf5NgSeCVRRRsi1",
         "email": "info@hotel-tlemcen.com",
         "hotelName": "Hôtel Renaissance Tlemcen",
         "location": "TLM",
@@ -66,7 +66,7 @@
         ]
     },
     {
-        "id": "hotel_alg_004",
+        "id": "n9CT5Qlag9Xy99bW7Kiafo0CsOf1",
         "email": "contact@hotel-sahara.com",
         "hotelName": "Hôtel Le Sahara",
         "location": "BSK",
@@ -87,7 +87,7 @@
         ]
     },
     {
-        "id": "hotel_alg_005",
+        "id": "hv7jsmE5WnVDq3hER99QZTagLnx1",
         "email": "accueil@hotel-bejaia.com",
         "hotelName": "Hôtel La Corniche Béjaïa",
         "location": "BJA",
@@ -109,7 +109,7 @@
         ]
     },
     {
-        "id": "hotel_sba_006",
+        "id": "MzME7i3a77aoYvlHQrKAKMKrFep2",
         "email": "reservation@hotel-benitala.com",
         "hotelName": "Hôtel Beni Tala",
         "location": "SBA",
@@ -132,7 +132,7 @@
         ]
     },
     {
-        "id": "hotel_sba_007",
+        "id": "FUNz0sWE67UNjs7JiqOWPNBtDid2",
         "email": "contact@hotel-eden.com",
         "hotelName": "Hôtel Eden",
         "location": "SBA",

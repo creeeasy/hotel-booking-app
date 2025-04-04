@@ -780,7 +780,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get amenities => 'وسائل الراحة';
 
   @override
-  String get recommended => 'موصى به';
+  String get recommended => 'مُوصى به';
 
   @override
   String get nearMe => 'بالقرب مني';
@@ -1297,8 +1297,93 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noDataAvailable => 'لا توجد بيانات متاحة';
 
   @override
-  String get noHotelsDescription => 'لم نتمكن من العثور على فنادق في هذه المنطقة. يرجى~ محاولة تعديل معايير البحث الخاصة بك.';
+  String get noHotelsDescription => 'لم نتمكن من العثور على أي فنادق تطابق معاييرك';
 
   @override
   String get reset => 'إعادة الضبط';
+
+  @override
+  String get hello => 'مرحبا';
+
+  @override
+  String get findYourPerfectStay => 'ابحث عن إقامتك المثالية';
+
+  @override
+  String get discoverAmazingHotels => 'اكتشف فنادق مذهلة مصممة خصيصًا لك';
+
+  @override
+  String get aiHotelRecommender => 'AI Hotel Recommender';
+
+  @override
+  String get tellUsWhatYouNeed => 'Tell us what you need and we\'ll find the perfect match';
+
+  @override
+  String get describeYourPerfectStay => 'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)';
+
+  @override
+  String get egRomanticBeachfront => 'e.g. romantic beachfront resort';
+
+  @override
+  String get startingFrom => 'تبدأ من';
+
+  @override
+  String get currencySymbol => 'د.ج';
+
+  @override
+  String get recommendedForYou => 'Recommended for you';
+
+  @override
+  String get popularDestinations => 'الوجهات الشعبية';
+
+  @override
+  String get tryAdjustingFilters => 'حاول تعديل عوامل التصفية أو معايير البحث الخاصة بك';
+
+  @override
+  String get noHotelsFoundTryAgain => 'No hotels found. Try again?';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong. Please try again.';
+
+  @override
+  String get findingBestMatches => 'Finding best matches for you...';
+
+  @override
+  String get surpriseMe => 'Surprise me';
+
+  @override
+  String get exploreAll => 'استكشف الكل';
+
+  @override
+  String get resetFilters => 'إعادة تعيين الفلاتر';
+
+  @override
+  String get findHotels => 'Find Hotels';
+
+  @override
+  String get luxury => 'فاخر';
+
+  @override
+  String get hotelsFound => 'الفنادق الموجودة';
+
+  @override
+  String get facilities => 'مرافق';
+
+  @override
+  String get availability => 'التوفر';
+
+  @override
+  String get activityNewBooking => 'حجز جديد';
+
+  @override
+  String activityBookingDescription(Object firstName, Object lastName, Object roomName) {
+    return 'قام $firstName $lastName بحجز $roomName';
+  }
+
+  @override
+  String get activityNewReview => 'مراجعة جديدة';
+
+  @override
+  String activityReviewDescription(Object firstName, Object lastName, Object rating) {
+    return 'ترك $firstName $lastName مراجعة بتقييم $rating نجوم';
+  }
 }

@@ -659,6 +659,47 @@
   "noItemsToDisplay": "Aucun élément à afficher",
   "noDataAvailable": "Aucune donnée disponible",
   "noHotelsDescription": "Nous n'avons trouvé aucun hôtel dans cette zone. Essayez d'ajuster vos critères de recherche.",
-   "reset": "Réinitialiser"
-
+   "reset": "Réinitialiser",
+   "hello": "Bonjour",
+      "findYourPerfectStay": "Trouvez votre séjour parfait",
+      "discoverAmazingHotels": "Découvrez des hôtels incroyables faits pour vous",
+      "recommended": "Recommandé",
+      "nearMe": "À proximité",
+      "seeAll": "Voir tout",
+      "exploreAll": "Tout explorer",
+      "popularDestinations": "Destinations populaires",
+      "startingFrom": "À partir de",
+      "bookNow": "Réserver maintenant",
+      "locationNotSpecified": "Emplacement non spécifié",
+      "noHotelsFound": "Aucun hôtel trouvé",
+      "tryAdjustingFilters": "Essayez d'ajuster vos filtres ou critères de recherche",
+      "resetFilters": "Réinitialiser les filtres",
+      "failedToLoadHotels": "Échec du chargement des hôtels",
+      "failedToLoadCityData": "Échec du chargement des données de la ville",
+      "noHotelsDescription": "Nous n'avons trouvé aucun hôtel correspondant à vos critères",
+      "hotels": "hôtels",
+      "currencySymbol": "DZD",
+      "luxury": "Luxe"
+, "hotelsFound": "Hôtels trouvés",
+ "facilities": "Équipements",
+  "availability": "Disponibilité",
+"activityNewBooking": "Nouvelle réservation",
+  "activityBookingDescription": "{firstName} {lastName} a réservé {roomName}",
+  "@activityBookingDescription": {
+    "placeholders": {
+      "firstName": {},
+      "lastName": {},
+      "roomName": {}
+    }
+  },
+  "activityNewReview": "Nouvel avis",
+  "activityReviewDescription": "{firstName} {lastName} a laissé un avis {rating} étoiles",
+  "@activityReviewDescription": {
+    "placeholders": {
+      "firstName": {},
+      "lastName": {},
+      "rating": {}
+    }
+  }
+  
 }

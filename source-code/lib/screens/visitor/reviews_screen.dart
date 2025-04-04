@@ -23,32 +23,28 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   int selectedLimit = 5;
   int currentPage = 1;
   int? selectedRating;
-  late Future<Map<String, dynamic>> _reviewsFuture;
   final PageController _pageController = PageController();
   final ValueNotifier<int?> _ratingFilterNotifier = ValueNotifier<int?>(null);
-  final String hotelId = "dHNQ0AKCIrWeqpKR81Q0fbfORZM2";
+  Future<Map<String, dynamic>> _loadReviews(BuildContext context) async {
+    final hotelId = ModalRoute.of(context)?.settings.arguments as String;
+    return await ReviewService.getAllHotelReviews(
+      hotelId: hotelId,
+      currentRatingStar: _ratingFilterNotifier.value,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     _setupRatingListener();
-    _loadReviews();
   }
 
   void _setupRatingListener() {
     _ratingFilterNotifier.addListener(_refreshReviews);
   }
 
-  Future<void> _loadReviews() async {
-    _reviewsFuture = ReviewService.getAllHotelReviews(
-      hotelId: hotelId,
-      currentRatingStar: _ratingFilterNotifier.value,
-    );
-  }
-
   Future<void> _refreshReviews() async {
     setState(() {
-      _loadReviews();
       currentPage = 1;
       if (_pageController.hasClients) {
         _pageController.jumpToPage(0);
@@ -73,7 +69,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           onBack: () => Navigator.of(context).pop(),
         ),
         body: FutureBuilder<Map<String, dynamic>>(
-          future: _reviewsFuture,
+          future: _loadReviews(context),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -193,7 +189,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            L10n.of(context).basedOnReviews( totalRatings),
+            L10n.of(context).basedOnReviews(totalRatings),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
@@ -244,7 +240,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                 value: rating.value,
                 label: rating.isAll
                     ? L10n.of(context).all
-                    : L10n.of(context).starsCount( rating.label),
+                    : L10n.of(context).starsCount(rating.label),
                 isSelected: selectedRating == rating.value,
               )),
           const SizedBox(width: 16),

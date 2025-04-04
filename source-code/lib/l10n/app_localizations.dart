@@ -1304,7 +1304,7 @@ abstract class AppLocalizations {
   /// No description provided for @seeAll.
   ///
   /// In en, this message translates to:
-  /// **'See all'**
+  /// **'See All'**
   String get seeAll;
 
   /// No description provided for @allWilayas.
@@ -2534,7 +2534,7 @@ abstract class AppLocalizations {
   /// No description provided for @noHotelsDescription.
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t find any hotels in this area. Try adjusting your search criteria.'**
+  /// **'We couldn\'t find any hotels matching your criteria'**
   String get noHotelsDescription;
 
   /// No description provided for @reset.
@@ -2542,6 +2542,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset'**
   String get reset;
+
+  /// No description provided for @hello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get hello;
+
+  /// No description provided for @findYourPerfectStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Your Perfect Stay'**
+  String get findYourPerfectStay;
+
+  /// No description provided for @discoverAmazingHotels.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover amazing hotels tailored just for you'**
+  String get discoverAmazingHotels;
+
+  /// No description provided for @aiHotelRecommender.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Hotel Recommender'**
+  String get aiHotelRecommender;
+
+  /// No description provided for @tellUsWhatYouNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you need and we\'ll find the perfect match'**
+  String get tellUsWhatYouNeed;
+
+  /// No description provided for @describeYourPerfectStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)'**
+  String get describeYourPerfectStay;
+
+  /// No description provided for @egRomanticBeachfront.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. romantic beachfront resort'**
+  String get egRomanticBeachfront;
+
+  /// No description provided for @startingFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting from'**
+  String get startingFrom;
+
+  /// No description provided for @currencySymbol.
+  ///
+  /// In en, this message translates to:
+  /// **'DZD'**
+  String get currencySymbol;
+
+  /// No description provided for @recommendedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get recommendedForYou;
+
+  /// No description provided for @popularDestinations.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Destinations'**
+  String get popularDestinations;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your filters or search criteria'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @noHotelsFoundTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels found. Try again?'**
+  String get noHotelsFoundTryAgain;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get somethingWentWrong;
+
+  /// No description provided for @findingBestMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding best matches for you...'**
+  String get findingBestMatches;
+
+  /// No description provided for @surpriseMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Surprise me'**
+  String get surpriseMe;
+
+  /// No description provided for @exploreAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore All'**
+  String get exploreAll;
+
+  /// No description provided for @resetFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Filters'**
+  String get resetFilters;
+
+  /// No description provided for @findHotels.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Hotels'**
+  String get findHotels;
+
+  /// No description provided for @luxury.
+  ///
+  /// In en, this message translates to:
+  /// **'Luxury'**
+  String get luxury;
+
+  /// No description provided for @hotelsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels Found'**
+  String get hotelsFound;
+
+  /// No description provided for @facilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Facilities'**
+  String get facilities;
+
+  /// No description provided for @availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get availability;
+
+  /// No description provided for @activityNewBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'New Booking'**
+  String get activityNewBooking;
+
+  /// No description provided for @activityBookingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'{firstName} {lastName} booked {roomName}'**
+  String activityBookingDescription(Object firstName, Object lastName, Object roomName);
+
+  /// No description provided for @activityNewReview.
+  ///
+  /// In en, this message translates to:
+  /// **'New Review'**
+  String get activityNewReview;
+
+  /// No description provided for @activityReviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'{firstName} {lastName} left a {rating}-star review'**
+  String activityReviewDescription(Object firstName, Object lastName, Object rating);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

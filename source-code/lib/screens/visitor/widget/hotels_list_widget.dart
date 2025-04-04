@@ -15,7 +15,7 @@ class HotelsListWidget extends StatelessWidget {
   const HotelsListWidget({
     super.key,
     required this.hotels,
-    this.title = "Hotels Found",
+    this.title,
     this.showCount = true,
     this.shrinkWrap = false,
     this.physics,
@@ -23,13 +23,14 @@ class HotelsListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizedTitle = title ?? L10n.of(context).hotelsFound;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Section
-          if (title != null) _buildHeaderSection(context),
+          _buildHeaderSection(context, localizedTitle), // Pass localizedTitle
           const SizedBox(height: 16),
 
           // Hotels List
@@ -40,7 +41,7 @@ class HotelsListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderSection(BuildContext context) {
+  Widget _buildHeaderSection(BuildContext context, String localizedTitle) { // Accept localizedTitle
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -61,7 +62,7 @@ class HotelsListWidget extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              title!,
+              localizedTitle, // Use localizedTitle directly
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,

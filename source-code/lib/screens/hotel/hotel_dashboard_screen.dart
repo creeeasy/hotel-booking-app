@@ -45,8 +45,8 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
         ReviewService.fetchAvailableRoomsCountFuture(hotelId: hotel.id);
     _fetchReviewStatisticsFuture =
         ReviewService.fetchReviewStatisticsFuture(hotelId: hotel.id);
-    _recentActivitiesFuture =
-        HotelService.getRecentActivity(hotelId: currentHotel.id);
+    _recentActivitiesFuture = HotelService.getRecentActivity(
+        hotelId: currentHotel.id, context: context);
   }
 
   @override

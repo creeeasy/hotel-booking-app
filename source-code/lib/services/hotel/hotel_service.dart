@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/constants/hotel_price_ranges.dart';
 import 'package:fatiel/enum/activity_type.dart';
 import 'package:fatiel/enum/review_update_type.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/activity_item.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/hotel.dart';
@@ -12,7 +13,7 @@ import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/services/room/room_service.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utils/generate_search_keywords.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HotelService {
@@ -442,6 +443,21 @@ class HotelService {
         (params.maxPeople == null || capacity <= params.maxPeople!);
   }
 
+  static Future<Hotel?> getRandomHotel() async {
+    try {
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('hotels').limit(1).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return Hotel.fromFirestore(querySnapshot.docs.first);
+      }
+      return null;
+    } catch (e) {
+      log('Error getting random hotel: $e');
+      return null;
+    }
+  }
+
   static Future<List<Hotel>> getAllHotels({
     HotelFilterParameters? params,
   }) async {
@@ -469,21 +485,6 @@ class HotelService {
   }
 
 // Supporting functions (these remain the same as in your existing code)
-  static Future<List<ActivityItem>> getRecentActivity({
-    required String hotelId,
-  }) async {
-    try {
-      final recentBookings = _getRecentBookings(hotelId);
-      final recentReviews = _getRecentReviews(hotelId);
-      final results = await Future.wait([recentBookings, recentReviews]);
-      final allActivities = [...results[0], ...results[1]];
-      allActivities.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-      return allActivities.take(maxRecentActivities).toList();
-    } catch (e) {
-      print('Error fetching recent activity: $e');
-      return [];
-    }
-  }
 
   static bool _needsRoomFiltering(HotelFilterParameters params) {
     return params.minPrice != null ||
@@ -491,7 +492,20 @@ class HotelService {
         params.maxPeople != null;
   }
 
-  static Future<List<ActivityItem>> _getRecentBookings(String hotelId) async {
+  static Future<void> updateHotel({required Hotel hotel}) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('hotels')
+          .doc(hotel.id)
+          .update(hotel.toUpdateMap());
+    } catch (e) {
+      log('An error occured $e');
+      rethrow;
+    }
+  }
+
+  static Future<List<ActivityItem>> _getRecentBookings(
+      String hotelId, BuildContext context) async {
     final cutoffDate = DateTime.now().subtract(recentActivityPeriod);
     final querySnapshot = await FirebaseFirestore.instance
         .collection('bookings')
@@ -510,9 +524,12 @@ class HotelService {
 
       activities.add(ActivityItem(
         type: ActivityType.booking,
-        title: 'New Booking',
-        description:
-            '${visitor!.firstName} ${visitor.lastName} booked ${room!.name}',
+        title: L10n.of(context).activityNewBooking,
+        description: L10n.of(context).activityBookingDescription(
+          visitor!.firstName,
+          visitor.lastName,
+          room!.name,
+        ),
         timestamp: booking.createdAt,
         icon: Iconsax.calendar_add,
       ));
@@ -521,7 +538,8 @@ class HotelService {
     return activities;
   }
 
-  static Future<List<ActivityItem>> _getRecentReviews(String hotelId) async {
+  static Future<List<ActivityItem>> _getRecentReviews(
+      String hotelId, BuildContext context) async {
     final cutoffDate = DateTime.now().subtract(recentActivityPeriod);
     final querySnapshot = await FirebaseFirestore.instance
         .collection('reviews')
@@ -539,9 +557,12 @@ class HotelService {
 
       activities.add(ActivityItem(
         type: ActivityType.review,
-        title: 'New Review',
-        description:
-            '${visitor!.firstName} ${visitor.lastName} left a ${review.rating}-star review',
+        title: L10n.of(context).activityNewReview,
+        description: L10n.of(context).activityReviewDescription(
+          visitor!.firstName,
+          visitor.lastName,
+          review.rating.toString(),
+        ),
         timestamp: review.createdAt,
         icon: Iconsax.star,
       ));
@@ -550,15 +571,19 @@ class HotelService {
     return activities;
   }
 
-  static Future<void> updateHotel({required Hotel hotel}) async {
+  static Future<List<ActivityItem>> getRecentActivity({
+    required String hotelId,
+    required BuildContext context,
+  }) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('hotels')
-          .doc(hotel.id)
-          .update(hotel.toUpdateMap());
+      final recentBookings = _getRecentBookings(hotelId, context);
+      final recentReviews = _getRecentReviews(hotelId, context);
+      final results = await Future.wait([recentBookings, recentReviews]);
+      final allActivities = [...results[0], ...results[1]];
+      allActivities.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return allActivities.take(maxRecentActivities).toList();
     } catch (e) {
-      log('An error occured $e');
-      rethrow;
+      return [];
     }
   }
 }

@@ -644,5 +644,46 @@
   "noItemsToDisplay": "لا توجد عناصر لعرضها",
   "noDataAvailable": "لا توجد بيانات متاحة",
 "noHotelsDescription": "لم نتمكن من العثور على فنادق في هذه المنطقة. يرجى~ محاولة تعديل معايير البحث الخاصة بك."
-,"reset": "إعادة الضبط"
+,"reset": "إعادة الضبط",
+ "hello": "مرحبا",
+      "findYourPerfectStay": "ابحث عن إقامتك المثالية",
+      "discoverAmazingHotels": "اكتشف فنادق مذهلة مصممة خصيصًا لك",
+      "recommended": "مُوصى به",
+      "nearMe": "بالقرب مني",
+      "seeAll": "عرض الكل",
+      "exploreAll": "استكشف الكل",
+      "popularDestinations": "الوجهات الشعبية",
+      "startingFrom": "تبدأ من",
+      "bookNow": "احجز الآن",
+      "locationNotSpecified": "الموقع غير محدد",
+      "noHotelsFound": "لم يتم العثور على فنادق",
+      "tryAdjustingFilters": "حاول تعديل عوامل التصفية أو معايير البحث الخاصة بك",
+      "resetFilters": "إعادة تعيين الفلاتر",
+      "failedToLoadHotels": "فشل تحميل الفنادق",
+      "failedToLoadCityData": "فشل تحميل بيانات المدينة",
+      "noHotelsDescription": "لم نتمكن من العثور على أي فنادق تطابق معاييرك",
+      "hotels": "فنادق",
+      "currencySymbol": "د.ج",
+      "luxury": "فاخر",
+      "hotelsFound": "الفنادق الموجودة",
+      "facilities": "مرافق",
+  "availability": "التوفر"
+  ,"activityNewBooking": "حجز جديد",
+  "activityBookingDescription": "قام {firstName} {lastName} بحجز {roomName}",
+  "@activityBookingDescription": {
+    "placeholders": {
+      "firstName": {},
+      "lastName": {},
+      "roomName": {}
+    }
+  },
+  "activityNewReview": "مراجعة جديدة",
+  "activityReviewDescription": "ترك {firstName} {lastName} مراجعة بتقييم {rating} نجوم",
+  "@activityReviewDescription": {
+    "placeholders": {
+      "firstName": {},
+      "lastName": {},
+      "rating": {}
+    }
+  }
 }

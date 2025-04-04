@@ -783,7 +783,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get recommended => 'Recommandé';
 
   @override
-  String get nearMe => 'Près de moi';
+  String get nearMe => 'À proximité';
 
   @override
   String get recommendedHotels => 'Hôtels recommandés';
@@ -1297,8 +1297,93 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noDataAvailable => 'Aucune donnée disponible';
 
   @override
-  String get noHotelsDescription => 'Nous n\'avons trouvé aucun hôtel dans cette zone. Essayez d\'ajuster vos critères de recherche.';
+  String get noHotelsDescription => 'Nous n\'avons trouvé aucun hôtel correspondant à vos critères';
 
   @override
   String get reset => 'Réinitialiser';
+
+  @override
+  String get hello => 'Bonjour';
+
+  @override
+  String get findYourPerfectStay => 'Trouvez votre séjour parfait';
+
+  @override
+  String get discoverAmazingHotels => 'Découvrez des hôtels incroyables faits pour vous';
+
+  @override
+  String get aiHotelRecommender => 'AI Hotel Recommender';
+
+  @override
+  String get tellUsWhatYouNeed => 'Tell us what you need and we\'ll find the perfect match';
+
+  @override
+  String get describeYourPerfectStay => 'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)';
+
+  @override
+  String get egRomanticBeachfront => 'e.g. romantic beachfront resort';
+
+  @override
+  String get startingFrom => 'À partir de';
+
+  @override
+  String get currencySymbol => 'DZD';
+
+  @override
+  String get recommendedForYou => 'Recommended for you';
+
+  @override
+  String get popularDestinations => 'Destinations populaires';
+
+  @override
+  String get tryAdjustingFilters => 'Essayez d\'ajuster vos filtres ou critères de recherche';
+
+  @override
+  String get noHotelsFoundTryAgain => 'No hotels found. Try again?';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong. Please try again.';
+
+  @override
+  String get findingBestMatches => 'Finding best matches for you...';
+
+  @override
+  String get surpriseMe => 'Surprise me';
+
+  @override
+  String get exploreAll => 'Tout explorer';
+
+  @override
+  String get resetFilters => 'Réinitialiser les filtres';
+
+  @override
+  String get findHotels => 'Find Hotels';
+
+  @override
+  String get luxury => 'Luxe';
+
+  @override
+  String get hotelsFound => 'Hôtels trouvés';
+
+  @override
+  String get facilities => 'Équipements';
+
+  @override
+  String get availability => 'Disponibilité';
+
+  @override
+  String get activityNewBooking => 'Nouvelle réservation';
+
+  @override
+  String activityBookingDescription(Object firstName, Object lastName, Object roomName) {
+    return '$firstName $lastName a réservé $roomName';
+  }
+
+  @override
+  String get activityNewReview => 'Nouvel avis';
+
+  @override
+  String activityReviewDescription(Object firstName, Object lastName, Object rating) {
+    return '$firstName $lastName a laissé un avis $rating étoiles';
+  }
 }

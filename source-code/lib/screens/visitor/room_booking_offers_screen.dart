@@ -273,15 +273,17 @@ class _RoomContentState extends State<RoomContent> {
                 const SizedBox(height: 24),
                 const _SectionDivider(icon: Iconsax.category_2),
                 const SizedBox(height: 16),
-                const SectionTitle(
-                    title: "Facilities", icon: Iconsax.category_2),
+                SectionTitle(
+                    title: L10n.of(context).facilities,
+                    icon: Iconsax.category_2),
                 const SizedBox(height: 12),
                 RoomAmenities(amenities: _selectedRoom.amenities),
                 const SizedBox(height: 24),
                 const _SectionDivider(icon: Iconsax.calendar_tick),
                 const SizedBox(height: 16),
-                const SectionTitle(
-                    title: "Availability", icon: Iconsax.calendar_tick),
+                SectionTitle(
+                    title: L10n.of(context).availability,
+                    icon: Iconsax.calendar_tick),
                 const SizedBox(height: 12),
                 RoomAvailabilityCard(availability: _selectedRoom.availability),
                 const SizedBox(height: 80),
