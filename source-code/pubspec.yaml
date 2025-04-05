@@ -1,5 +1,6 @@
 name: fatiel
-description: A new Flutter project.
+description: >
+  Fatiel est une application moderne de réservation d'hôtels qui permet aux utilisateurs de découvrir et réserver facilement des hôtels dans les différentes wilayas d’Algérie. Grâce à une interface intuitive, des filtres intelligents et une prise en charge multilingue, Fatiel simplifie la planification de vos séjours.
 publish_to: "none"
 
 version: 1.0.0+1
@@ -40,6 +41,7 @@ dependencies:
   shared_preferences: ^2.2.3
   flutter_gen: ^5.9.0
   country_icons: ^3.0.0
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:

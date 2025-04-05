@@ -700,6 +700,9 @@
       "lastName": {},
       "rating": {}
     }
-  }
-  
+  },
+    "hotelsInWilaya": "Hôtels à {wilaya}"
+  , "currentlyAvailable": "Actuellement disponible",
+  "availableSoon": "Bientôt disponible"
+
 }

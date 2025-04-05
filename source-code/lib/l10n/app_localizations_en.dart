@@ -1312,25 +1312,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoverAmazingHotels => 'Discover amazing hotels tailored just for you';
 
   @override
-  String get aiHotelRecommender => 'AI Hotel Recommender';
-
-  @override
-  String get tellUsWhatYouNeed => 'Tell us what you need and we\'ll find the perfect match';
-
-  @override
-  String get describeYourPerfectStay => 'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)';
-
-  @override
-  String get egRomanticBeachfront => 'e.g. romantic beachfront resort';
-
-  @override
   String get startingFrom => 'Starting from';
 
   @override
   String get currencySymbol => 'DZD';
-
-  @override
-  String get recommendedForYou => 'Recommended for you';
 
   @override
   String get popularDestinations => 'Popular Destinations';
@@ -1339,25 +1324,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tryAdjustingFilters => 'Try adjusting your filters or search criteria';
 
   @override
-  String get noHotelsFoundTryAgain => 'No hotels found. Try again?';
-
-  @override
-  String get somethingWentWrong => 'Something went wrong. Please try again.';
-
-  @override
-  String get findingBestMatches => 'Finding best matches for you...';
-
-  @override
-  String get surpriseMe => 'Surprise me';
-
-  @override
   String get exploreAll => 'Explore All';
 
   @override
   String get resetFilters => 'Reset Filters';
-
-  @override
-  String get findHotels => 'Find Hotels';
 
   @override
   String get luxury => 'Luxury';
@@ -1386,4 +1356,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String activityReviewDescription(Object firstName, Object lastName, Object rating) {
     return '$firstName $lastName left a $rating-star review';
   }
+
+  @override
+  String hotelsInWilaya(Object wilaya) {
+    return 'Hotels in $wilaya';
+  }
+
+  @override
+  String get currentlyAvailable => 'Currently Available';
+
+  @override
+  String get availableSoon => 'Available Soon';
 }

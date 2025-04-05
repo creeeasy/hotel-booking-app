@@ -100,37 +100,45 @@ class _HotelDashboardScreenState extends State<HotelDashboardScreen> {
       children: [
         Row(
           children: [
-            _buildMetricCard(
-              future: _fetchMonthlyBookingsFuture,
-              title: L10n.of(context).activeBookings,
-              icon: Iconsax.book,
-              color: ThemeColors.primary,
+            Flexible(
+              child: _buildMetricCard(
+                future: _fetchMonthlyBookingsFuture,
+                title: L10n.of(context).activeBookings,
+                icon: Iconsax.book,
+                color: ThemeColors.primary,
+              ),
             ),
             const SizedBox(width: 12),
-            _buildMetricCard(
-              future: _fetchAvailableRoomsCountFuture,
-              title: L10n.of(context).roomsAvailable,
-              icon: Iconsax.home,
-              color: ThemeColors.success,
+            Flexible(
+              child: _buildMetricCard(
+                future: _fetchAvailableRoomsCountFuture,
+                title: L10n.of(context).roomsAvailable,
+                icon: Iconsax.home,
+                color: ThemeColors.success,
+              ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            _buildMetricCard(
-              future: _fetchReviewStatisticsFuture,
-              title: L10n.of(context).totalReviews,
-              icon: Iconsax.star,
-              color: ThemeColors.star,
-              isRating: true,
+            Flexible(
+              child: _buildMetricCard(
+                future: _fetchReviewStatisticsFuture,
+                title: L10n.of(context).totalReviews,
+                icon: Iconsax.star,
+                color: ThemeColors.star,
+                isRating: true,
+              ),
             ),
             const SizedBox(width: 12),
-            _buildMetricCard(
-              future: _fetchPendingBookingsFuture,
-              title: L10n.of(context).pendingBookings,
-              icon: Iconsax.calendar_add,
-              color: ThemeColors.accentPink,
+            Flexible(
+              child: _buildMetricCard(
+                future: _fetchPendingBookingsFuture,
+                title: L10n.of(context).pendingBookings,
+                icon: Iconsax.calendar_add,
+                color: ThemeColors.accentPink,
+              ),
             ),
           ],
         ),
@@ -282,6 +290,9 @@ class MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(
+        minWidth: 0, // Allows the card to shrink below intrinsic width
+      ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: ThemeColors.card,
@@ -300,13 +311,19 @@ class MetricCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: ThemeColors.textSecondary,
-                    ),
+              Flexible(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: ThemeColors.textSecondary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
-              Icon(icon, color: color),
+              Icon(icon, color: color, size: 20), // Constrained icon size
             ],
           ),
           const SizedBox(height: 8),
@@ -322,12 +339,15 @@ class MetricCard extends StatelessWidget {
                   ),
                 )
               else
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: color,
-                      ),
+                Flexible(
+                  child: Text(
+                    value,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               if (isRating && !isLoading) ...[
                 const SizedBox(width: 4),

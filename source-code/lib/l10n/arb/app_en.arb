@@ -669,24 +669,14 @@
     "hello": "Hello",
   "findYourPerfectStay": "Find your perfect stay",
   "discoverAmazingHotels": "Discover amazing hotels for your next trip",
-  "aiHotelRecommender": "AI Hotel Recommender",
-  "tellUsWhatYouNeed": "Tell us what you need and we'll find the perfect match",
-  "describeYourPerfectStay": "Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)",
-  "egRomanticBeachfront": "e.g. romantic beachfront resort",
   "startingFrom": "From",
   "night": "night",
   "currencySymbol": "DA ", 
-  "recommendedForYou": "Recommended for you",
   "popularDestinations": "Popular destinations",
   "tryAdjustingFilters": "Try adjusting your filters or search in a different location",
   "noHotelsFound": "No hotels found",
-  "noHotelsFoundTryAgain": "No hotels found. Try again?",
-  "somethingWentWrong": "Something went wrong. Please try again.",
-  "findingBestMatches": "Finding best matches for you...",
-  "surpriseMe": "Surprise me",
   "exploreAll": "Explore all",
   "resetFilters": "Reset filters",
-  "findHotels": "Find Hotels",
     "hello": "Hello",
     "findYourPerfectStay": "Find Your Perfect Stay",
     "discoverAmazingHotels": "Discover amazing hotels tailored just for you",
@@ -728,5 +718,7 @@
     }
   }
   
-  
+  ,  "hotelsInWilaya": "Hotels in {wilaya}",
+  "currentlyAvailable": "Currently Available",
+  "availableSoon": "Available Soon"
 }

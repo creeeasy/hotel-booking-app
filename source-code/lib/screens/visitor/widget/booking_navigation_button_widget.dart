@@ -192,31 +192,6 @@ class _BookingNavigationButtonWidgetState
     }
   }
 
-  Widget _buildPriceInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          "${L10n.of(context).from} \$${_pricePerNight.toStringAsFixed(2)}",
-          style: const TextStyle(
-            fontSize: 14,
-            color: ThemeColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          "\$${_pricePerNight.toStringAsFixed(2)} / ${L10n.of(context).night}",
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: ThemeColors.primary,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBookButton(String visitorId) {
     return ElevatedButton(
       onPressed: _isRoomAvailable
@@ -293,7 +268,6 @@ class _BookingNavigationButtonWidgetState
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildPriceInfo(),
             _buildBookButton(visitorId),
           ],
         ),

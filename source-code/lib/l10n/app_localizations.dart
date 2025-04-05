@@ -2561,30 +2561,6 @@ abstract class AppLocalizations {
   /// **'Discover amazing hotels tailored just for you'**
   String get discoverAmazingHotels;
 
-  /// No description provided for @aiHotelRecommender.
-  ///
-  /// In en, this message translates to:
-  /// **'AI Hotel Recommender'**
-  String get aiHotelRecommender;
-
-  /// No description provided for @tellUsWhatYouNeed.
-  ///
-  /// In en, this message translates to:
-  /// **'Tell us what you need and we\'ll find the perfect match'**
-  String get tellUsWhatYouNeed;
-
-  /// No description provided for @describeYourPerfectStay.
-  ///
-  /// In en, this message translates to:
-  /// **'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)'**
-  String get describeYourPerfectStay;
-
-  /// No description provided for @egRomanticBeachfront.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. romantic beachfront resort'**
-  String get egRomanticBeachfront;
-
   /// No description provided for @startingFrom.
   ///
   /// In en, this message translates to:
@@ -2596,12 +2572,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DZD'**
   String get currencySymbol;
-
-  /// No description provided for @recommendedForYou.
-  ///
-  /// In en, this message translates to:
-  /// **'Recommended for you'**
-  String get recommendedForYou;
 
   /// No description provided for @popularDestinations.
   ///
@@ -2615,30 +2585,6 @@ abstract class AppLocalizations {
   /// **'Try adjusting your filters or search criteria'**
   String get tryAdjustingFilters;
 
-  /// No description provided for @noHotelsFoundTryAgain.
-  ///
-  /// In en, this message translates to:
-  /// **'No hotels found. Try again?'**
-  String get noHotelsFoundTryAgain;
-
-  /// No description provided for @somethingWentWrong.
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong. Please try again.'**
-  String get somethingWentWrong;
-
-  /// No description provided for @findingBestMatches.
-  ///
-  /// In en, this message translates to:
-  /// **'Finding best matches for you...'**
-  String get findingBestMatches;
-
-  /// No description provided for @surpriseMe.
-  ///
-  /// In en, this message translates to:
-  /// **'Surprise me'**
-  String get surpriseMe;
-
   /// No description provided for @exploreAll.
   ///
   /// In en, this message translates to:
@@ -2650,12 +2596,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reset Filters'**
   String get resetFilters;
-
-  /// No description provided for @findHotels.
-  ///
-  /// In en, this message translates to:
-  /// **'Find Hotels'**
-  String get findHotels;
 
   /// No description provided for @luxury.
   ///
@@ -2704,6 +2644,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{firstName} {lastName} left a {rating}-star review'**
   String activityReviewDescription(Object firstName, Object lastName, Object rating);
+
+  /// No description provided for @hotelsInWilaya.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels in {wilaya}'**
+  String hotelsInWilaya(Object wilaya);
+
+  /// No description provided for @currentlyAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Available'**
+  String get currentlyAvailable;
+
+  /// No description provided for @availableSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Soon'**
+  String get availableSoon;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

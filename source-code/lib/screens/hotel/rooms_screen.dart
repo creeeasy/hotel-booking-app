@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/models/amenity.dart';
 import 'package:fatiel/models/hotel.dart';
@@ -218,10 +217,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
   Future<void> _toggleRoomAvailability(Room room) async {
     try {
-      await FirebaseFirestore.instance.collection('rooms').doc(room.id).update({
-        'availability.isAvailable': !room.availability.isAvailable,
-        'availability.nextAvailableDate': null,
-      });
+      await RoomService.toggleRoomAvailability(room);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -290,10 +286,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
   Future<void> _deleteRoom(Room room) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('rooms')
-          .doc(room.id)
-          .delete();
+      await RoomService.deleteRoom(room);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -328,7 +321,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
 
     int capacity = room?.capacity ?? 1;
     List<String> amenities = List.from(room?.amenities ?? []);
-    bool isAvailable = room?.availability.isAvailable ?? true;
+    bool isAvailable = room?.availability.isAvailable ?? false;
     final tempImages = ValueNotifier<List<String>>(room?.images ?? []);
     final isImageLoading = ValueNotifier<bool>(false);
     final picker = ImagePicker();
@@ -371,17 +364,17 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
       }
     }
 
-    Future<void> _removeImage(int index) async {
+    Future<void> removeImage(int index) async {
       try {
         isImageLoading.value = true;
-        final url = tempImages.value[index];
-        final publicId = CloudinaryService.extractPublicIdFromUrl(url);
-
-        if (publicId != null) {
-          final success = await CloudinaryService.deleteImage(publicId);
-          if (!success)
-            throw Exception("Failed to delete image from Cloudinary");
-        }
+        // final url = tempImages.value[index];
+        // final publicId = CloudinaryService.extractPublicIdFromUrl(url);
+        // log(publicId.toString());
+        // if (publicId != null) {
+        //   final success = await CloudinaryService.deleteImage(publicId);
+        //   if (!success)
+        //     throw Exception("Failed to delete image from Cloudinary");
+        // }
 
         tempImages.value = List.from(tempImages.value)..removeAt(index);
 
@@ -456,7 +449,7 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
               top: 4,
               right: 4,
               child: GestureDetector(
-                onTap: () => _removeImage(index),
+                onTap: () => removeImage(index),
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
@@ -881,32 +874,19 @@ class _HotelRoomsPageState extends State<HotelRoomsPage> {
                       child: ElevatedButton(
                         onPressed: () async {
                           if (formKey.currentState?.validate() ?? false) {
-                            final roomData = {
-                              'hotelId': _hotelId,
-                              'name': nameController.text.trim(),
-                              'description': descController.text.trim(),
-                              'pricePerNight':
-                                  double.parse(priceController.text),
-                              'capacity': capacity,
-                              'amenities': amenities,
-                              'images': tempImages.value,
-                              'availability': {
-                                'isAvailable': isAvailable,
-                                'nextAvailableDate': null,
-                              },
-                            };
-
                             try {
-                              if (isEditing) {
-                                await FirebaseFirestore.instance
-                                    .collection('rooms')
-                                    .doc(room.id)
-                                    .update(roomData);
-                              } else {
-                                await FirebaseFirestore.instance
-                                    .collection('rooms')
-                                    .add(roomData);
-                              }
+                              await RoomService.addOrUpdateRoom(
+                                hotelId: _hotelId,
+                                name: nameController.text.trim(),
+                                description: descController.text.trim(),
+                                pricePerNight:
+                                    double.parse(priceController.text),
+                                capacity: capacity,
+                                amenities: amenities,
+                                images: tempImages.value,
+                                isAvailable: room != null ? isAvailable : false,
+                                roomId: room?.id,
+                              );
 
                               if (!mounted) return;
                               Navigator.pop(context);

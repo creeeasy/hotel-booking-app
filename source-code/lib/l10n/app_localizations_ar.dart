@@ -1312,25 +1312,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoverAmazingHotels => 'اكتشف فنادق مذهلة مصممة خصيصًا لك';
 
   @override
-  String get aiHotelRecommender => 'AI Hotel Recommender';
-
-  @override
-  String get tellUsWhatYouNeed => 'Tell us what you need and we\'ll find the perfect match';
-
-  @override
-  String get describeYourPerfectStay => 'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)';
-
-  @override
-  String get egRomanticBeachfront => 'e.g. romantic beachfront resort';
-
-  @override
   String get startingFrom => 'تبدأ من';
 
   @override
   String get currencySymbol => 'د.ج';
-
-  @override
-  String get recommendedForYou => 'Recommended for you';
 
   @override
   String get popularDestinations => 'الوجهات الشعبية';
@@ -1339,25 +1324,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tryAdjustingFilters => 'حاول تعديل عوامل التصفية أو معايير البحث الخاصة بك';
 
   @override
-  String get noHotelsFoundTryAgain => 'No hotels found. Try again?';
-
-  @override
-  String get somethingWentWrong => 'Something went wrong. Please try again.';
-
-  @override
-  String get findingBestMatches => 'Finding best matches for you...';
-
-  @override
-  String get surpriseMe => 'Surprise me';
-
-  @override
   String get exploreAll => 'استكشف الكل';
 
   @override
   String get resetFilters => 'إعادة تعيين الفلاتر';
-
-  @override
-  String get findHotels => 'Find Hotels';
 
   @override
   String get luxury => 'فاخر';
@@ -1386,4 +1356,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String activityReviewDescription(Object firstName, Object lastName, Object rating) {
     return 'ترك $firstName $lastName مراجعة بتقييم $rating نجوم';
   }
+
+  @override
+  String hotelsInWilaya(Object wilaya) {
+    return 'فنادق في $wilaya';
+  }
+
+  @override
+  String get currentlyAvailable => 'متاح حالياً';
+
+  @override
+  String get availableSoon => 'سيكون متاحاً قريباً';
 }

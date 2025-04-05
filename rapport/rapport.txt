@@ -1,85 +1,143 @@
-Fatiel est une application mobile.
-C'est une plateforme dédiée à l'hôtellerie en Algérie.
+# نظام إدارة الفندق
+## أدوار المستخدمين والميزات
 
-Dans cette application, il y a deux types d'utilisateurs : Visiteur et Hôtel.
-Ils ont des interfaces d'inscription différentes mais partagent la même interface d'authentification.
+---
 
-Authentification
-L'authentification comprend :
+## 👥 أدوار المستخدمين
 
-Page d'inscription :
+### 1. الزائر (المسافر)
+الزائر هو المستخدم الذي يبحث عن غرف للحجز. وتشمل تجربته:
+* استكشاف الغرف المتاحة
+* إجراء الحجوزات
+* ترك التقييمات والمراجعات
+* إدارة ملفه الشخصي
 
-Visiteur : Pour s'inscrire, le visiteur doit renseigner son email, un mot de passe, une confirmation du mot de passe et son prénom.
-Ensuite, il a la possibilité de choisir une localisation (ce champ est optionnel).
-Hôtel : Pour s'inscrire, l'hôtel doit renseigner son email, le nom de l'hôtel, sa localisation et une description.
-Autres interfaces :
+### 2. مالك الفندق (المضيف)
+مالك الفندق هو المستخدم الذي يقوم بإدراج وإدارة الغرف في التطبيق. وتشمل مسؤولياته:
+* إدارة الحجوزات
+* تحديث معلومات الغرف
+* الرد على التقييمات
+* إدارة ملفه الشخصي
 
-Mot de passe oublié : Permet de réinitialiser le mot de passe.
-Vérification de l'email : Processus de confirmation après l'inscription.
-Interface du Visiteur
-Une fois connecté, le visiteur accède à une page d’exploration qui fait office de page d’accueil.
-La navigation inférieure comporte trois sections :
+---
 
-Explorer
-Réservations
-Favoris
-1. Explorer
-La première page de l'exploration permet au visiteur de rechercher un hôtel par son nom.
-On y trouve deux onglets :
+## 🔐 تسجيل الدخول والتسجيل
 
-Hôtels recommandés avec un bouton "Voir tout".
-Hôtels à proximité avec un bouton "Voir tout".
-Il peut aussi découvrir les villes disponibles via un carrousel des 58 wilayas algériennes.
-En cliquant sur une wilaya, la page affiche tous les hôtels de cette région.
+يستخدم كل من الزائر ومالك الفندق نفس واجهة تسجيل الدخول.
 
-Détails d’un hôtel
-Si l’utilisateur clique sur une carte d’hôtel, il sera redirigé vers la page de détails de l'hôtel, où il pourra voir :
+### شاشة تسجيل الدخول
+* مشتركة بين جميع المستخدمين
+* الحقول المطلوبة: البريد الإلكتروني وكلمة المرور
 
-Nom de l'hôtel
-Description
-Images
-Évaluations et notes
-Vignette (thumbnail)
-Localisation
-Informations de contact
-Voir l'hôtel sur Google Maps
-Explorer les offres de chambres
-Sur cette page, il peut également ajouter l'hôtel à ses favoris pour le retrouver plus tard.
+### نسيت كلمة المرور
+* خيار لاستعادة الحساب
+* يُدخل المستخدم بريده الإلكتروني للحصول على رابط إعادة تعيين كلمة المرور
 
-En cliquant sur "Voir tous les avis", il sera redirigé vers la page des avis de l'hôtel, qui affiche les évaluations des utilisateurs avec leurs commentaires et leurs notes.
-En cliquant sur "Ouvrir dans Google Maps", il sera redirigé vers Google Maps.
-En cliquant sur "Voir les offres de chambres", il sera dirigé vers la page correspondante.
-Explorer les offres de chambres
-Dans cette section, le visiteur peut choisir la chambre qui lui convient.
-Chaque chambre possède plusieurs attributs :
+### عملية التسجيل
+* يمكن الوصول إلى شاشة التسجيل من صفحة تسجيل الدخول
+* يتم عرض الحقول بناءً على نوع المستخدم
 
-Nom
-Description
-Capacité
-Prix par nuit
-Équipements
-Disponibilité :
-Soit l'hôtel indique qu’elle est disponible.
-Soit elle est réservée, avec la prochaine date disponible affichée.
-Images
-Si le visiteur clique sur "Réserver maintenant", il pourra :
+#### تسجيل الزائر
+* الاسم الأول
+* الاسم الأخير
+* البريد الإلكتروني
+* كلمة المرور
+* تأكيد كلمة المرور
 
-Sélectionner la durée de son séjour.
-Confirmer sa réservation.
-2. Réservations
-Cette section comporte trois onglets :
+#### تسجيل مالك الفندق
+* اسم مالك الفندق
+* البريد الإلكتروني
+* كلمة المرور
+* تأكيد كلمة المرور
 
-Réservations en attente
+---
 
-Réservations confirmées
+## 🧭 واجهة الزائر والتنقل
 
-Réservations annulées
+### 1. حجوزاتي
+تتضمن ثلاثة تبويبات:
+* **قيد الانتظار**: الحجوزات التي تنتظر موافقة المالك
+* **مكتملة**: الحجوزات التي تم تأكيدها من قبل المالك
+  * بعد إتمام الحجز يمكن للزائر:
+    * ترك مراجعة
+    * تقييم التجربة
+    * تعديل أو حذف المراجعة
+* **ملغاة**: الحجوزات التي قام الزائر بإلغائها
 
-Réservations en attente : L'hôtel n’a pas encore confirmé la réservation. Le visiteur peut voir les détails de sa réservation et l’annuler si nécessaire.
+### 2. المفضلة
+* عرض الغرف التي قام الزائر بإضافتها إلى المفضلة
+* يمكن الرجوع إليها لاحقاً بسهولة
 
-Réservations confirmées : Liste des réservations complétées avec un message indiquant que le séjour est terminé.
+### 3. الملف الشخصي
+يتضمن:
+* المعلومات الأساسية (الاسم، البريد الإلكتروني، إلخ)
+* تحديث كلمة المرور
+* اختيار اللغة
+* تسجيل الخروج
 
-Réservations annulées : Liste des réservations annulées avec un message approprié.
+---
 
-3. Favoris
-Dans cet onglet, l’utilisateur peut retrouver les hôtels qu’il a ajoutés en favoris.
+## 🏨 واجهة مالك الفندق والتنقل
+
+### التبويبات الرئيسية:
+* الصفحة الرئيسية
+* الغرف
+* الحجوزات
+* التقييمات
+* الملف الشخصي
+
+### 1. الصفحة الرئيسية
+تعرض:
+* الحجوزات النشطة
+* توفر الغرف
+* الحجوزات قيد الانتظار
+* إجمالي التقييمات
+* اختصارات للوصول السريع
+* الأنشطة الحديثة (الحجوزات والمراجعات خلال آخر ٧ أيام)
+
+### 2. الغرف
+صفحة إدارة الغرف الخاصة بمالك الفندق.
+
+#### خصائص الغرف:
+* إضافة غرفة جديدة
+* تعديل الغرف الموجودة
+* حذف الغرف
+* تفعيل/إلغاء تفعيل توفر الغرفة
+
+#### تفاصيل الغرفة:
+* **المعلومات الأساسية**:
+  * الاسم والوصف
+* **السعر والتوفر**:
+  * السعر لليلة الواحدة
+  * عدد الأشخاص المسموح بهم
+  * تبديل حالة التوفر
+* **الصور**:
+  * إضافة أو إزالة الصور
+* **المرافق والخدمات**:
+  * واي فاي، مقابس كهرباء، صالة رياضية، مطاعم، موقف سيارات، خدمات الغرف، وغيرها
+
+### 3. الحجوزات
+تشمل مجموعة من الفلاتر:
+* جميع الحجوزات
+* قيد الانتظار
+* مكتملة
+* بانتظار المراجعة
+
+#### العمليات المتاحة:
+* إلغاء الحجز
+* تحديد الحجز كغير مكتمل
+* عرض تفاصيل الحجز فقط (قراءة فقط)
+
+### 4. المراجعات
+* عرض التقييمات التي تركها الزوار
+* إمكانية تصفية التقييمات حسب التقييم (النجوم)
+
+### 5. الملف الشخصي
+يعرض:
+* صور مالك الفندق
+* الاسم والوصف
+* معلومات التواصل (البريد الإلكتروني)
+* رابط الخريطة
+* **الإعدادات**:
+  * تغيير اللغة
+  * تسجيل الخروج

@@ -20,14 +20,14 @@ class HotelBrowseView extends StatefulWidget {
       filterFunction;
   final HotelFilterParameters? initialFilters;
   final bool useUserLocationOnly;
-  final String? appBackTitle;
+  final String? appBarTitle;
 
   const HotelBrowseView(
       {super.key,
       this.filterFunction,
       this.initialFilters,
       this.useUserLocationOnly = false,
-      this.appBackTitle});
+      this.appBarTitle});
 
   @override
   State<HotelBrowseView> createState() => _HotelBrowseViewState();
@@ -101,7 +101,7 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
       child: Scaffold(
         backgroundColor: ThemeColors.background,
         appBar: CustomBackAppBar(
-          title: widget.appBackTitle ?? L10n.of(context).allHotels,
+          title: widget.appBarTitle ?? L10n.of(context).allHotels,
           onBack: () => Navigator.of(context).pop(),
         ),
         body: Column(

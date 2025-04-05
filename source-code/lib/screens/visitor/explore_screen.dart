@@ -9,9 +9,11 @@ import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/models/wilaya.dart';
 import 'package:fatiel/screens/visitor/hotel_browse_view.dart';
 import 'package:fatiel/screens/visitor/widget/error_widget_with_retry.dart';
+import 'package:fatiel/screens/visitor/widget/favorite_button_widget.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_state.dart';
 import 'package:fatiel/services/hotel/hotel_service.dart';
+import 'package:fatiel/services/room/room_service.dart';
 import 'package:fatiel/utils/user_profile.dart';
 import 'package:fatiel/widgets/card_loading_indicator_widget.dart';
 import 'package:flutter/material.dart';
@@ -498,7 +500,7 @@ class _ExploreViewState extends State<ExploreView> {
       MaterialPageRoute(
         builder: (context) => HotelBrowseView(
           useUserLocationOnly: _selectedTab == HotelListType.nearMe,
-          appBackTitle: _selectedTab == HotelListType.recommended
+          appBarTitle: _selectedTab == HotelListType.recommended
               ? L10n.of(context).recommendedHotels
               : L10n.of(context).hotelsNearYou,
           initialFilters: _currentFilters,
@@ -515,6 +517,8 @@ class _ExploreViewState extends State<ExploreView> {
       context,
       MaterialPageRoute(
         builder: (context) => HotelBrowseView(
+          appBarTitle: L10n.of(context).hotelsInWilaya(wilaya.name),
+          useUserLocationOnly: true,
           initialFilters: _currentFilters.copyWith(location: wilaya.ind),
           filterFunction: (params) => HotelService.getRecommendedHotels(
             params: params.copyWith(location: wilaya.ind),
@@ -544,235 +548,216 @@ class HotelCard extends StatelessWidget {
     final locationName =
         hotel.location != null ? Wilaya.fromIndex(hotel.location!)?.name : null;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: ThemeColors.card,
-        boxShadow: [
-          const BoxShadow(
-            color: ThemeColors.shadow,
-            blurRadius: 15,
-            spreadRadius: 0,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      height: 320, // Fixed height for the entire card
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image Section - fixed height
-          SizedBox(
-            height: 180, // Fixed height for image
-            width: double.infinity,
-            child: Stack(
-              children: [
-                _buildHotelImage(),
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        ThemeColors.darkTransparent,
-                      ],
-                      stops: [0.5, 1],
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: ThemeColors.card,
+          boxShadow: const [
+            BoxShadow(
+              color: ThemeColors.shadow,
+              blurRadius: 15,
+              spreadRadius: 0,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        height: 320, // Fixed height for the entire card
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Section - fixed height
+            SizedBox(
+              height: 180, // Fixed height for image
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  _buildHotelImage(),
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          ThemeColors.darkTransparent,
+                        ],
+                        stops: [0.5, 1],
+                      ),
                     ),
                   ),
-                ),
-                if (hotel.ratings.rating >= 4.5)
+                  if (hotel.ratings.rating >= 4.5)
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          gradient: ThemeColors.accentGradient,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: ThemeColors.shadowDark,
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'PREMIUM',
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: ThemeColors.textOnDark,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 1,
+                                  ),
+                        ),
+                      ),
+                    ),
                   Positioned(
-                    top: 12,
-                    left: 12,
+                    bottom: 12,
+                    right: 12,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        gradient: ThemeColors.accentGradient,
+                        color: ThemeColors.darkBackground.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          const BoxShadow(
-                            color: ThemeColors.shadowDark,
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Iconsax.star1,
+                              size: 14, color: ThemeColors.star),
+                          const SizedBox(width: 4),
+                          Text(
+                            hotel.ratings.rating.toStringAsFixed(1),
+                            style: const TextStyle(
+                              color: ThemeColors.textOnDark,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ],
                       ),
-                      child: Text(
-                        'PREMIUM',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: ThemeColors.textOnDark,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1,
-                            ),
-                      ),
                     ),
                   ),
-                Positioned(
-                  bottom: 12,
-                  right: 12,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: ThemeColors.darkBackground.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(20),
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: FavoriteButton(
+                      hotelId: hotel.id,
+                      size: 28,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+                ],
+              ),
+            ),
+            // Content Section - flexible height within remaining space
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Iconsax.star1,
-                            size: 14, color: ThemeColors.star),
-                        const SizedBox(width: 4),
+                        // Hotel Name
                         Text(
-                          hotel.ratings.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            color: ThemeColors.textOnDark,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          hotel.hotelName,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: ThemeColors.textPrimary,
+                                  ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        // Location
+                        Row(
+                          children: [
+                            const Icon(
+                              Iconsax.location,
+                              size: 14,
+                              color: ThemeColors.textSecondary,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                locationName ??
+                                    L10n.of(context).locationNotSpecified,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: ThemeColors.textSecondary,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                ),
-                if (showFavoriteButton)
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: const BoxDecoration(
-                        color: ThemeColors.surface,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: ThemeColors.shadow,
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Iconsax.heart,
-                        size: 18,
-                        color: ThemeColors.heart,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          // Content Section - flexible height within remaining space
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Hotel Name
-                      Text(
-                        hotel.hotelName,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: ThemeColors.textPrimary,
-                                ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      // Location
-                      Row(
-                        children: [
-                          const Icon(
-                            Iconsax.location,
-                            size: 14,
-                            color: ThemeColors.textSecondary,
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              locationName ??
-                                  L10n.of(context).locationNotSpecified,
+                    // Price & Button row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              L10n.of(context).startingFrom,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
                                   ?.copyWith(
                                     color: ThemeColors.textSecondary,
                                   ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  // Price & Button row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            L10n.of(context).startingFrom,
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: ThemeColors.textSecondary,
-                                    ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${L10n.of(context).currencySymbol}${_getStartingPrice(hotel)}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: ThemeColors.primary,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 40,
-                        child: ElevatedButton(
-                          onPressed: onPressed,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ThemeColors.buttonPrimary,
-                            foregroundColor: ThemeColors.textOnPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            L10n.of(context).bookNow,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
+                            FutureBuilder<String>(
+                              future: RoomService.getStartingPrice(hotel),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final price = snapshot.data;
+                                  return Column(
+                                    children: [
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        '${L10n.of(context).currencySymbol} $price',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: ThemeColors.primary,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return SizedBox.shrink();
+                                }
+                              },
+                            )
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -820,10 +805,6 @@ class HotelCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getStartingPrice(Hotel hotel) {
-    return '--';
   }
 }
 
@@ -939,13 +920,12 @@ class SectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: ThemeColors.textPrimary,
-              ),
-        ),
+        Text(title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: ThemeColors.textPrimary,
+              fontSize: 16,
+            )),
         TextButton(
           onPressed: onSeeAllTap,
           style: TextButton.styleFrom(

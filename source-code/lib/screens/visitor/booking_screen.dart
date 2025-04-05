@@ -347,13 +347,13 @@ class _HotelBookingCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _HotelImageWithDates(hotel: hotel, booking: booking),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   hotel.hotelName,
@@ -458,7 +458,7 @@ class _DateCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
@@ -896,7 +896,7 @@ class _CancelBookingButtonState extends State<_CancelBookingButton> {
                 color: ThemeColors.error,
               ),
             )
-          : Text(L10n.of(context).cancelBooking),
+          : Text(L10n.of(context).cancel),
     );
   }
 

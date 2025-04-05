@@ -147,8 +147,8 @@ class _HotelCardState extends State<HotelCard> {
   }
 
   Widget _buildHotelImage(List<String> images) {
-    return AspectRatio(
-      aspectRatio: widget.aspectRatio,
+    return SizedBox(
+      height: 320,
       child: Container(
         color: ThemeColors.grey200, // Fallback background
         child: Stack(
@@ -230,6 +230,7 @@ class _HotelCardState extends State<HotelCard> {
       left: 0,
       right: 0,
       child: Container(
+        height: 320 * 0.4,
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
         decoration: BoxDecoration(
           gradient: LinearGradient(

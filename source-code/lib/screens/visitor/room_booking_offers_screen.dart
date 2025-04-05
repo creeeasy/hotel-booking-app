@@ -269,6 +269,8 @@ class _RoomContentState extends State<RoomContent> {
                 const SizedBox(height: 20),
                 _RoomHeader(room: _selectedRoom),
                 const SizedBox(height: 12),
+                _buildPriceInfo(),
+                const SizedBox(height: 12),
                 _RoomDescription(description: _selectedRoom.description),
                 const SizedBox(height: 24),
                 const _SectionDivider(icon: Iconsax.category_2),
@@ -291,6 +293,18 @@ class _RoomContentState extends State<RoomContent> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPriceInfo() {
+    final double pricePerNight = _selectedRoom.pricePerNight;
+    return Text(
+      "\$${pricePerNight.toStringAsFixed(2)} / ${L10n.of(context).night}",
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: ThemeColors.primary,
       ),
     );
   }
@@ -588,45 +602,70 @@ class RoomAvailabilityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAvailable = availability.nextAvailableDate != null;
-    final color = isAvailable ? ThemeColors.success : ThemeColors.error;
-    final icon = isAvailable ? Iconsax.calendar_tick : Iconsax.calendar_remove;
-    final message = isAvailable
-        ? "${L10n.of(context).availableFrom} ${DateFormat('MMM d, y').format(availability.nextAvailableDate!)}"
-        : L10n.of(context).notCurrentlyAvailable;
+    // Determine availability status
+    final bool isCurrentlyAvailable = availability.isAvailable;
+    final bool hasFutureAvailability = availability.nextAvailableDate != null;
+    final Color color = isCurrentlyAvailable
+        ? ThemeColors.success
+        : hasFutureAvailability
+            ? ThemeColors.warning
+            : ThemeColors.error;
+
+    final IconData icon = isCurrentlyAvailable
+        ? Iconsax.calendar_tick
+        : hasFutureAvailability
+            ? Iconsax.calendar_search
+            : Iconsax.calendar_remove;
+
+    String message;
+    if (isCurrentlyAvailable) {
+      message = L10n.of(context).currentlyAvailable;
+    } else if (hasFutureAvailability) {
+      message =
+          "${L10n.of(context).availableFrom} ${DateFormat('MMM d, y').format(availability.nextAvailableDate!)}";
+    } else {
+      message = L10n.of(context).notCurrentlyAvailable;
+    }
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: color),
+          Icon(icon, size: 24, color: color),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isAvailable
-                    ? L10n.of(context).available
-                    : L10n.of(context).unavailable,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-              ),
-              if (isAvailable)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  message,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: ThemeColors.textSecondary,
+                  isCurrentlyAvailable
+                      ? L10n.of(context).available
+                      : hasFutureAvailability
+                          ? L10n.of(context).availableSoon
+                          : L10n.of(context).unavailable,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: color,
                   ),
                 ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: color.withOpacity(0.8),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

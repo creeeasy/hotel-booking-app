@@ -1312,25 +1312,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discoverAmazingHotels => 'Découvrez des hôtels incroyables faits pour vous';
 
   @override
-  String get aiHotelRecommender => 'AI Hotel Recommender';
-
-  @override
-  String get tellUsWhatYouNeed => 'Tell us what you need and we\'ll find the perfect match';
-
-  @override
-  String get describeYourPerfectStay => 'Describe your perfect stay (e.g. romantic beachfront, family-friendly, business hotel)';
-
-  @override
-  String get egRomanticBeachfront => 'e.g. romantic beachfront resort';
-
-  @override
   String get startingFrom => 'À partir de';
 
   @override
   String get currencySymbol => 'DZD';
-
-  @override
-  String get recommendedForYou => 'Recommended for you';
 
   @override
   String get popularDestinations => 'Destinations populaires';
@@ -1339,25 +1324,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tryAdjustingFilters => 'Essayez d\'ajuster vos filtres ou critères de recherche';
 
   @override
-  String get noHotelsFoundTryAgain => 'No hotels found. Try again?';
-
-  @override
-  String get somethingWentWrong => 'Something went wrong. Please try again.';
-
-  @override
-  String get findingBestMatches => 'Finding best matches for you...';
-
-  @override
-  String get surpriseMe => 'Surprise me';
-
-  @override
   String get exploreAll => 'Tout explorer';
 
   @override
   String get resetFilters => 'Réinitialiser les filtres';
-
-  @override
-  String get findHotels => 'Find Hotels';
 
   @override
   String get luxury => 'Luxe';
@@ -1386,4 +1356,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String activityReviewDescription(Object firstName, Object lastName, Object rating) {
     return '$firstName $lastName a laissé un avis $rating étoiles';
   }
+
+  @override
+  String hotelsInWilaya(Object wilaya) {
+    return 'Hôtels à $wilaya';
+  }
+
+  @override
+  String get currentlyAvailable => 'Actuellement disponible';
+
+  @override
+  String get availableSoon => 'Bientôt disponible';
 }

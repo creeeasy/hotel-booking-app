@@ -64,9 +64,9 @@ class _AuthFlowState extends State<AuthFlow> {
 
     return WillPopScope(
       onWillPop: _handleWillPop,
-      child: Scaffold(
-        body: SafeArea(
-          child: Stack(
+      child: SafeArea(
+        child: Scaffold(
+          body: Stack(
             children: [
               BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {

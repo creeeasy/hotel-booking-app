@@ -685,5 +685,8 @@
       "lastName": {},
       "rating": {}
     }
-  }
+  },
+    "hotelsInWilaya": "فنادق في {wilaya}",
+     "currentlyAvailable": "متاح حالياً",
+  "availableSoon": "سيكون متاحاً قريباً"
 }

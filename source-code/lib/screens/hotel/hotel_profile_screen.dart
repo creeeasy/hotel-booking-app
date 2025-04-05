@@ -110,12 +110,12 @@ class _HotelProfileViewState extends State<HotelProfileView> {
   Future<void> _removeImage(int index) async {
     try {
       _isImageLoading.value = true;
-      final url = _tempImages.value[index];
-      final publicId = CloudinaryService.extractPublicIdFromUrl(url);
+      // final url = _tempImages.value[index];
+      // final publicId = CloudinaryService.extractPublicIdFromUrl(url);
 
-      if (publicId != null) {
-        await CloudinaryService.deleteImage(publicId);
-      }
+      // if (publicId != null) {
+      //   await CloudinaryService.deleteImage(publicId);
+      // }
 
       _tempImages.value = List.from(_tempImages.value)..removeAt(index);
       _showSnackbar(L10n.of(context).imageRemovedSuccessfully, isError: false);
