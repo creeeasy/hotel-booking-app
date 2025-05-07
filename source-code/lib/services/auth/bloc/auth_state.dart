@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fatiel/models/admin.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/visitor.dart';
 import 'package:flutter/foundation.dart' show immutable;
@@ -95,4 +96,27 @@ class AuthStateLoggedOut extends AuthState with EquatableMixin {
 
   @override
   List<Object?> get props => [exception, isLoading];
+}
+
+
+class AuthStateHotelSubscriptionRequired extends AuthState {
+  final Hotel hotel;
+  final String message;
+
+  const AuthStateHotelSubscriptionRequired({
+    required this.hotel,
+    required bool isLoading,
+    this.message =
+        "Your subscription is pending. Please contact support to activate your account.",
+  }) : super(isLoading: isLoading, currentUser: hotel);
+}
+
+class AuthStateAdminLoggedIn extends AuthState {
+  final Admin admin;
+  const AuthStateAdminLoggedIn({
+    required bool isLoading,
+    required this.admin,
+  }) : super(
+          isLoading: isLoading,
+        );
 }

@@ -720,5 +720,48 @@
   
   ,  "hotelsInWilaya": "Hotels in {wilaya}",
   "currentlyAvailable": "Currently Available",
-  "availableSoon": "Available Soon"
+  "availableSoon": "Available Soon",
+
+   "hotelsManagement": "Hotels Management",
+  "refresh": "Refresh",
+  "searchByHotelNameOrEmail": "Search by hotel name or email",
+  "allHotels": "All Hotels",
+  "subscribed": "Subscribed",
+  "unsubscribed": "Unsubscribed",
+  "inactive": "Inactive",
+  "unknown": "Unknown",
+  "noHotelsInDatabase": "No hotels found in the database",
+  "noHotelsMatchFilters": "No hotels match your current filters",
+  "clearFilters": "Clear filters",
+  "subscribe": "Sub",
+  "unsubscribe": "Unsub",
+  "errorLoadingHotels": "Error loading hotels",
+  "errorUpdatingSubscription": "Error updating subscription status",
+  "hotelNowSubscribed": "{hotelName} is now subscribed",
+  "@hotelNowSubscribed": {
+    "placeholders": {
+      "hotelName": {
+        "type": "String"
+      }
+    }
+  },
+  "hotelNowUnsubscribed": "{hotelName} is now unsubscribed",
+  "@hotelNowUnsubscribed": {
+    "placeholders": {
+      "hotelName": {
+        "type": "String"
+      }
+    }
+  },
+  "ratingValue": "{rating} ({count})",
+  "@ratingValue": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

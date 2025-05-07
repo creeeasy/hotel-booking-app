@@ -13,6 +13,7 @@ class Hotel {
   final String? mapLink;
   final String? contactInfo;
   final List<String>? searchKeywords;
+  final bool isSubscribed;
 
   Hotel({
     required this.id,
@@ -26,6 +27,7 @@ class Hotel {
     this.mapLink,
     this.contactInfo,
     this.searchKeywords = const [],
+    this.isSubscribed = false, // Default to unsubscribed
   }) : ratings = ratings ?? Rating(rating: 0, totalRating: 0);
 
   Hotel copyWith({
@@ -40,6 +42,7 @@ class Hotel {
     String? contactInfo,
     List<String>? searchKeywords,
     Rating? ratings,
+    bool? isSubscribed,
   }) {
     return Hotel(
       id: id ?? this.id,
@@ -53,6 +56,7 @@ class Hotel {
       contactInfo: contactInfo ?? this.contactInfo,
       searchKeywords: searchKeywords ?? this.searchKeywords,
       ratings: ratings ?? this.ratings,
+      isSubscribed: isSubscribed ?? this.isSubscribed,
     );
   }
 
@@ -70,6 +74,7 @@ class Hotel {
         'rating': ratings.rating,
         'totalRating': ratings.totalRating,
       },
+      'isSubscribed': isSubscribed,
     };
   }
 
@@ -99,6 +104,7 @@ class Hotel {
               ?.map((e) => e as String)
               .toList() ??
           [],
+      isSubscribed: data['isSubscribed'] as bool? ?? false,
     );
   }
 
@@ -114,7 +120,8 @@ class Hotel {
       'mapLink': mapLink,
       'contactInfo': contactInfo,
       'totalRooms': totalRooms,
-      'searchKeywords': searchKeywords
+      'searchKeywords': searchKeywords,
+      'isSubscribed': isSubscribed,
     };
   }
 }

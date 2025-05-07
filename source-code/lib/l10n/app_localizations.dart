@@ -2662,6 +2662,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available Soon'**
   String get availableSoon;
+
+  /// No description provided for @hotelsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotels Management'**
+  String get hotelsManagement;
+
+  /// No description provided for @searchByHotelNameOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by hotel name or email'**
+  String get searchByHotelNameOrEmail;
+
+  /// No description provided for @subscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribed'**
+  String get subscribed;
+
+  /// No description provided for @unsubscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsubscribed'**
+  String get unsubscribed;
+
+  /// No description provided for @inactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactive;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @noHotelsInDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels found in the database'**
+  String get noHotelsInDatabase;
+
+  /// No description provided for @noHotelsMatchFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No hotels match your current filters'**
+  String get noHotelsMatchFilters;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
+
+  /// No description provided for @subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub'**
+  String get subscribe;
+
+  /// No description provided for @unsubscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsub'**
+  String get unsubscribe;
+
+  /// No description provided for @errorLoadingHotels.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading hotels'**
+  String get errorLoadingHotels;
+
+  /// No description provided for @errorUpdatingSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating subscription status'**
+  String get errorUpdatingSubscription;
+
+  /// No description provided for @hotelNowSubscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'{hotelName} is now subscribed'**
+  String hotelNowSubscribed(String hotelName);
+
+  /// No description provided for @hotelNowUnsubscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'{hotelName} is now unsubscribed'**
+  String hotelNowUnsubscribed(String hotelName);
+
+  /// No description provided for @ratingValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} ({count})'**
+  String ratingValue(String rating, String count);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

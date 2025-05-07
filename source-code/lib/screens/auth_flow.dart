@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:fatiel/screens/admin/admin_home_screen.dart';
+import 'package:fatiel/screens/hotel/hotel_subscription_pending_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fatiel/l10n/l10n.dart';
@@ -92,9 +94,14 @@ class _AuthFlowState extends State<AuthFlow> {
                     case AuthStateHotelRegistering:
                       return const HotelRegistrationView();
                     case AuthStateHotelDetailsCompletion:
-                      return HotelDetailsCompletion();
+                      return const HotelDetailsCompletion();
                     case AuthStateVisitorRegistering:
                       return const VisitorRegistrationView();
+                    case AuthStateHotelSubscriptionRequired:
+                      return const HotelSubscriptionPendingScreen();
+                    case AuthStateAdminLoggedIn:
+                      return const AdminHomePage();
+
                     default:
                       return const Scaffold(
                         body: CircularProgressIndicatorWidget(),

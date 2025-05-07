@@ -1279,7 +1279,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get filterByLocation => 'Localisation (Wilaya)';
 
   @override
-  String get allHotels => 'Tous les hôtels';
+  String get allHotels => 'Tous les Hôtels';
 
   @override
   String get favoritesTitle => 'Favoris';
@@ -1367,4 +1367,58 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get availableSoon => 'Bientôt disponible';
+
+  @override
+  String get hotelsManagement => 'Gestion des Hôtels';
+
+  @override
+  String get searchByHotelNameOrEmail => 'Rechercher par nom d\'hôtel ou e-mail';
+
+  @override
+  String get subscribed => 'Abonnés';
+
+  @override
+  String get unsubscribed => 'Non Abonnés';
+
+  @override
+  String get inactive => 'Inactif';
+
+  @override
+  String get unknown => 'Inconnu';
+
+  @override
+  String get noHotelsInDatabase => 'Aucun hôtel trouvé dans la base de données';
+
+  @override
+  String get noHotelsMatchFilters => 'Aucun hôtel ne correspond à vos filtres actuels';
+
+  @override
+  String get clearFilters => 'Effacer les filtres';
+
+  @override
+  String get subscribe => 'Abon';
+
+  @override
+  String get unsubscribe => 'Désab';
+
+  @override
+  String get errorLoadingHotels => 'Erreur lors du chargement des hôtels';
+
+  @override
+  String get errorUpdatingSubscription => 'Erreur lors de la mise à jour du statut d\'abonnement';
+
+  @override
+  String hotelNowSubscribed(String hotelName) {
+    return '$hotelName est maintenant abonné';
+  }
+
+  @override
+  String hotelNowUnsubscribed(String hotelName) {
+    return '$hotelName est maintenant désabonné';
+  }
+
+  @override
+  String ratingValue(String rating, String count) {
+    return '$rating ($count)';
+  }
 }

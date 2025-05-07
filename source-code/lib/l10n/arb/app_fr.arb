@@ -703,6 +703,48 @@
   },
     "hotelsInWilaya": "Hôtels à {wilaya}"
   , "currentlyAvailable": "Actuellement disponible",
-  "availableSoon": "Bientôt disponible"
+  "availableSoon": "Bientôt disponible",
+   "hotelsManagement": "Gestion des Hôtels",
+  "refresh": "Actualiser",
+  "searchByHotelNameOrEmail": "Rechercher par nom d'hôtel ou e-mail",
+  "allHotels": "Tous les Hôtels",
+  "subscribed": "Abonnés",
+  "unsubscribed": "Non Abonnés",
+  "inactive": "Inactif",
+  "unknown": "Inconnu",
+  "noHotelsInDatabase": "Aucun hôtel trouvé dans la base de données",
+  "noHotelsMatchFilters": "Aucun hôtel ne correspond à vos filtres actuels",
+  "clearFilters": "Effacer les filtres",
+  "subscribe": "Abon",
+  "unsubscribe": "Désab",
+  "errorLoadingHotels": "Erreur lors du chargement des hôtels",
+  "errorUpdatingSubscription": "Erreur lors de la mise à jour du statut d'abonnement",
+  "hotelNowSubscribed": "{hotelName} est maintenant abonné",
+  "@hotelNowSubscribed": {
+    "placeholders": {
+      "hotelName": {
+        "type": "String"
+      }
+    }
+  },
+  "hotelNowUnsubscribed": "{hotelName} est maintenant désabonné",
+  "@hotelNowUnsubscribed": {
+    "placeholders": {
+      "hotelName": {
+        "type": "String"
+      }
+    }
+  },
+  "ratingValue": "{rating} ({count})",
+  "@ratingValue": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 
 }

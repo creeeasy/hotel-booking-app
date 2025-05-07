@@ -42,6 +42,7 @@ dependencies:
   flutter_gen: ^5.9.0
   country_icons: ^3.0.0
   crypto: ^3.0.3
+  syncfusion_flutter_charts: ^20.4.48
 
 dev_dependencies:
   flutter_test:

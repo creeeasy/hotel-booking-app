@@ -74,4 +74,22 @@ class AuthService implements AuthProvider {
     return provider.updatePassword(
         currentPassword: currentPassword, newPassword: newPassword);
   }
+
+  @override
+  Future<AuthUser?> createAdmin({
+    required String email,
+    required String password,
+    required String name,
+  }) {
+    return provider.createAdmin(
+      email: email,
+      password: password,
+      name: name,
+    );
+  }
+
+  @override
+  Future<bool> checkHotelSubscription({required String hotelId}) {
+    return provider.checkHotelSubscription(hotelId: hotelId);
+  }
 }

@@ -688,5 +688,47 @@
   },
     "hotelsInWilaya": "فنادق في {wilaya}",
      "currentlyAvailable": "متاح حالياً",
-  "availableSoon": "سيكون متاحاً قريباً"
+  "availableSoon": "سيكون متاحاً قريباً",
+    "hotelsManagement": "إدارة الفنادق",
+  "refresh": "تحديث",
+  "searchByHotelNameOrEmail": "البحث بإسم الفندق أو البريد الإلكتروني",
+  "allHotels": "جميع الفنادق",
+  "subscribed": "مشترك",
+  "unsubscribed": "غير مشترك",
+  "inactive": "غير نشط",
+  "unknown": "غير معروف",
+  "noHotelsInDatabase": "لم يتم العثور على فنادق في قاعدة البيانات",
+  "noHotelsMatchFilters": "لا توجد فنادق تطابق عوامل التصفية الحالية",
+  "clearFilters": "مسح عوامل التصفية",
+  "subscribe": "اشتراك",
+  "unsubscribe": "إلغاء",
+  "errorLoadingHotels": "خطأ في تحميل الفنادق",
+  "errorUpdatingSubscription": "خطأ في تحديث حالة الاشتراك",
+  "hotelNowSubscribed": "{hotelName} مشترك الآن",
+  "@hotelNowSubscribed": {
+    "placeholders": {
+      "hotelName": {
+        "type": "String"
+      }
+    }
+  },
+  "hotelNowUnsubscribed": "{hotelName} غير مشترك الآن",
+  "@hotelNowUnsubscribed": {
+    "placeholders": {
+      "hotelName": {
+        "type": "String"
+      }
+    }
+  },
+  "ratingValue": "{rating} ({count})",
+  "@ratingValue": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1367,4 +1367,58 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get availableSoon => 'سيكون متاحاً قريباً';
+
+  @override
+  String get hotelsManagement => 'إدارة الفنادق';
+
+  @override
+  String get searchByHotelNameOrEmail => 'البحث بإسم الفندق أو البريد الإلكتروني';
+
+  @override
+  String get subscribed => 'مشترك';
+
+  @override
+  String get unsubscribed => 'غير مشترك';
+
+  @override
+  String get inactive => 'غير نشط';
+
+  @override
+  String get unknown => 'غير معروف';
+
+  @override
+  String get noHotelsInDatabase => 'لم يتم العثور على فنادق في قاعدة البيانات';
+
+  @override
+  String get noHotelsMatchFilters => 'لا توجد فنادق تطابق عوامل التصفية الحالية';
+
+  @override
+  String get clearFilters => 'مسح عوامل التصفية';
+
+  @override
+  String get subscribe => 'اشتراك';
+
+  @override
+  String get unsubscribe => 'إلغاء';
+
+  @override
+  String get errorLoadingHotels => 'خطأ في تحميل الفنادق';
+
+  @override
+  String get errorUpdatingSubscription => 'خطأ في تحديث حالة الاشتراك';
+
+  @override
+  String hotelNowSubscribed(String hotelName) {
+    return '$hotelName مشترك الآن';
+  }
+
+  @override
+  String hotelNowUnsubscribed(String hotelName) {
+    return '$hotelName غير مشترك الآن';
+  }
+
+  @override
+  String ratingValue(String rating, String count) {
+    return '$rating ($count)';
+  }
 }

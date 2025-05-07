@@ -20,4 +20,10 @@ abstract class AuthProvider {
   Future<void> updatePassword(
       {required String currentPassword, required String newPassword});
   AuthUser? get currentUser;
+  Future<AuthUser?> createAdmin({
+    required String email,
+    required String password,
+    required String name,
+  });
+  Future<bool> checkHotelSubscription({required String hotelId});
 }

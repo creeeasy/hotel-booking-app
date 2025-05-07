@@ -1367,4 +1367,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get availableSoon => 'Available Soon';
+
+  @override
+  String get hotelsManagement => 'Hotels Management';
+
+  @override
+  String get searchByHotelNameOrEmail => 'Search by hotel name or email';
+
+  @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get noHotelsInDatabase => 'No hotels found in the database';
+
+  @override
+  String get noHotelsMatchFilters => 'No hotels match your current filters';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String get subscribe => 'Sub';
+
+  @override
+  String get unsubscribe => 'Unsub';
+
+  @override
+  String get errorLoadingHotels => 'Error loading hotels';
+
+  @override
+  String get errorUpdatingSubscription => 'Error updating subscription status';
+
+  @override
+  String hotelNowSubscribed(String hotelName) {
+    return '$hotelName is now subscribed';
+  }
+
+  @override
+  String hotelNowUnsubscribed(String hotelName) {
+    return '$hotelName is now unsubscribed';
+  }
+
+  @override
+  String ratingValue(String rating, String count) {
+    return '$rating ($count)';
+  }
 }

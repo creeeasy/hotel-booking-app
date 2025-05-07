@@ -1,6 +1,8 @@
 import 'package:fatiel/enum/user_role.dart';
+import 'package:fatiel/models/admin.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/visitor.dart';
+import 'package:fatiel/services/admin/admin_service.dart';
 import 'package:fatiel/services/hotel/hotel_service.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utils/generate_search_keywords.dart';
@@ -26,15 +28,31 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       final user = currentUser;
 
       if (user != null) {
+        final adminData = await AdminService.getAdminById(user.id);
+        if (adminData != null) {
+          return AuthUser(
+            id: user.id,
+            email: user.email,
+            isEmailVerified: true,
+            role: UserRole.admin,
+          );
+        }
+
         final visitorData = await VisitorService.getVisitorById(user.id);
-        final userRole =
-            visitorData != null ? UserRole.visitor : UserRole.hotel;
+        if (visitorData != null) {
+          return AuthUser(
+            id: user.id,
+            email: user.email,
+            isEmailVerified: true,
+            role: UserRole.visitor,
+          );
+        }
 
         return AuthUser(
           id: user.id,
           email: user.email,
           isEmailVerified: true,
-          role: userRole,
+          role: UserRole.hotel,
         );
       } else {
         return null;
@@ -208,8 +226,70 @@ class FirebaseAuthProvider implements AuthProviderImplement {
   }
 
   @override
+  Future<AuthUser?> createAdmin({
+    required String email,
+    required String password,
+    required String name,
+  }) async {
+    try {
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = userCredential.user;
+      if (user != null) {
+        final now = DateTime.now();
+        await FirebaseFirestore.instance
+            .collection('admins')
+            .doc(user.uid)
+            .set({
+          'email': email,
+          'name': name,
+          'createdAt': now,
+          'updatedAt': now,
+          'role': UserRole.admin.toString().split('.').last,
+        });
+        return AuthUser.currentUser(user);
+      } else {
+        return null;
+      }
+    } on FirebaseAuthException catch (error) {
+      switch (error.code) {
+        case 'invalid-email':
+          throw InvalidEmailException();
+        case 'weak-password':
+          throw WeakPasswordException();
+        case 'email-already-in-use':
+          throw EmailAlreadyInUseException();
+        case 'missing-password':
+          throw MissingPasswordException();
+        default:
+          throw GenericException();
+      }
+    } catch (error) {
+      throw GenericException();
+    }
+  }
+
+  @override
   Future<dynamic> getUser() async {
     final user = currentUser!;
+
+    final admin = await AdminService.getAdminById(user.id);
+    if (admin != null) {
+      return {
+        'role': UserRole.admin,
+        'admin': Admin(
+          id: user.id,
+          email: user.email,
+          name: admin.name,
+          createdAt: admin.createdAt,
+          updatedAt: admin.updatedAt,
+        ),
+      };
+    }
 
     final hotel = await HotelService.getHotelById(user.id);
     if (hotel != null) {
@@ -225,6 +305,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         mapLink: hotel.mapLink,
         contactInfo: hotel.contactInfo,
         searchKeywords: hotel.searchKeywords,
+        isSubscribed: hotel.isSubscribed,
       );
       final isCompleted = [
         hotel.location,
@@ -232,21 +313,28 @@ class FirebaseAuthProvider implements AuthProviderImplement {
         hotel.mapLink?.isNotEmpty == true,
         hotel.contactInfo?.isNotEmpty == true
       ].every((detail) => detail != null && detail != false);
-      return {'isCompleted': isCompleted, 'hotel': hotelData};
+      return {
+        'role': UserRole.hotel,
+        'isCompleted': isCompleted,
+        'hotel': hotelData
+      };
     }
 
     final visitor = await VisitorService.getVisitorById(user.id);
     if (visitor != null) {
-      return Visitor(
-        id: user.id,
-        email: user.email,
-        firstName: visitor.firstName,
-        lastName: visitor.lastName,
-        favorites: visitor.favorites,
-        bookings: visitor.bookings,
-        location: visitor.location,
-        avatarURL: visitor.avatarURL,
-      );
+      return {
+        'role': UserRole.visitor,
+        'visitor': Visitor(
+          id: user.id,
+          email: user.email,
+          firstName: visitor.firstName,
+          lastName: visitor.lastName,
+          favorites: visitor.favorites,
+          bookings: visitor.bookings,
+          location: visitor.location,
+          avatarURL: visitor.avatarURL,
+        ),
+      };
     }
 
     return null;
@@ -286,6 +374,17 @@ class FirebaseAuthProvider implements AuthProviderImplement {
       }
     } else {
       throw UserNotLoggedInException();
+    }
+  }
+
+  @override
+  Future<bool> checkHotelSubscription({required String hotelId}) async {
+    try {
+      final hotel = await HotelService.getHotelById(hotelId);
+
+      return hotel!.isSubscribed == true;
+    } catch (error) {
+      throw GenericException();
     }
   }
 }

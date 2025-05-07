@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/models/booking.dart';
+import 'package:fatiel/models/booking_with_details.dart';
 import 'package:fatiel/models/room.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
@@ -285,6 +286,74 @@ class BookingService {
     } catch (e) {
       log('Error fetching user bookings: $e');
       return [];
+    }
+  }
+
+  static Future<List<BookingWithDetails>> getRecentBookings() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .orderBy('createdAt', descending: true)
+          .limit(10)
+          .get();
+
+      List<BookingWithDetails> bookingsWithDetails = [];
+
+      for (var doc in querySnapshot.docs) {
+        final booking = Booking.fromFirestore(doc);
+
+        // Fetch visitor, hotel, and room details
+        final visitor = await VisitorService.getVisitorById(booking.visitorId);
+        final hotelSnapshot = await FirebaseFirestore.instance
+            .collection('hotels')
+            .doc(booking.hotelId)
+            .get();
+        final roomSnapshot = await FirebaseFirestore.instance
+            .collection('rooms')
+            .doc(booking.roomId)
+            .get();
+
+        if (hotelSnapshot.exists && roomSnapshot.exists) {
+          final hotelName = hotelSnapshot['hotelName'] as String;
+          final roomName = roomSnapshot['roomName'] as String;
+          final commission = roomSnapshot['commission'] as double;
+
+          bookingsWithDetails.add(
+            BookingWithDetails(
+              booking: booking,
+              visitorName:
+                  '${visitor?.firstName ?? 'Unknown'} ${visitor?.lastName ?? ''}',
+              hotelName: hotelName,
+              roomName: roomName,
+              commission: commission,
+            ),
+          );
+        }
+      }
+
+      return bookingsWithDetails;
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching recent bookings: $e');
+      return [];
+    } catch (e) {
+      log('Error fetching recent bookings: $e');
+      return [];
+    }
+  }
+
+  /// Fetches the total number of visitors
+  static Future<int> getTotalVisitors() async {
+    try {
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('visitors').get();
+
+      return querySnapshot.size;
+    } on FirebaseException catch (e) {
+      log('Firebase error fetching total visitors: $e');
+      return 0;
+    } catch (e) {
+      log('Error fetching total visitors: $e');
+      return 0;
     }
   }
 }

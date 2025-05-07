@@ -71,3 +71,8 @@ class AuthEventHotelRegistering extends AuthEvent {
   final String password;
   const AuthEventHotelRegistering(this.hotelName, this.email, this.password);
 }
+
+class AuthEventCheckSubscriptionStatus extends AuthEvent {
+  final String hotelId;
+  const AuthEventCheckSubscriptionStatus(this.hotelId);
+}

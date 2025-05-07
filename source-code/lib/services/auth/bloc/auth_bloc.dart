@@ -1,4 +1,7 @@
+import 'package:fatiel/enum/user_role.dart';
+import 'package:fatiel/models/admin.dart';
 import 'package:fatiel/models/hotel.dart';
+import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/stream/visitor_bookings_stream.dart';
 import 'package:fatiel/services/stream/visitor_favorites_stream.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,46 +129,72 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<AuthEventInitialize>(((event, emit) async {
+    on<AuthEventInitialize>((event, emit) async {
       await provider.firebaseIntialize();
       final user = provider.currentUser;
+
       if (user == null) {
         emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } else {
-        // if (!user.isEmailVerified) {
-        //   emit(const AuthStateNeedsVerification(isLoading: false));
-        // } else {
         final authenticatedUser = await provider.getUser();
-        if (authenticatedUser is Map<String, dynamic> &&
-            authenticatedUser["hotel"] is Hotel) {
-          final bool isCompleted = authenticatedUser["isCompleted"] as bool;
-          final Hotel hotel = authenticatedUser["hotel"] as Hotel;
 
-          if (isCompleted) {
-            return emit(AuthStateHotelLoggedIn(
-              isLoading: false,
-              user: hotel,
-            ));
-          }
-
-          emit(AuthStateHotelDetailsCompletion(
-            exception: null,
-            isLoading: false,
-            hotel: hotel,
-          ));
-        } else {
-          VisitorBookingsStream.listenToBookings(null);
-          VisitorFavoritesStream.listenToFavorites();
-
-          return emit(AuthStateVisitorLoggedIn(
-            isLoading: false,
-            user: authenticatedUser,
-          ));
+        if (authenticatedUser == null) {
+          emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+          return;
         }
-        // }
-      }
-    }));
 
+        if (authenticatedUser is Map) {
+          final userRole = authenticatedUser['role'] as UserRole;
+
+          switch (userRole) {
+            case UserRole.admin:
+              final Admin admin = authenticatedUser["admin"] as Admin;
+              emit(AuthStateAdminLoggedIn(
+                isLoading: false,
+                admin: admin,
+              ));
+              break;
+
+            case UserRole.hotel:
+              final bool isCompleted = authenticatedUser["isCompleted"] as bool;
+              final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+
+              if (isCompleted) {
+                if (!hotel.isSubscribed) {
+                  return add(AuthEventCheckSubscriptionStatus(hotel.id));
+                }
+                emit(AuthStateHotelLoggedIn(
+                  isLoading: false,
+                  user: hotel,
+                ));
+              } else {
+                emit(AuthStateHotelDetailsCompletion(
+                  exception: null,
+                  isLoading: false,
+                  hotel: hotel,
+                ));
+              }
+              break;
+
+            case UserRole.visitor:
+              final Visitor visitor = authenticatedUser["visitor"] as Visitor;
+              VisitorBookingsStream.listenToBookings(null);
+              VisitorFavoritesStream.listenToFavorites();
+
+              emit(AuthStateVisitorLoggedIn(
+                isLoading: false,
+                user: visitor,
+              ));
+              break;
+
+            default:
+              emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+          }
+        } else {
+          emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+        }
+      }
+    });
     on<AuthEventHotelLogIn>((event, emit) async {
       final authenticatedUser = await provider.getUser();
       final Hotel hotel = authenticatedUser["hotel"] as Hotel;
@@ -204,6 +233,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           final Hotel hotel = authenticatedUser["hotel"] as Hotel;
 
           if (isCompleted) {
+            if (!hotel.isSubscribed) {
+              return add(AuthEventCheckSubscriptionStatus(hotel.id));
+            }
             return emit(AuthStateHotelLoggedIn(
               isLoading: false,
               user: hotel,
@@ -214,6 +246,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             exception: null,
             isLoading: false,
             hotel: hotel,
+          ));
+        } else if (authenticatedUser is Map<String, dynamic> &&
+            authenticatedUser["admin"] is Admin) {
+          final Admin admin = authenticatedUser["admin"] as Admin;
+          return emit(AuthStateAdminLoggedIn(
+            isLoading: false,
+            admin: admin,
           ));
         } else {
           VisitorBookingsStream.listenToBookings(null);
@@ -234,7 +273,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     });
-
     on<AuthEventLogOut>((event, emit) async {
       try {
         await provider.logOut();
@@ -277,6 +315,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ));
         emit(const AuthStateVisitorRegistering(
             exception: null, isLoading: false));
+      }
+    });
+
+    on<AuthEventCheckSubscriptionStatus>((event, emit) async {
+      try {
+        final hotelId = event.hotelId;
+        final bool isSubscribed =
+            await provider.checkHotelSubscription(hotelId: hotelId);
+
+        if (!isSubscribed) {
+          final authenticatedUser = await provider.getUser();
+          final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+
+          emit(AuthStateHotelSubscriptionRequired(
+            hotel: hotel,
+            isLoading: false,
+          ));
+        } else {
+          final authenticatedUser = await provider.getUser();
+          final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+
+          emit(AuthStateHotelLoggedIn(
+            isLoading: false,
+            user: hotel,
+          ));
+        }
+      } on Exception catch (exception) {
+        emit(AuthStateLoggedOut(
+          exception: exception,
+          isLoading: false,
+        ));
       }
     });
   }
