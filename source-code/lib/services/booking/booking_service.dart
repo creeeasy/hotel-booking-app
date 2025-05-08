@@ -333,9 +333,11 @@ class BookingService {
 
       return bookingsWithDetails;
     } on FirebaseException catch (e) {
+      print(e);
       log('Firebase error fetching recent bookings: $e');
       return [];
     } catch (e) {
+      print(e);
       log('Error fetching recent bookings: $e');
       return [];
     }

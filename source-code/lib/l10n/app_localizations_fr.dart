@@ -1321,7 +1321,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get popularDestinations => 'Destinations populaires';
 
   @override
-  String get tryAdjustingFilters => 'Essayez d\'ajuster vos filtres ou critères de recherche';
+  String get tryAdjustingFilters => 'Essayez d\'ajuster vos filtres ou revenez plus tard';
 
   @override
   String get exploreAll => 'Tout explorer';
@@ -1421,4 +1421,203 @@ class AppLocalizationsFr extends AppLocalizations {
   String ratingValue(String rating, String count) {
     return '$rating ($count)';
   }
+
+  @override
+  String get adminsManagement => 'Gestion des administrateurs';
+
+  @override
+  String get administratorAccounts => 'Comptes administrateurs';
+
+  @override
+  String get manageAdminAccounts => 'Gérer tous les comptes administrateurs et permissions';
+
+  @override
+  String get searchByName => 'Rechercher par nom...';
+
+  @override
+  String get noAdminAccounts => 'Aucun compte administrateur trouvé';
+
+  @override
+  String get noAdminsMatch => 'Aucun administrateur ne correspond à votre recherche';
+
+  @override
+  String get createNewAdmin => 'Créez un nouveau compte administrateur pour commencer';
+
+  @override
+  String get adjustSearchCriteria => 'Essayez d\'ajuster vos critères de recherche';
+
+  @override
+  String get addAdmin => 'Ajouter un administrateur';
+
+  @override
+  String get name => 'Nom';
+
+  @override
+  String get createdAt => 'Créé le';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get editAdmin => 'Modifier l\'administrateur';
+
+  @override
+  String get deleteAdmin => 'Supprimer l\'administrateur';
+
+  @override
+  String get totalAdmins => 'Total administrateurs';
+
+  @override
+  String get filtered => 'Filtré';
+
+  @override
+  String get ofWord => 'sur';
+
+  @override
+  String get adminId => 'ID administrateur';
+
+  @override
+  String get addNewAdmin => 'Ajouter un nouvel administrateur';
+
+  @override
+  String get createNewAdminAccount => 'Créer un nouveau compte administrateur';
+
+  @override
+  String get fullName => 'Nom complet';
+
+  @override
+  String get pleaseEnterName => 'Veuillez entrer un nom';
+
+  @override
+  String get pleaseEnterEmail => 'Veuillez entrer un e-mail';
+
+  @override
+  String get pleaseEnterValidEmail => 'Veuillez entrer un e-mail valide';
+
+  @override
+  String get pleaseEnterPassword => 'Veuillez entrer un mot de passe';
+
+  @override
+  String get passwordLengthError => 'Le mot de passe doit contenir au moins 6 caractères';
+
+  @override
+  String get passwordMustBeLong => 'Le mot de passe doit contenir au moins 6 caractères';
+
+  @override
+  String get creatingAdminAccount => 'Création du compte administrateur...';
+
+  @override
+  String get adminCreatedSuccessfully => 'Compte administrateur créé avec succès';
+
+  @override
+  String get updateAdminInfo => 'Mettre à jour les informations de l\'administrateur';
+
+  @override
+  String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get deleteAdminAccount => 'Supprimer le compte administrateur';
+
+  @override
+  String get confirmDeleteAdmin => 'Êtes-vous sûr de vouloir supprimer ce compte administrateur ?';
+
+  @override
+  String get createdOn => 'Créé le';
+
+  @override
+  String get actionCannotBeUndone => 'Cette action ne peut pas être annulée.';
+
+  @override
+  String get updatingAdminAccount => 'Mise à jour du compte administrateur...';
+
+  @override
+  String get adminUpdatedSuccessfully => 'Compte administrateur mis à jour avec succès';
+
+  @override
+  String failedToLoadAdmins(Object error) {
+    return 'Échec du chargement des administrateurs : $error';
+  }
+
+  @override
+  String get bookingsManagement => 'Gestion des réservations';
+
+  @override
+  String get totalBookings => 'Réservations totales';
+
+  @override
+  String get totalEarnings => 'Gains totaux';
+
+  @override
+  String get filterByDate => 'Filtrer par date';
+
+  @override
+  String get allTime => 'Toutes les dates';
+
+  @override
+  String get today => 'Aujourd\'hui';
+
+  @override
+  String get last7Days => '7 derniers jours';
+
+  @override
+  String get thisMonth => 'Ce mois-ci';
+
+  @override
+  String get lastMonth => 'Le mois dernier';
+
+  @override
+  String get customRange => 'Plage personnalisée';
+
+  @override
+  String get selectDateRange => 'Sélectionner une plage de dates';
+
+  @override
+  String get startDate => 'Date de début';
+
+  @override
+  String get endDate => 'Date de fin';
+
+  @override
+  String get applyFilter => 'Appliquer le filtre';
+
+  @override
+  String get nightsWord => 'nuits';
+
+  @override
+  String get bookedOn => 'Réservé le';
+
+  @override
+  String get commission => 'Commission';
+
+  @override
+  String get unknownHotel => 'Hôtel inconnu';
+
+  @override
+  String get unknownRoom => 'Chambre inconnue';
+
+  @override
+  String errorLoadingBookings(Object error) {
+    return 'Erreur de chargement des réservations : $error';
+  }
+
+  @override
+  String get dismiss => 'Ignorer';
+
+  @override
+  String get startDateBeforeEndDate => 'La date de début doit être avant la date de fin';
+
+  @override
+  String get endDateAfterStartDate => 'La date de fin doit être après la date de début';
+
+  @override
+  String get selectBothDates => 'Veuillez sélectionner les dates de début et de fin';
+
+  @override
+  String get loadingBookings => 'Chargement des réservations...';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get dashboard => 'Tableau de bord';
 }

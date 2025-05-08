@@ -248,10 +248,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get markCompleted => 'وضع علامة كمكتمل';
 
   @override
-  String get checkIn => 'تسجيل الوصول';
+  String get checkIn => 'تاريخ الوصول';
 
   @override
-  String get checkOut => 'تسجيل المغادرة';
+  String get checkOut => 'تاريخ المغادرة';
 
   @override
   String perNight(Object price) {
@@ -259,7 +259,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get noBookingsFound => 'لم يتم العثور على حجوزات';
+  String get noBookingsFound => 'لا توجد حجوزات';
 
   @override
   String get noBookingsDefault => 'ليس لديك أي حجوزات حتى الآن';
@@ -1069,7 +1069,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noHotelInformationAvailable => 'لا تتوفر معلومات الفندق';
 
   @override
-  String get room => 'غرفة';
+  String get room => 'الغرفة';
 
   @override
   String get noDescriptionAvailable => 'لا يوجد وصف متاح';
@@ -1321,7 +1321,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get popularDestinations => 'الوجهات الشعبية';
 
   @override
-  String get tryAdjustingFilters => 'حاول تعديل عوامل التصفية أو معايير البحث الخاصة بك';
+  String get tryAdjustingFilters => 'حاول تعديل عوامل التصفية أو تحقق لاحقًا';
 
   @override
   String get exploreAll => 'استكشف الكل';
@@ -1421,4 +1421,203 @@ class AppLocalizationsAr extends AppLocalizations {
   String ratingValue(String rating, String count) {
     return '$rating ($count)';
   }
+
+  @override
+  String get adminsManagement => 'إدارة المشرفين';
+
+  @override
+  String get administratorAccounts => 'حسابات المشرفين';
+
+  @override
+  String get manageAdminAccounts => 'إدارة جميع حسابات المشرفين والصلاحيات';
+
+  @override
+  String get searchByName => 'البحث بالاسم...';
+
+  @override
+  String get noAdminAccounts => 'لا توجد حسابات مشرفين';
+
+  @override
+  String get noAdminsMatch => 'لا توجد نتائج مطابقة للبحث';
+
+  @override
+  String get createNewAdmin => 'إنشاء حساب مشرف جديد للبدء';
+
+  @override
+  String get adjustSearchCriteria => 'حاول تعديل معايير البحث';
+
+  @override
+  String get addAdmin => 'إضافة مشرف';
+
+  @override
+  String get name => 'الاسم';
+
+  @override
+  String get createdAt => 'تاريخ الإنشاء';
+
+  @override
+  String get actions => 'الإجراءات';
+
+  @override
+  String get editAdmin => 'تعديل المشرف';
+
+  @override
+  String get deleteAdmin => 'حذف المشرف';
+
+  @override
+  String get totalAdmins => 'إجمالي المشرفين';
+
+  @override
+  String get filtered => 'مفلتر';
+
+  @override
+  String get ofWord => 'من';
+
+  @override
+  String get adminId => 'معرف المشرف';
+
+  @override
+  String get addNewAdmin => 'إضافة مشرف جديد';
+
+  @override
+  String get createNewAdminAccount => 'إنشاء حساب مشرف جديد';
+
+  @override
+  String get fullName => 'الاسم الكامل';
+
+  @override
+  String get pleaseEnterName => 'الرجاء إدخال الاسم';
+
+  @override
+  String get pleaseEnterEmail => 'الرجاء إدخال البريد الإلكتروني';
+
+  @override
+  String get pleaseEnterValidEmail => 'الرجاء إدخال بريد إلكتروني صالح';
+
+  @override
+  String get pleaseEnterPassword => 'الرجاء إدخال كلمة المرور';
+
+  @override
+  String get passwordLengthError => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get passwordMustBeLong => 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل';
+
+  @override
+  String get creatingAdminAccount => 'جاري إنشاء حساب المشرف...';
+
+  @override
+  String get adminCreatedSuccessfully => 'تم إنشاء حساب المشرف بنجاح';
+
+  @override
+  String get updateAdminInfo => 'تحديث معلومات المشرف';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get deleteAdminAccount => 'حذف حساب المشرف';
+
+  @override
+  String get confirmDeleteAdmin => 'هل أنت متأكد أنك تريد حذف حساب المشرف هذا؟';
+
+  @override
+  String get createdOn => 'تم الإنشاء في';
+
+  @override
+  String get actionCannotBeUndone => 'لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get updatingAdminAccount => 'جاري تحديث حساب المشرف...';
+
+  @override
+  String get adminUpdatedSuccessfully => 'تم تحديث حساب المشرف بنجاح';
+
+  @override
+  String failedToLoadAdmins(Object error) {
+    return 'فشل تحميل المشرفين: $error';
+  }
+
+  @override
+  String get bookingsManagement => 'إدارة الحجوزات';
+
+  @override
+  String get totalBookings => 'إجمالي الحجوزات';
+
+  @override
+  String get totalEarnings => 'إجمالي الأرباح';
+
+  @override
+  String get filterByDate => 'تصفية حسب التاريخ';
+
+  @override
+  String get allTime => 'كل الأوقات';
+
+  @override
+  String get today => 'اليوم';
+
+  @override
+  String get last7Days => 'آخر 7 أيام';
+
+  @override
+  String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get lastMonth => 'الشهر الماضي';
+
+  @override
+  String get customRange => 'نطاق مخصص';
+
+  @override
+  String get selectDateRange => 'اختر نطاق التاريخ';
+
+  @override
+  String get startDate => 'تاريخ البدء';
+
+  @override
+  String get endDate => 'تاريخ الانتهاء';
+
+  @override
+  String get applyFilter => 'تطبيق التصفية';
+
+  @override
+  String get nightsWord => 'ليالي';
+
+  @override
+  String get bookedOn => 'تم الحجز في';
+
+  @override
+  String get commission => 'العمولة';
+
+  @override
+  String get unknownHotel => 'فندق غير معروف';
+
+  @override
+  String get unknownRoom => 'غرفة غير معروفة';
+
+  @override
+  String errorLoadingBookings(Object error) {
+    return 'خطأ في تحميل الحجوزات: $error';
+  }
+
+  @override
+  String get dismiss => 'تجاهل';
+
+  @override
+  String get startDateBeforeEndDate => 'يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء';
+
+  @override
+  String get endDateAfterStartDate => 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء';
+
+  @override
+  String get selectBothDates => 'الرجاء تحديد تاريخي البدء والانتهاء';
+
+  @override
+  String get loadingBookings => 'جاري تحميل الحجوزات...';
+
+  @override
+  String get admins => 'المسؤولين';
+
+  @override
+  String get dashboard => 'لوحة التحكم';
 }

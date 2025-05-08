@@ -566,7 +566,7 @@ abstract class AppLocalizations {
   /// Title when no bookings exist
   ///
   /// In en, this message translates to:
-  /// **'No Bookings Found'**
+  /// **'No bookings found'**
   String get noBookingsFound;
 
   /// Default no bookings message
@@ -2582,7 +2582,7 @@ abstract class AppLocalizations {
   /// No description provided for @tryAdjustingFilters.
   ///
   /// In en, this message translates to:
-  /// **'Try adjusting your filters or search criteria'**
+  /// **'Try adjusting your filters or check back later'**
   String get tryAdjustingFilters;
 
   /// No description provided for @exploreAll.
@@ -2758,6 +2758,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{rating} ({count})'**
   String ratingValue(String rating, String count);
+
+  /// No description provided for @adminsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins Management'**
+  String get adminsManagement;
+
+  /// No description provided for @administratorAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator Accounts'**
+  String get administratorAccounts;
+
+  /// No description provided for @manageAdminAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage all administrator accounts and permissions'**
+  String get manageAdminAccounts;
+
+  /// No description provided for @searchByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name...'**
+  String get searchByName;
+
+  /// No description provided for @noAdminAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin accounts found'**
+  String get noAdminAccounts;
+
+  /// No description provided for @noAdminsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No admins match your search'**
+  String get noAdminsMatch;
+
+  /// No description provided for @createNewAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new admin account to get started'**
+  String get createNewAdmin;
+
+  /// No description provided for @adjustSearchCriteria.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search criteria'**
+  String get adjustSearchCriteria;
+
+  /// No description provided for @addAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Admin'**
+  String get addAdmin;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get createdAt;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @editAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Admin'**
+  String get editAdmin;
+
+  /// No description provided for @deleteAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Admin'**
+  String get deleteAdmin;
+
+  /// No description provided for @totalAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Admins'**
+  String get totalAdmins;
+
+  /// No description provided for @filtered.
+  ///
+  /// In en, this message translates to:
+  /// **'Filtered'**
+  String get filtered;
+
+  /// No description provided for @ofWord.
+  ///
+  /// In en, this message translates to:
+  /// **'of'**
+  String get ofWord;
+
+  /// No description provided for @adminId.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin ID'**
+  String get adminId;
+
+  /// No description provided for @addNewAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Admin'**
+  String get addNewAdmin;
+
+  /// No description provided for @createNewAdminAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new administrator account'**
+  String get createNewAdminAccount;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @pleaseEnterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get pleaseEnterName;
+
+  /// No description provided for @pleaseEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an email'**
+  String get pleaseEnterEmail;
+
+  /// No description provided for @pleaseEnterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get pleaseEnterValidEmail;
+
+  /// No description provided for @pleaseEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a password'**
+  String get pleaseEnterPassword;
+
+  /// No description provided for @passwordLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordLengthError;
+
+  /// No description provided for @passwordMustBeLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters long'**
+  String get passwordMustBeLong;
+
+  /// No description provided for @creatingAdminAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating admin account...'**
+  String get creatingAdminAccount;
+
+  /// No description provided for @adminCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin account created successfully'**
+  String get adminCreatedSuccessfully;
+
+  /// No description provided for @updateAdminInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Update administrator information'**
+  String get updateAdminInfo;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @deleteAdminAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Admin Account'**
+  String get deleteAdminAccount;
+
+  /// No description provided for @confirmDeleteAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this admin account?'**
+  String get confirmDeleteAdmin;
+
+  /// No description provided for @createdOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Created on'**
+  String get createdOn;
+
+  /// No description provided for @actionCannotBeUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get actionCannotBeUndone;
+
+  /// No description provided for @updatingAdminAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating admin account...'**
+  String get updatingAdminAccount;
+
+  /// No description provided for @adminUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin account updated successfully'**
+  String get adminUpdatedSuccessfully;
+
+  /// No description provided for @failedToLoadAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load admins: {error}'**
+  String failedToLoadAdmins(Object error);
+
+  /// No description provided for @bookingsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings Management'**
+  String get bookingsManagement;
+
+  /// No description provided for @totalBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Bookings'**
+  String get totalBookings;
+
+  /// No description provided for @totalEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Earnings'**
+  String get totalEarnings;
+
+  /// No description provided for @filterByDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by date'**
+  String get filterByDate;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 Days'**
+  String get last7Days;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @lastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Month'**
+  String get lastMonth;
+
+  /// No description provided for @customRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Range'**
+  String get customRange;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date Range'**
+  String get selectDateRange;
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get endDate;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filter'**
+  String get applyFilter;
+
+  /// No description provided for @nightsWord.
+  ///
+  /// In en, this message translates to:
+  /// **'nights'**
+  String get nightsWord;
+
+  /// No description provided for @bookedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked on'**
+  String get bookedOn;
+
+  /// No description provided for @commission.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission'**
+  String get commission;
+
+  /// No description provided for @unknownHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Hotel'**
+  String get unknownHotel;
+
+  /// No description provided for @unknownRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Room'**
+  String get unknownRoom;
+
+  /// No description provided for @errorLoadingBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading bookings: {error}'**
+  String errorLoadingBookings(Object error);
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// No description provided for @startDateBeforeEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date must be before end date'**
+  String get startDateBeforeEndDate;
+
+  /// No description provided for @endDateAfterStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End date must be after start date'**
+  String get endDateAfterStartDate;
+
+  /// No description provided for @selectBothDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select both start and end dates'**
+  String get selectBothDates;
+
+  /// No description provided for @loadingBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading bookings...'**
+  String get loadingBookings;
+
+  /// No description provided for @admins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get admins;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

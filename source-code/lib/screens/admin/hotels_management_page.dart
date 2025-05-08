@@ -1,5 +1,6 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/l10n/l10n.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/models/wilaya.dart';
@@ -126,23 +127,8 @@ class _HotelsManagementPageState extends State<HotelsManagementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeColors.background,
-      appBar: AppBar(
-        title: Text(
-          L10n.of(context).hotelsManagement,
-          style: const TextStyle(
-            color: ThemeColors.textOnPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: ThemeColors.primary,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Iconsax.refresh, color: ThemeColors.textOnPrimary),
-            onPressed: _loadHotels,
-            tooltip: L10n.of(context).refresh,
-          ),
-        ],
+      appBar: CustomBackAppBar(
+        title: L10n.of(context).hotelsManagement,
       ),
       body: Column(
         children: [
@@ -168,7 +154,7 @@ class _HotelsManagementPageState extends State<HotelsManagementPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: const BoxDecoration(
-        color: ThemeColors.primary,
+        color: ThemeColors.background,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(24.0),
           bottomRight: Radius.circular(24.0),
@@ -193,7 +179,7 @@ class _HotelsManagementPageState extends State<HotelsManagementPage> {
                 )
               : null,
           filled: true,
-          fillColor: ThemeColors.primaryDark,
+          fillColor: ThemeColors.primary,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
             borderSide: BorderSide.none,

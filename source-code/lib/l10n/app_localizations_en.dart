@@ -259,7 +259,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get noBookingsFound => 'No Bookings Found';
+  String get noBookingsFound => 'No bookings found';
 
   @override
   String get noBookingsDefault => 'You don\'t have any bookings yet';
@@ -1321,7 +1321,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get popularDestinations => 'Popular Destinations';
 
   @override
-  String get tryAdjustingFilters => 'Try adjusting your filters or search criteria';
+  String get tryAdjustingFilters => 'Try adjusting your filters or check back later';
 
   @override
   String get exploreAll => 'Explore All';
@@ -1421,4 +1421,203 @@ class AppLocalizationsEn extends AppLocalizations {
   String ratingValue(String rating, String count) {
     return '$rating ($count)';
   }
+
+  @override
+  String get adminsManagement => 'Admins Management';
+
+  @override
+  String get administratorAccounts => 'Administrator Accounts';
+
+  @override
+  String get manageAdminAccounts => 'Manage all administrator accounts and permissions';
+
+  @override
+  String get searchByName => 'Search by name...';
+
+  @override
+  String get noAdminAccounts => 'No admin accounts found';
+
+  @override
+  String get noAdminsMatch => 'No admins match your search';
+
+  @override
+  String get createNewAdmin => 'Create a new admin account to get started';
+
+  @override
+  String get adjustSearchCriteria => 'Try adjusting your search criteria';
+
+  @override
+  String get addAdmin => 'Add Admin';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get createdAt => 'Created At';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get editAdmin => 'Edit Admin';
+
+  @override
+  String get deleteAdmin => 'Delete Admin';
+
+  @override
+  String get totalAdmins => 'Total Admins';
+
+  @override
+  String get filtered => 'Filtered';
+
+  @override
+  String get ofWord => 'of';
+
+  @override
+  String get adminId => 'Admin ID';
+
+  @override
+  String get addNewAdmin => 'Add New Admin';
+
+  @override
+  String get createNewAdminAccount => 'Create a new administrator account';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get pleaseEnterName => 'Please enter a name';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter an email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get pleaseEnterPassword => 'Please enter a password';
+
+  @override
+  String get passwordLengthError => 'Password must be at least 6 characters';
+
+  @override
+  String get passwordMustBeLong => 'Password must be at least 6 characters long';
+
+  @override
+  String get creatingAdminAccount => 'Creating admin account...';
+
+  @override
+  String get adminCreatedSuccessfully => 'Admin account created successfully';
+
+  @override
+  String get updateAdminInfo => 'Update administrator information';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get deleteAdminAccount => 'Delete Admin Account';
+
+  @override
+  String get confirmDeleteAdmin => 'Are you sure you want to delete this admin account?';
+
+  @override
+  String get createdOn => 'Created on';
+
+  @override
+  String get actionCannotBeUndone => 'This action cannot be undone.';
+
+  @override
+  String get updatingAdminAccount => 'Updating admin account...';
+
+  @override
+  String get adminUpdatedSuccessfully => 'Admin account updated successfully';
+
+  @override
+  String failedToLoadAdmins(Object error) {
+    return 'Failed to load admins: $error';
+  }
+
+  @override
+  String get bookingsManagement => 'Bookings Management';
+
+  @override
+  String get totalBookings => 'Total Bookings';
+
+  @override
+  String get totalEarnings => 'Total Earnings';
+
+  @override
+  String get filterByDate => 'Filter by date';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get last7Days => 'Last 7 Days';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get lastMonth => 'Last Month';
+
+  @override
+  String get customRange => 'Custom Range';
+
+  @override
+  String get selectDateRange => 'Select Date Range';
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get endDate => 'End Date';
+
+  @override
+  String get applyFilter => 'Apply Filter';
+
+  @override
+  String get nightsWord => 'nights';
+
+  @override
+  String get bookedOn => 'Booked on';
+
+  @override
+  String get commission => 'Commission';
+
+  @override
+  String get unknownHotel => 'Unknown Hotel';
+
+  @override
+  String get unknownRoom => 'Unknown Room';
+
+  @override
+  String errorLoadingBookings(Object error) {
+    return 'Error loading bookings: $error';
+  }
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get startDateBeforeEndDate => 'Start date must be before end date';
+
+  @override
+  String get endDateAfterStartDate => 'End date must be after start date';
+
+  @override
+  String get selectBothDates => 'Please select both start and end dates';
+
+  @override
+  String get loadingBookings => 'Loading bookings...';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get dashboard => 'Dashboard';
 }

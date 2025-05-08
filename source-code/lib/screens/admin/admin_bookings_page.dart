@@ -1,7 +1,9 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/booking_with_details.dart';
+import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -78,7 +80,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
             .doc(booking.hotelId)
             .get();
         final hotelData = hotelDoc.data();
-        final hotelName = hotelData?['hotelName'] ?? 'Unknown Hotel';
+        final hotelName =
+            hotelData?['hotelName'] ?? L10n.of(context).unknownHotel;
 
         // Fetch room details
         final roomDoc = await FirebaseFirestore.instance
@@ -86,7 +89,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
             .doc(booking.roomId)
             .get();
         final roomData = roomDoc.data();
-        final roomName = roomData?['name'] ?? 'Unknown Room';
+        final roomName = roomData?['name'] ?? L10n.of(context).unknownRoom;
 
         // Calculate commission
         final commission = booking.totalPrice * _commissionRate;
@@ -110,7 +113,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
       setState(() {
         _isLoading = false;
       });
-      _showErrorSnackBar('Error loading bookings: $e');
+      _showErrorSnackBar(L10n.of(context).errorLoadingBookings(e.toString()));
     }
   }
 
@@ -124,7 +127,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           borderRadius: BorderRadius.circular(12),
         ),
         action: SnackBarAction(
-          label: 'Dismiss',
+          label: L10n.of(context).dismiss,
           textColor: ThemeColors.white,
           onPressed: () {},
         ),
@@ -218,23 +221,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeColors.background,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: ThemeColors.primary,
-        title: const Text(
-          'Bookings Management',
-          style: TextStyle(
-            color: ThemeColors.textOnPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Iconsax.refresh, color: ThemeColors.textOnPrimary),
-            onPressed: _loadBookings,
-            tooltip: 'Refresh bookings',
-          ),
-        ],
+      appBar: CustomBackAppBar(
+        title: L10n.of(context).bookingsManagement,
       ),
       body: _isLoading
           ? Center(
@@ -246,8 +234,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Loading bookings...',
-                    style: TextStyle(
+                    L10n.of(context).loadingBookings,
+                    style: const TextStyle(
                       color: ThemeColors.textSecondary,
                       fontSize: 14,
                     ),
@@ -298,15 +286,15 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Iconsax.calendar_1,
             size: 80,
             color: ThemeColors.grey400,
           ),
           const SizedBox(height: 24),
           Text(
-            'No bookings found',
-            style: TextStyle(
+            L10n.of(context).noBookingsFound,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ThemeColors.textSecondary,
@@ -314,8 +302,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Try adjusting your filters or check back later',
-            style: TextStyle(
+            L10n.of(context).tryAdjustingFilters,
+            style: const TextStyle(
               fontSize: 14,
               color: ThemeColors.textSecondary,
             ),
@@ -334,7 +322,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           // Total Bookings Card
           Expanded(
             child: _buildSummaryCard(
-              title: 'Total Bookings',
+              title: L10n.of(context).totalBookings,
               value: '$_totalBookings',
               icon: Iconsax.calendar_1,
               iconColor: ThemeColors.accentPurple,
@@ -345,7 +333,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           // Total Earnings Card
           Expanded(
             child: _buildSummaryCard(
-              title: 'Total Earnings',
+              title: L10n.of(context).totalEarnings,
               value: '\$${_totalEarnings.toStringAsFixed(2)}',
               icon: Iconsax.money,
               iconColor: ThemeColors.success,
@@ -401,7 +389,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: ThemeColors.textSecondary,
@@ -433,15 +421,15 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Iconsax.filter,
                 size: 16,
                 color: ThemeColors.textSecondary,
               ),
               const SizedBox(width: 8),
               Text(
-                'Filter by date',
-                style: TextStyle(
+                L10n.of(context).filterByDate,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: ThemeColors.textSecondary,
@@ -454,12 +442,12 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip('All Time', 'all'),
-                _buildFilterChip('Today', 'today'),
-                _buildFilterChip('Last 7 Days', 'last7days'),
-                _buildFilterChip('This Month', 'thisMonth'),
-                _buildFilterChip('Last Month', 'lastMonth'),
-                _buildFilterChip('Custom Range', 'custom'),
+                _buildFilterChip(L10n.of(context).allTime, 'all'),
+                _buildFilterChip(L10n.of(context).today, 'today'),
+                _buildFilterChip(L10n.of(context).last7Days, 'last7days'),
+                _buildFilterChip(L10n.of(context).thisMonth, 'thisMonth'),
+                _buildFilterChip(L10n.of(context).lastMonth, 'lastMonth'),
+                _buildFilterChip(L10n.of(context).customRange, 'custom'),
               ],
             ),
           ),
@@ -478,8 +466,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Select Date Range',
-                    style: TextStyle(
+                    L10n.of(context).selectDateRange,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: ThemeColors.textPrimary,
@@ -490,7 +478,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                     children: [
                       Expanded(
                         child: _buildDatePickerButton(
-                          label: 'Start Date',
+                          label: L10n.of(context).startDate,
                           date: _startDate,
                           icon: Iconsax.calendar,
                           onTap: () async {
@@ -518,7 +506,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                                 _setCustomDateRange(date, _endDate ?? date);
                               } else {
                                 _showErrorSnackBar(
-                                    'Start date must be before end date');
+                                    L10n.of(context).startDateBeforeEndDate);
                               }
                             }
                           },
@@ -527,7 +515,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildDatePickerButton(
-                          label: 'End Date',
+                          label: L10n.of(context).endDate,
                           date: _endDate,
                           icon: Iconsax.calendar,
                           onTap: () async {
@@ -555,7 +543,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                                 _setCustomDateRange(_startDate ?? date, date);
                               } else {
                                 _showErrorSnackBar(
-                                    'End date must be after start date');
+                                    L10n.of(context).endDateAfterStartDate);
                               }
                             }
                           },
@@ -571,8 +559,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                         if (_startDate != null && _endDate != null) {
                           _filterBookings();
                         } else {
-                          _showErrorSnackBar(
-                              'Please select both start and end dates');
+                          _showErrorSnackBar(L10n.of(context).selectBothDates);
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -583,7 +570,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Apply Filter'),
+                      child: Text(L10n.of(context).applyFilter),
                     ),
                   ),
                 ],
@@ -702,9 +689,9 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           // Header with visitor name and status
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: ThemeColors.cardHighlight,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
@@ -797,8 +784,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Room: ${bookingDetails.roomName}',
-                            style: TextStyle(
+                            '${L10n.of(context).room}: ${bookingDetails.roomName}',
+                            style: const TextStyle(
                               fontSize: 13,
                               color: ThemeColors.textSecondary,
                             ),
@@ -817,7 +804,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                     // Check-in date
                     Expanded(
                       child: _buildDateInfoCard(
-                        title: 'Check-in',
+                        title: L10n.of(context).checkIn,
                         date: booking.checkInDate,
                         icon: Iconsax.login,
                         color: ThemeColors.info,
@@ -836,8 +823,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '$nights ${nights == 1 ? 'night' : 'nights'}',
-                            style: TextStyle(
+                            '$nights ${nights == 1 ? L10n.of(context).night : L10n.of(context).nightsWord}',
+                            style: const TextStyle(
                               fontSize: 12,
                               color: ThemeColors.textSecondary,
                               fontWeight: FontWeight.w500,
@@ -850,7 +837,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                     // Check-out date
                     Expanded(
                       child: _buildDateInfoCard(
-                        title: 'Check-out',
+                        title: L10n.of(context).checkOut,
                         date: booking.checkOutDate,
                         icon: Iconsax.logout,
                         color: ThemeColors.warning,
@@ -872,8 +859,8 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
-                        'Booked on ${DateFormat('MMM dd, yyyy').format(booking.createdAt)}',
-                        style: TextStyle(
+                        '${L10n.of(context).bookedOn} ${DateFormat('MMM dd, yyyy').format(booking.createdAt)}',
+                        style: const TextStyle(
                           fontSize: 12,
                           color: ThemeColors.textSecondary,
                           fontWeight: FontWeight.w500,
@@ -896,7 +883,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                     // Total price
                     Expanded(
                       child: _buildPriceInfoCard(
-                        title: 'Total Price',
+                        title: L10n.of(context).totalPrice,
                         value: '\$${booking.totalPrice.toStringAsFixed(2)}',
                         icon: Iconsax.wallet,
                         color: ThemeColors.accentDeep,
@@ -907,7 +894,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
                     Expanded(
                       child: _buildPriceInfoCard(
                         title:
-                            'Commission (${(_commissionRate * 100).toInt()}%)',
+                            '${L10n.of(context).commission} (${(_commissionRate * 100).toInt()}%)',
                         value:
                             '\$${bookingDetails.commission.toStringAsFixed(2)}',
                         icon: Iconsax.money,
@@ -973,7 +960,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           ),
           Text(
             DateFormat('EEEE').format(date),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color: ThemeColors.textSecondary,
             ),
@@ -1012,7 +999,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: ThemeColors.textSecondary,
                     fontWeight: FontWeight.w500,
@@ -1062,6 +1049,14 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
   }
 
   String _getStatusText(BookingStatus status) {
-    return status.toString().split('.').last;
+    switch (status) {
+      case BookingStatus.completed:
+        return L10n.of(context).completed;
+      case BookingStatus.cancelled:
+        return L10n.of(context).cancelled;
+      case BookingStatus.pending:
+      default:
+        return L10n.of(context).pending;
+    }
   }
 }
