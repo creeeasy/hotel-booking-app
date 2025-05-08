@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fatiel/enum/avatar_action.dart';
 import 'package:fatiel/models/admin.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AdminService {
   static final _admins = FirebaseFirestore.instance.collection('admins');
@@ -19,29 +21,43 @@ class AdminService {
   }
 
   // Get all admins
-  static Stream<List<Admin>> getAllAdmins() {
-    return _admins.snapshots().map((snapshot) {
+  static Future<List<Admin>> getAllAdmins() async {
+    try {
+      final snapshot = await _admins.get();
       return snapshot.docs.map((doc) => Admin.fromFirestore(doc)).toList();
-    });
+    } catch (e) {
+      // Log error or handle it as needed
+      throw Exception('Failed to fetch admins: $e');
+    }
   }
 
   // Create Admin
   static Future<void> createAdmin({
-    required String userId,
     required String email,
     required String name,
+    required String password,
   }) async {
     try {
-      final now = DateTime.now();
-      final admin = Admin(
-        id: userId,
+      // Create user with Firebase Authentication
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
-        name: name,
-        createdAt: now,
-        updatedAt: now,
+        password: password,
       );
 
-      await _admins.doc(userId).set(admin.toFirestore());
+      // Get the auto-generated user ID from Firebase Auth
+      final userId = userCredential.user!.uid;
+      final now = DateTime.now();
+
+      // Store only the necessary fields in Firestore
+      await _admins.doc(userId).set({
+        'name': name,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+      });
+
+      // Optionally, update user profile in Firebase Auth
+      await userCredential.user?.updateDisplayName(name);
     } catch (e) {
       print('Error creating admin: $e');
       rethrow;
@@ -64,16 +80,6 @@ class AdminService {
     }
   }
 
-  // Delete Admin
-  static Future<void> deleteAdmin(String adminId) async {
-    try {
-      await _admins.doc(adminId).delete();
-    } catch (e) {
-      print('Error deleting admin: $e');
-      rethrow;
-    }
-  }
-
   // Toggle hotel subscription status
   static Future<void> toggleHotelSubscription({
     required String hotelId,
@@ -92,26 +98,30 @@ class AdminService {
     }
   }
 
-  // Promote user to admin
-  static Future<void> promoteToAdmin({
-    required String userId,
-    required String email,
-    required String name,
+  static Future<void> modifyAdminAvatar({
+    required AvatarAction action,
+    required String adminId,
+    String? newAvatarUrl,
   }) async {
-    try {
-      final now = DateTime.now();
-      final admin = Admin(
-        id: userId,
-        email: email,
-        name: name,
-        createdAt: now,
-        updatedAt: now,
-      );
+    final adminRef =
+        FirebaseFirestore.instance.collection('admins').doc(adminId);
 
-      await _admins.doc(userId).set(admin.toFirestore());
-    } catch (e) {
-      print('Error promoting user to admin: $e');
-      rethrow;
+    switch (action) {
+      case AvatarAction.update:
+        if (newAvatarUrl == null) {
+          throw Exception('New avatar URL is required for update action');
+        }
+        await adminRef.update({
+          'avatarURL': newAvatarUrl,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        break;
+      case AvatarAction.remove:
+        await adminRef.update({
+          'avatarURL': FieldValue.delete(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        break;
     }
   }
 }

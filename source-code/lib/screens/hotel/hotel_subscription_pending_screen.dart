@@ -15,231 +15,330 @@ class HotelSubscriptionPendingScreen extends StatefulWidget {
 }
 
 class _HotelSubscriptionPendingScreenState
-    extends State<HotelSubscriptionPendingScreen> {
+    extends State<HotelSubscriptionPendingScreen>
+    with SingleTickerProviderStateMixin {
   late Hotel hotel;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     hotel = context.read<AuthBloc>().state.currentUser as Hotel;
+
+    // Initialize animation controller
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ThemeColors.background,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Adaptive layout based on screen width
-          final bool isWideScreen = constraints.maxWidth > 600;
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final bool isWideScreen = constraints.maxWidth > 600;
 
-          return SafeArea(
-            child: Center(
+            return Center(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxWidth: isWideScreen ? 800 : double.infinity,
+                      maxWidth: isWideScreen ? 600 : double.infinity,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Banner image if available
-                        if (hotel.images.isNotEmpty)
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: ThemeColors.shadow,
-                                  blurRadius: 15,
-                                  spreadRadius: 2,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                height: isWideScreen ? 260 : 200,
-                                decoration: BoxDecoration(
-                                  color: ThemeColors.grey200,
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black45,
-                                    ],
-                                  ),
-                                ),
-                                child: Image.network(
-                                  hotel.images.first,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: ThemeColors.primaryLight.withOpacity(0.15),
-                                      child: const Center(
-                                        child: Icon(
-                                          Iconsax.building_4,
-                                          size: 72,
-                                          color: ThemeColors.primary,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 40),
-
-                        // Welcome message with improved typography
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Welcome,",
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                                color: ThemeColors.textSecondary.withOpacity(0.8),
-                                letterSpacing: 0.2,
-                                height: 1.1,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              hotel.hotelName,
-                              style: const TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w800,
-                                color: ThemeColors.primaryDark,
-                                letterSpacing: 0.5,
-                                fontFamily: 'Poppins',
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Subscription status message with enhanced styling
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                ThemeColors.warning.withOpacity(0.05),
-                                ThemeColors.warning.withOpacity(0.15),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: ThemeColors.warning.withOpacity(0.4),
-                              width: 1.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: ThemeColors.warning.withOpacity(0.12),
-                                blurRadius: 12,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: ThemeColors.warning.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: const Icon(
-                                      Iconsax.warning_2,
-                                      color: ThemeColors.warning,
-                                      size: 26,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      "Your subscription is not active",
-                                      style: TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w700,
-                                        color: ThemeColors.textPrimary.withOpacity(0.9),
-                                        letterSpacing: 0.2,
-                                      ),
-                                    ),
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Hotel banner image if available
+                          if (hotel.images.isNotEmpty) ...[
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: ThemeColors.shadowDark
+                                        .withOpacity(0.25),
+                                    blurRadius: 20,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 10),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              Text(
-                                "Please contact support to activate your hotel account.",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: ThemeColors.textSecondary.withOpacity(0.85),
-                                  height: 1.5,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: Container(
+                                  height: isWideScreen ? 260 : 200,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black54,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Image.network(
+                                        hotel.images.first,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Container(
+                                            color: ThemeColors.primaryLight
+                                                .withOpacity(0.15),
+                                            child: const Center(
+                                              child: Icon(
+                                                Iconsax.building_4,
+                                                size: 80,
+                                                color: ThemeColors.primary,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      // Gradient overlay
+                                      Positioned.fill(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Colors.transparent,
+                                                ThemeColors.primaryDark
+                                                    .withOpacity(0.7),
+                                              ],
+                                              stops: const [0.6, 1.0],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 36),
+                            ),
+                            const SizedBox(height: 48),
+                          ],
 
-                        // Hotel information card with premium styling
-                        Container(
-                          decoration: BoxDecoration(
-                            color: ThemeColors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: ThemeColors.primary.withOpacity(0.08),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                                offset: const Offset(0, 6),
+                          // Lock icon in elegant circle
+                          Container(
+                            padding: const EdgeInsets.all(28),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  ThemeColors.primaryLight.withOpacity(0.3),
+                                  ThemeColors.primary.withOpacity(0.15),
+                                ],
                               ),
-                            ],
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ThemeColors.primary.withOpacity(0.15),
+                                  blurRadius: 16,
+                                  spreadRadius: 2,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                              border: Border.all(
+                                color:
+                                    ThemeColors.primaryLight.withOpacity(0.3),
+                                width: 2,
+                              ),
+                            ),
+                            child: const Icon(
+                              Iconsax.lock,
+                              size: 52,
+                              color: ThemeColors.primary,
+                            ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
+                          const SizedBox(height: 36),
+
+                          // Welcome message with enhanced typography
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: const TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Hello, ",
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w500,
+                                    color: ThemeColors.textPrimary,
+                                    fontFamily: 'Poppins',
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "${hotel.hotelName} 👋",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              color: ThemeColors.primary,
+                              fontFamily: 'Poppins',
+                              letterSpacing: 0.3,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 36),
+
+                          // Subscription pending message card with enhanced styling
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(28),
+                            decoration: BoxDecoration(
+                              color: ThemeColors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ThemeColors.shadow.withOpacity(0.12),
+                                  blurRadius: 24,
+                                  spreadRadius: 1,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                              border: Border.all(
+                                color: ThemeColors.border,
+                                width: 1.5,
+                              ),
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Row(
+                                Row(
                                   children: [
-                                    Icon(
-                                      Iconsax.info_circle,
-                                      color: ThemeColors.primary,
-                                      size: 24,
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: ThemeColors.warning
+                                            .withOpacity(0.15),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: const Icon(
+                                        Iconsax.timer_1,
+                                        color: ThemeColors.warning,
+                                        size: 26,
+                                      ),
                                     ),
-                                    SizedBox(width: 12),
-                                    Text(
-                                      "Account Information",
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w700,
-                                        color: ThemeColors.primary,
-                                        letterSpacing: 0.2,
+                                    const SizedBox(width: 16),
+                                    const Expanded(
+                                      child: Text(
+                                        "Your subscription is still pending",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                          color: ThemeColors.textPrimary,
+                                          letterSpacing: 0.3,
+                                          height: 1.3,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 20),
+                                const Text(
+                                  "You can't use the app until your account is activated by the admin. Please check back later.",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: ThemeColors.textSecondary,
+                                    letterSpacing: 0.2,
+                                    height: 1.6,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 36),
+
+                          // Account information card with premium styling
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(28),
+                            decoration: BoxDecoration(
+                              color: ThemeColors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ThemeColors.shadow.withOpacity(0.08),
+                                  blurRadius: 20,
+                                  spreadRadius: 0,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                              border: Border.all(
+                                color: ThemeColors.border,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: ThemeColors.primary
+                                            .withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: const Icon(
+                                        Iconsax.info_circle,
+                                        color: ThemeColors.primary,
+                                        size: 26,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    const Text(
+                                      "Account Information",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                        color: ThemeColors.primary,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 Divider(
                                   color: ThemeColors.grey300.withOpacity(0.6),
-                                  height: 32,
+                                  height: 40,
                                   thickness: 1.5,
                                 ),
                                 _buildInfoRow(
@@ -248,104 +347,76 @@ class _HotelSubscriptionPendingScreenState
                                   "Email",
                                   hotel.email,
                                 ),
-                                const SizedBox(height: 20),
                                 if (hotel.contactInfo != null) ...[
+                                  const SizedBox(height: 20),
                                   _buildInfoRow(
                                     context,
                                     Iconsax.call,
                                     "Contact",
                                     hotel.contactInfo!,
                                   ),
-                                  const SizedBox(height: 20),
                                 ],
                               ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 40),
+                          const SizedBox(height: 40),
 
-                        // Contact support button with premium styling
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [
-                              BoxShadow(
-                                color: ThemeColors.primary.withOpacity(0.3),
-                                blurRadius: 12,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
+                          // Additional subtle note at the bottom
+                          Text(
+                            "Our team will review your application shortly",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: ThemeColors.textSecondary.withOpacity(0.7),
+                              letterSpacing: 0.2,
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
-                          child: ElevatedButton.icon(
-                            icon: const Icon(Iconsax.support, size: 24),
+                          const SizedBox(height: 40),
+
+                          // Sign out button with improved styling
+                          TextButton.icon(
+                            icon: const Icon(
+                              Iconsax.logout,
+                              size: 20,
+                              color: Colors.red,
+                            ),
                             label: const Text(
-                              "Contact Support",
+                              "Sign Out",
                               style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.8,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
                               ),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: ThemeColors.primary,
-                              foregroundColor: ThemeColors.textOnPrimary,
-                              padding: const EdgeInsets.symmetric(vertical: 20),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 24),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(14),
+                                side: const BorderSide(
+                                    color: Colors.red, width: 1.5),
                               ),
+                              foregroundColor: Colors.red,
+
+                              backgroundColor: ThemeColors.background,
                             ),
                             onPressed: () {
-                              // Add contact support logic here
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text("Contact support feature coming soon"),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: ThemeColors.primaryDark,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              );
+                              context
+                                  .read<AuthBloc>()
+                                  .add(const AuthEventLogOut());
                             },
                           ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Sign out button with improved styling
-                        TextButton.icon(
-                          icon: const Icon(
-                            Iconsax.logout,
-                            size: 20,
-                            color: ThemeColors.textSecondary,
-                          ),
-                          label: const Text(
-                            "Sign Out",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: ThemeColors.textSecondary,
-                            ),
-                          ),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Add sign out logic here
-                            context.read<AuthBloc>().add(const AuthEventLogOut());
-                          },
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -356,10 +427,10 @@ class _HotelSubscriptionPendingScreenState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: ThemeColors.primary.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(12),
+            color: ThemeColors.primaryLight.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
             icon,
@@ -367,7 +438,7 @@ class _HotelSubscriptionPendingScreenState
             color: ThemeColors.primary,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 18),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

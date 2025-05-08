@@ -23,7 +23,7 @@ import 'package:fatiel/screens/visitor/search_hotel_screen.dart';
 import 'package:fatiel/screens/visitor/update_informations_screen.dart';
 import 'package:fatiel/screens/visitor/update_password_sceen.dart';
 import 'package:fatiel/screens/visitor/visitor_home_screen.dart';
-import 'package:fatiel/screens/visitor/visitor_profile_screen.dart';
+import 'package:fatiel/screens/visitor/generic_profile_screen.dart';
 import 'package:fatiel/screens/visitor/wilaya_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
           allWilayaViewRoute: (context) => const AllWilayaScreen(),
           reviewsScreenRoute: (context) => const ReviewsScreen(),
           hotelBrowseScreenRoute: (context) => const HotelBrowseView(),
-          visitorProfileRoute: (context) => const VisitorProfileScreen(),
+          genericProfileRoute: (context) => const GenericProfileScreen(),
           updatePasswordRoute: (context) => const UpdatePasswordScreen(),
           updateInformationRoute: (context) => const UpdateUserInformation(),
           hotelDashboardRoute: (context) => const HotelDashboardScreen(),

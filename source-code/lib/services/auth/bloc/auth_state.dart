@@ -98,7 +98,6 @@ class AuthStateLoggedOut extends AuthState with EquatableMixin {
   List<Object?> get props => [exception, isLoading];
 }
 
-
 class AuthStateHotelSubscriptionRequired extends AuthState {
   final Hotel hotel;
   final String message;
@@ -118,5 +117,6 @@ class AuthStateAdminLoggedIn extends AuthState {
     required this.admin,
   }) : super(
           isLoading: isLoading,
+          currentUser: admin,
         );
 }

@@ -249,7 +249,6 @@ class FirebaseAuthProvider implements AuthProviderImplement {
           'name': name,
           'createdAt': now,
           'updatedAt': now,
-          'role': UserRole.admin.toString().split('.').last,
         });
         return AuthUser.currentUser(user);
       } else {
@@ -287,6 +286,7 @@ class FirebaseAuthProvider implements AuthProviderImplement {
           name: admin.name,
           createdAt: admin.createdAt,
           updatedAt: admin.updatedAt,
+          avatarURL: admin.avatarURL,
         ),
       };
     }

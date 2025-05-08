@@ -17,26 +17,25 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
   List<Admin> _filteredAdmins = [];
   bool _isLoading = true;
   String _searchQuery = '';
-  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
     _fetchCurrentUserId();
-    _listenToAdmins();
+    _fetchAdmins();
   }
 
   Future<void> _fetchCurrentUserId() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       setState(() {
-        _currentUserId = user.uid;
       });
     }
   }
 
-  void _listenToAdmins() {
-    AdminService.getAllAdmins().listen((adminsList) {
+  Future<void> _fetchAdmins() async {
+    try {
+      final adminsList = await AdminService.getAllAdmins();
       if (mounted) {
         setState(() {
           _admins = adminsList;
@@ -44,14 +43,14 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
           _isLoading = false;
         });
       }
-    }, onError: (error) {
+    } catch (error) {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
         _showErrorSnackBar('Failed to load admins: $error');
       }
-    });
+    }
   }
 
   void _applySearch() {
@@ -59,9 +58,7 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
       _filteredAdmins = List.from(_admins);
     } else {
       _filteredAdmins = _admins
-          .where((admin) =>
-              admin.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              admin.email.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .where((admin) => admin.name.toLowerCase().contains(_searchQuery.toLowerCase()))
           .toList();
     }
   }
@@ -111,6 +108,13 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _fetchAdmins,
+        backgroundColor: ThemeColors.primary,
+        foregroundColor: ThemeColors.textOnPrimary,
+        child: const Icon(Iconsax.refresh),
+        tooltip: 'Refresh',
       ),
     );
   }
@@ -173,7 +177,7 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
                 Iconsax.search_normal,
                 color: ThemeColors.primary,
               ),
-              hintText: 'Search by name or email...',
+              hintText: 'Search by name...',
               hintStyle: const TextStyle(
                 color: ThemeColors.textSecondary,
               ),
@@ -287,15 +291,6 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
             ),
             DataColumn(
               label: Text(
-                'Email',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: ThemeColors.textPrimary,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
                 'Created At',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -322,52 +317,26 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
                     fontWeight: FontWeight.w500,
                   ),
                 )),
-                DataCell(Text(admin.email)),
                 DataCell(Text(
                   '${admin.createdAt.day}/${admin.createdAt.month}/${admin.createdAt.year}',
                 )),
                 DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          _showEditAdminDialog(admin);
-                        },
-                        icon: const Icon(
-                          Iconsax.edit,
-                          size: 20,
-                          color: ThemeColors.primary,
-                        ),
-                        tooltip: 'Edit',
-                        style: IconButton.styleFrom(
-                          backgroundColor: ThemeColors.surface,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                  IconButton(
+                    onPressed: () {
+                      _showEditAdminDialog(admin);
+                    },
+                    icon: const Icon(
+                      Iconsax.edit,
+                      size: 20,
+                      color: ThemeColors.primary,
+                    ),
+                    tooltip: 'Edit',
+                    style: IconButton.styleFrom(
+                      backgroundColor: ThemeColors.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const SizedBox(width: 8),
-                      // Only allow deleting other admins, not yourself
-                      if (admin.id != _currentUserId)
-                        IconButton(
-                          onPressed: () {
-                            _showDeleteAdminConfirmation(admin);
-                          },
-                          icon: const Icon(
-                            Iconsax.trash,
-                            size: 20,
-                            color: ThemeColors.error,
-                          ),
-                          tooltip: 'Delete',
-                          style: IconButton.styleFrom(
-                            backgroundColor: ThemeColors.surface,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -561,29 +530,30 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
       _showLoadingDialog('Creating admin account...');
 
       // Create user with Firebase Auth and add to Firestore
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await AdminService.createAdmin(
         email: email,
+        name: name,
         password: password,
-      ).then((userCredential) async {
-        // Now add the admin to Firestore using AdminService
-        await AdminService.createAdmin(
-          userId: userCredential.user!.uid,
-          email: email,
-          name: name,
-        );
-      });
-
+      );
+      
       // Hide loading indicator
-      Navigator.of(context, rootNavigator: true).pop();
-
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      
+      // Refresh the admins list
+      await _fetchAdmins();
+      
       // Show success message
       _showSuccessSnackBar('Admin account created successfully');
     } catch (e) {
-      // Hide loading indicator
-      Navigator.of(context, rootNavigator: true).pop();
+      if (context.mounted) {
+        // Hide loading indicator
+        Navigator.of(context, rootNavigator: true).pop();
 
-      // Show error message
-      _showErrorSnackBar('Error: ${e.toString()}');
+        // Show error message
+        _showErrorSnackBar('Error: ${e.toString()}');
+      }
     }
   }
 
@@ -649,36 +619,6 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
-                  // Display email as read-only
-                  TextFormField(
-                    initialValue: admin.email,
-                    enabled: false,
-                    decoration: InputDecoration(
-                      labelText: 'Email (cannot be changed)',
-                      labelStyle: const TextStyle(
-                        color: ThemeColors.textSecondary,
-                      ),
-                      prefixIcon: const Icon(
-                        Iconsax.sms,
-                        color: ThemeColors.grey400,
-                      ),
-                      filled: true,
-                      fillColor: ThemeColors.grey100,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: ThemeColors.grey400,
-                        ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: ThemeColors.grey400,
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -732,103 +672,11 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
       // Hide loading indicator
       Navigator.of(context, rootNavigator: true).pop();
 
+      // Refresh the admins list
+      await _fetchAdmins();
+
       // Show success message
       _showSuccessSnackBar('Admin updated successfully');
-    } catch (e) {
-      // Hide loading indicator
-      Navigator.of(context, rootNavigator: true).pop();
-
-      // Show error message
-      _showErrorSnackBar('Error: ${e.toString()}');
-    }
-  }
-
-  void _showDeleteAdminConfirmation(Admin admin) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(
-            'Delete Admin',
-            style: TextStyle(
-              color: ThemeColors.error,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Iconsax.warning_2,
-                color: ThemeColors.warning,
-                size: 48,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Are you sure you want to delete ${admin.name}?',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'This action cannot be undone.',
-                style: TextStyle(
-                  color: ThemeColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: ThemeColors.textSecondary,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _deleteAdmin(admin);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ThemeColors.error,
-                foregroundColor: ThemeColors.textOnPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _deleteAdmin(Admin admin) async {
-    try {
-      _showLoadingDialog('Deleting admin...');
-
-      // Delete admin using service
-      await AdminService.deleteAdmin(admin.id);
-
-      // Hide loading indicator
-      Navigator.of(context, rootNavigator: true).pop();
-
-      // Show success message
-      _showSuccessSnackBar('Admin deleted successfully');
     } catch (e) {
       // Hide loading indicator
       Navigator.of(context, rootNavigator: true).pop();

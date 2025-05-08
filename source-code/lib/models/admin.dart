@@ -6,6 +6,7 @@ class Admin {
   final String name;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? avatarURL;
 
   Admin({
     required this.id,
@@ -13,7 +14,8 @@ class Admin {
     required this.name,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : 
+    this.avatarURL,
+  }) :
     createdAt = createdAt ?? DateTime.now(),
     updatedAt = updatedAt ?? DateTime.now();
 
@@ -23,6 +25,7 @@ class Admin {
     String? name,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? avatarURL,
   }) {
     return Admin(
       id: id ?? this.id,
@@ -30,6 +33,7 @@ class Admin {
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      avatarURL: avatarURL ?? this.avatarURL,
     );
   }
 
@@ -42,6 +46,7 @@ class Admin {
       name: data['name'] as String? ?? '',
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      avatarURL: data['avatarURL'] as String?,
     );
   }
 
@@ -52,6 +57,7 @@ class Admin {
       'name': name,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'avatarURL': avatarURL,
     };
   }
 }

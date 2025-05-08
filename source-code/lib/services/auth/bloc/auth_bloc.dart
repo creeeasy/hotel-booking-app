@@ -215,64 +215,65 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       try {
         await provider.logIn(email: email, password: password);
-        // final user = await provider.logIn(email: email, password: password);
+        emit(const AuthStateLoggedOut(exception: null, isLoading: false));
 
-        // if (!user!.isEmailVerified) {
-        //   emit(const AuthStateNeedsVerification(
-        //     isLoading: false,
-        //   ));
-        // } else {
-        emit(const AuthStateLoggedOut(
-          exception: null,
-          isLoading: false,
-        ));
-        final authenticatedUser = await provider.getUser();
-        if (authenticatedUser is Map<String, dynamic> &&
-            authenticatedUser["hotel"] is Hotel) {
-          final bool isCompleted = authenticatedUser["isCompleted"] as bool;
-          final Hotel hotel = authenticatedUser["hotel"] as Hotel;
+        final userData = await provider.getUser();
 
-          if (isCompleted) {
-            if (!hotel.isSubscribed) {
-              return add(AuthEventCheckSubscriptionStatus(hotel.id));
-            }
-            return emit(AuthStateHotelLoggedIn(
+        if (userData == null || userData["role"] == null) {
+          throw Exception("User role not found");
+        }
+
+        final role = userData["role"];
+
+        switch (role) {
+          case UserRole.admin:
+            final admin = userData["admin"] as Admin;
+            return emit(AuthStateAdminLoggedIn(
               isLoading: false,
-              user: hotel,
+              admin: admin,
             ));
-          }
 
-          emit(AuthStateHotelDetailsCompletion(
-            exception: null,
-            isLoading: false,
-            hotel: hotel,
-          ));
-        } else if (authenticatedUser is Map<String, dynamic> &&
-            authenticatedUser["admin"] is Admin) {
-          final Admin admin = authenticatedUser["admin"] as Admin;
-          return emit(AuthStateAdminLoggedIn(
-            isLoading: false,
-            admin: admin,
-          ));
-        } else {
-          VisitorBookingsStream.listenToBookings(null);
-          VisitorFavoritesStream.listenToFavorites();
+          case UserRole.hotel:
+            final bool isCompleted = userData["isCompleted"] as bool;
+            final Hotel hotel = userData["hotel"] as Hotel;
 
-          return emit(AuthStateVisitorLoggedIn(
-            isLoading: false,
-            user: authenticatedUser,
-          ));
-          // }
+            if (isCompleted) {
+              if (!hotel.isSubscribed) {
+                return add(AuthEventCheckSubscriptionStatus(hotel.id));
+              }
+              return emit(AuthStateHotelLoggedIn(
+                isLoading: false,
+                user: hotel,
+              ));
+            } else {
+              return emit(AuthStateHotelDetailsCompletion(
+                exception: null,
+                isLoading: false,
+                hotel: hotel,
+              ));
+            }
+
+          case UserRole.visitor:
+            VisitorBookingsStream.listenToBookings(null);
+            VisitorFavoritesStream.listenToFavorites();
+            final visitor = userData["visitor"] as Visitor;
+
+            return emit(AuthStateVisitorLoggedIn(
+              isLoading: false,
+              user: visitor,
+            ));
+
+          default:
+            throw Exception("Unknown user role: $role");
         }
       } on Exception catch (exception) {
-        emit(
-          AuthStateLoggedOut(
-            exception: exception,
-            isLoading: false,
-          ),
-        );
+        emit(AuthStateLoggedOut(
+          exception: exception,
+          isLoading: false,
+        ));
       }
     });
+
     on<AuthEventLogOut>((event, emit) async {
       try {
         await provider.logOut();

@@ -1,5 +1,4 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
-import 'package:fatiel/models/visitor.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +9,7 @@ class UserProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visitor = context.watch<AuthBloc>().state.currentUser as Visitor;
-    final avatarURL = visitor.avatarURL;
+    final avatarURL = context.watch<AuthBloc>().state.currentUser.avatarURL;
     final hasAvatar = avatarURL?.isNotEmpty == true;
 
     return Container(

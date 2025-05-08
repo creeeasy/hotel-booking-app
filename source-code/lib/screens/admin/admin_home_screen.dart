@@ -1,7 +1,7 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/screens/admin/admins_management_page.dart';
 import 'package:fatiel/screens/admin/admin_bookings_page.dart';
-import 'package:fatiel/screens/admin/dashboard_page.dart';
+import 'package:fatiel/screens/admin/admin_dashboard_page.dart';
 import 'package:fatiel/screens/admin/hotels_management_page.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';

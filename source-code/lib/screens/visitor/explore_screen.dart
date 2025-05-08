@@ -89,7 +89,7 @@ class _ExploreViewState extends State<ExploreView> {
               children: [
                 InkWell(
                   onTap: () =>
-                      Navigator.pushNamed(context, visitorProfileRoute),
+                      Navigator.pushNamed(context, genericProfileRoute),
                   borderRadius: BorderRadius.circular(24),
                   child: Container(
                     decoration: BoxDecoration(

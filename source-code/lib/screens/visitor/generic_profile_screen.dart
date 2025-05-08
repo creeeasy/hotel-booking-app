@@ -3,10 +3,13 @@ import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/avatar_action.dart';
 import 'package:fatiel/helpers/auth_helper.dart';
+import 'package:fatiel/models/admin.dart';
 import 'package:fatiel/providers/locale_provider.dart';
+import 'package:fatiel/services/admin/admin_service.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
 import 'package:fatiel/services/visitor/visitor_service.dart';
 import 'package:fatiel/utilities/dialogs/generic_dialog.dart';
+import 'package:fatiel/widgets/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:iconsax/iconsax.dart';
@@ -18,14 +21,14 @@ import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class VisitorProfileScreen extends StatefulWidget {
-  const VisitorProfileScreen({super.key});
+class GenericProfileScreen extends StatefulWidget {
+  const GenericProfileScreen({super.key});
 
   @override
-  State<VisitorProfileScreen> createState() => _VisitorProfileScreenState();
+  State<GenericProfileScreen> createState() => _GenericProfileScreenState();
 }
 
-class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
+class _GenericProfileScreenState extends State<GenericProfileScreen> {
   Uint8List? _imageBytes;
   String? _imageUrl;
   bool _isUploading = false;
@@ -37,8 +40,15 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
   }
 
   Future<void> _loadProfileImage() async {
-    final visitor = context.read<AuthBloc>().state.currentUser as Visitor;
-    setState(() => _imageUrl = visitor.avatarURL);
+    final currentUser = context.read<AuthBloc>().state.currentUser;
+
+    setState(() {
+      if (currentUser is Visitor) {
+        _imageUrl = currentUser.avatarURL;
+      } else if (currentUser is Admin) {
+        _imageUrl = currentUser.avatarURL;
+      }
+    });
   }
 
   Future<void> _pickAndUploadImage() async {
@@ -54,18 +64,27 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
           await CloudinaryService.uploadImageWeb(fileBytes, pickedFile.name);
       if (imageUrl == null) throw Exception(L10n.of(context).imageUploadFailed);
 
-      final visitorId =
-          (context.read<AuthBloc>().state.currentUser as Visitor).id;
-      await VisitorService.modifyVisitorAvatar(
-        action: AvatarAction.update,
-        visitorId: visitorId,
-        newAvatarUrl: imageUrl,
-      );
+      final currentUser = context.read<AuthBloc>().state.currentUser;
+
+      if (currentUser is Visitor) {
+        await VisitorService.modifyVisitorAvatar(
+          action: AvatarAction.update,
+          visitorId: currentUser.id,
+          newAvatarUrl: imageUrl,
+        );
+      } else if (currentUser is Admin) {
+        await AdminService.modifyAdminAvatar(
+          action: AvatarAction.update,
+          adminId: currentUser.id,
+          newAvatarUrl: imageUrl,
+        );
+      }
 
       setState(() {
         _imageBytes = fileBytes;
         _imageUrl = imageUrl;
       });
+
       if (context.mounted) {
         _showSnackBar(L10n.of(context).profileImageUpdatedSuccessfully);
         context.read<AuthBloc>().add(const AuthEventInitialize());
@@ -92,12 +111,19 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
     if (!shouldDelete) return;
 
     try {
-      final visitorId =
-          (context.read<AuthBloc>().state.currentUser as Visitor).id;
-      await VisitorService.modifyVisitorAvatar(
-        action: AvatarAction.remove,
-        visitorId: visitorId,
-      );
+      final currentUser = context.read<AuthBloc>().state.currentUser;
+
+      if (currentUser is Visitor) {
+        await VisitorService.modifyVisitorAvatar(
+          action: AvatarAction.remove,
+          visitorId: currentUser.id,
+        );
+      } else if (currentUser is Admin) {
+        await AdminService.modifyAdminAvatar(
+          action: AvatarAction.remove,
+          adminId: currentUser.id,
+        );
+      }
 
       setState(() {
         _imageBytes = null;
@@ -105,6 +131,7 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       });
 
       _showSnackBar(L10n.of(context).profileImageRemoved);
+      context.read<AuthBloc>().add(const AuthEventInitialize());
     } catch (e) {
       _showSnackBar("${L10n.of(context).failedToRemoveImage}: ${e.toString()}");
     }
@@ -205,10 +232,22 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
       );
     }
 
-    final visitor = context.read<AuthBloc>().state.currentUser as Visitor;
-    return VisitorProfile(
-      visitor: visitor.copyWith(avatarURL: _imageUrl ?? visitor.avatarURL),
-    );
+    final currentUser = context.read<AuthBloc>().state.currentUser;
+
+    if (currentUser is Visitor) {
+      return UserProfile(
+        avatarURL: _imageUrl,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+      );
+    } else if (currentUser is Admin) {
+      return UserProfile(
+        avatarURL: _imageUrl,
+        name: currentUser.name,
+      );
+    }
+
+    return const UserProfile();
   }
 
   Widget _buildEditPhotoButton() {
@@ -288,6 +327,8 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
   }
 
   Widget _buildAccountSettingsSection() {
+    final currentUser = context.read<AuthBloc>().state.currentUser;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -299,11 +340,13 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
             _showLanguagePopup(context);
           },
         ),
-        _buildSettingsOption(
-          icon: Iconsax.user_edit,
-          title: L10n.of(context).updateProfile,
-          onTap: () => Navigator.pushNamed(context, updateInformationRoute),
-        ),
+        // Only show profile update option for visitors
+        if (currentUser is Visitor)
+          _buildSettingsOption(
+            icon: Iconsax.user_edit,
+            title: L10n.of(context).updateProfile,
+            onTap: () => Navigator.pushNamed(context, updateInformationRoute),
+          ),
         _buildSettingsOption(
           icon: Iconsax.lock,
           title: L10n.of(context).changePassword,
@@ -437,79 +480,6 @@ class _VisitorProfileScreenState extends State<VisitorProfileScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class VisitorProfile extends StatelessWidget {
-  final Visitor visitor;
-
-  const VisitorProfile({
-    Key? key,
-    required this.visitor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final avatarURL = visitor.avatarURL;
-    final hasAvatar = avatarURL?.isNotEmpty == true;
-
-    return Container(
-      width: 136,
-      height: 136,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: ThemeColors.primaryLight,
-          width: 2,
-        ),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          if (hasAvatar)
-            ClipOval(
-              child: SizedBox(
-                width: 132,
-                height: 132,
-                child: Image.network(
-                  avatarURL!,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: ThemeColors.primary,
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                (loadingProgress.expectedTotalBytes ?? 1)
-                            : null,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, _, __) => _buildFallbackIcon(),
-                ),
-              ),
-            )
-          else
-            _buildFallbackIcon(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFallbackIcon() {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: ThemeColors.primary.withOpacity(0.1),
-      ),
-      child: const Icon(
-        Iconsax.user,
-        size: 48,
-        color: ThemeColors.primary,
       ),
     );
   }
