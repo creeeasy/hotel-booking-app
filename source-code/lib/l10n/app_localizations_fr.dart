@@ -1620,4 +1620,75 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dashboard => 'Tableau de bord';
+
+  @override
+  String get wavingHand => '👋';
+
+  @override
+  String get subscriptionPending => 'Votre abonnement est toujours en attente';
+
+  @override
+  String get subscriptionPendingMessage => 'Vous ne pouvez pas utiliser l\'application tant que votre compte n\'est pas activé par l\'administrateur. Veuillez vérifier plus tard.';
+
+  @override
+  String get accountInformation => 'Informations du compte';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get reviewApplicationNote => 'Notre équipe examinera votre demande sous peu';
+
+  @override
+  String get signOut => 'Se déconnecter';
+
+  @override
+  String get dashboardTitle => 'Tableau de bord';
+
+  @override
+  String errorLoadingDashboard(Object error) {
+    return 'Erreur lors du chargement des données du tableau de bord : $error';
+  }
+
+  @override
+  String get performanceAnalytics => 'Analyse de performance';
+
+  @override
+  String get earnings => 'Gains';
+
+  @override
+  String get dailyEarnings => 'Gains quotidiens (USD)';
+
+  @override
+  String get dailyBookings => 'Nombre de réservations quotidiennes';
+
+  @override
+  String get topPerformingHotels => 'Hôtels les plus performants';
+
+  @override
+  String get top5 => 'Top 5';
+
+  @override
+  String get dashboardOverview => 'Aperçu du tableau de bord';
+
+  @override
+  String get monitorPerformance => 'Surveillez les performances de votre plateforme';
+
+  @override
+  String get activeHotels => 'Hôtels actifs';
+
+  @override
+  String get totalVisitors => 'Visiteurs totaux';
+
+  @override
+  String get recentBookings => 'Réservations récentes';
+
+  @override
+  String get noBookingsAvailable => 'Aucune réservation disponible';
+
+  @override
+  String get booking => 'Réservation';
+
+  @override
+  String get active => 'Actif';
 }

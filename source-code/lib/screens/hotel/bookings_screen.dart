@@ -47,7 +47,8 @@ class _HotelBookingsPageState extends State<HotelBookingsPage> {
 
   Future<List<Booking>> _fetchBookings() async {
     try {
-      return await BookingService.fetchHotelBookings(hotelId: _hotel.id);
+      return await BookingService.fetchHotelBookings(
+          hotelId: _hotel.id, isAdmin: true);
     } catch (e) {
       debugPrint('Error fetching bookings: $e');
       return [];

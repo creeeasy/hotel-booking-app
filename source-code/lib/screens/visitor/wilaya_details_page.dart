@@ -36,7 +36,8 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
       setState(() {
         _wilayaId = args is int ? args : -1;
         if (_wilayaId != -1) {
-          _hotelsFuture = HotelService.getHotelsByWilaya(_wilayaId!);
+          _hotelsFuture =
+              HotelService.getHotelsByWilaya(_wilayaId!, isAdmin: false);
         }
       });
     }
@@ -51,7 +52,8 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
 
       if (_wilayaId != -1) {
         setState(() {
-          _hotelsFuture = HotelService.getHotelsByWilaya(_wilayaId!);
+          _hotelsFuture =
+              HotelService.getHotelsByWilaya(_wilayaId!, isAdmin: false);
         });
       }
     }
@@ -60,7 +62,8 @@ class _WilayaDetailsPageViewState extends State<WilayaDetailsPageView> {
   Future<void> _refreshData() async {
     if (_wilayaId == null || _wilayaId == -1) return;
     setState(() {
-      _hotelsFuture = HotelService.getHotelsByWilaya(_wilayaId!);
+      _hotelsFuture =
+          HotelService.getHotelsByWilaya(_wilayaId!, isAdmin: false);
     });
   }
 

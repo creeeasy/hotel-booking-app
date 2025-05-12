@@ -798,7 +798,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToLoadHotels => 'Failed to load hotels';
 
   @override
-  String get noHotelsAvailable => 'No Hotels Available';
+  String get noHotelsAvailable => 'No hotels available';
 
   @override
   String get noHotelsMatchingCriteria => 'We couldn\'t find any hotels matching your criteria.';
@@ -1620,4 +1620,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboard => 'Dashboard';
+
+  @override
+  String get wavingHand => '👋';
+
+  @override
+  String get subscriptionPending => 'Your subscription is still pending';
+
+  @override
+  String get subscriptionPendingMessage => 'You can\'t use the app until your account is activated by the admin. Please check back later.';
+
+  @override
+  String get accountInformation => 'Account Information';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get reviewApplicationNote => 'Our team will review your application shortly';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String errorLoadingDashboard(Object error) {
+    return 'Error loading dashboard data: $error';
+  }
+
+  @override
+  String get performanceAnalytics => 'Performance Analytics';
+
+  @override
+  String get earnings => 'Earnings';
+
+  @override
+  String get dailyEarnings => 'Daily Earnings (USD)';
+
+  @override
+  String get dailyBookings => 'Daily Bookings Count';
+
+  @override
+  String get topPerformingHotels => 'Top Performing Hotels';
+
+  @override
+  String get top5 => 'Top 5';
+
+  @override
+  String get dashboardOverview => 'Dashboard Overview';
+
+  @override
+  String get monitorPerformance => 'Monitor your platform performance';
+
+  @override
+  String get activeHotels => 'Active Hotels';
+
+  @override
+  String get totalVisitors => 'Total Visitors';
+
+  @override
+  String get recentBookings => 'Recent Bookings';
+
+  @override
+  String get noBookingsAvailable => 'No bookings available';
+
+  @override
+  String get booking => 'Booking';
+
+  @override
+  String get active => 'Active';
 }

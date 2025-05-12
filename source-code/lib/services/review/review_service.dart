@@ -17,7 +17,9 @@ class ReviewService {
     required String comment,
   }) async {
     try {
-      final booking = await BookingService.getBookingById(bookingId);
+      final booking = await BookingService.getBookingById(
+        bookingId,
+      );
 
       if (booking.status != BookingStatus.completed) {
         return const ReviewingFailure(

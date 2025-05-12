@@ -69,7 +69,7 @@ class _HotelBrowseViewState extends State<HotelBrowseView>
 
     fetchFilteredHotels = widget.filterFunction ??
         (HotelFilterParameters params) {
-          return HotelService.getAllHotels(params: params);
+          return HotelService.getAllHotels(params: params, isAdmin: false);
         };
     super.initState();
   }

@@ -1303,7 +1303,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reset => 'إعادة الضبط';
 
   @override
-  String get hello => 'مرحبا';
+  String get hello => 'مرحباً';
 
   @override
   String get findYourPerfectStay => 'ابحث عن إقامتك المثالية';
@@ -1620,4 +1620,75 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashboard => 'لوحة التحكم';
+
+  @override
+  String get wavingHand => '👋';
+
+  @override
+  String get subscriptionPending => 'اشتراكك لا يزال قيد الانتظار';
+
+  @override
+  String get subscriptionPendingMessage => 'لا يمكنك استخدام التطبيق حتى يتم تفعيل حسابك من قبل المسؤول. يرجى التحقق لاحقاً.';
+
+  @override
+  String get accountInformation => 'معلومات الحساب';
+
+  @override
+  String get contact => 'الاتصال';
+
+  @override
+  String get reviewApplicationNote => 'سيقوم فريقنا بمراجعة طلبك قريباً';
+
+  @override
+  String get signOut => 'تسجيل الخروج';
+
+  @override
+  String get dashboardTitle => 'لوحة التحكم';
+
+  @override
+  String errorLoadingDashboard(Object error) {
+    return 'خطأ في تحميل بيانات لوحة التحكم: $error';
+  }
+
+  @override
+  String get performanceAnalytics => 'تحليل الأداء';
+
+  @override
+  String get earnings => 'الأرباح';
+
+  @override
+  String get dailyEarnings => 'الأرباح اليومية (دولار)';
+
+  @override
+  String get dailyBookings => 'عدد الحجوزات اليومية';
+
+  @override
+  String get topPerformingHotels => 'أفضل الفنادق أداءً';
+
+  @override
+  String get top5 => 'أفضل 5';
+
+  @override
+  String get dashboardOverview => 'نظرة عامة على لوحة التحكم';
+
+  @override
+  String get monitorPerformance => 'مراقبة أداء منصتك';
+
+  @override
+  String get activeHotels => 'الفنادق النشطة';
+
+  @override
+  String get totalVisitors => 'إجمالي الزوار';
+
+  @override
+  String get recentBookings => 'الحجوزات الحديثة';
+
+  @override
+  String get noBookingsAvailable => 'لا توجد حجوزات متاحة';
+
+  @override
+  String get booking => 'حجز';
+
+  @override
+  String get active => 'نشط';
 }

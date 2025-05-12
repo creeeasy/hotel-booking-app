@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fatiel/enum/booking_status.dart';
+import 'package:fatiel/models/hotel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -30,6 +31,7 @@ class VisitorBookingsStream {
     if (status == null) {
       return _bookingsController.add([]);
     }
+
     _bookingSubscription = _firestore
         .collection('visitors')
         .doc(_visitorId)
@@ -44,17 +46,39 @@ class VisitorBookingsStream {
           List<String>.from(doc.data()?['bookings'] ?? []);
       final List<String> filteredBookings = [];
 
-      for (final bookingId in bookingIds) {
-        final bookingDoc =
-            await _firestore.collection('bookings').doc(bookingId).get();
-        final bookingData = bookingDoc.data() as Map<String, dynamic>?;
+      try {
+        for (final bookingId in bookingIds) {
+          log(bookingId);
+          final bookingDoc =
+              await _firestore.collection('bookings').doc(bookingId).get();
+          final bookingData = bookingDoc.data() as Map<String, dynamic>?;
 
-        if (bookingData?['status'].toString() == status.name) {
-          filteredBookings.add(bookingId);
+          if (bookingData == null) continue;
+
+          // Check booking status
+          if (bookingData['status'].toString() != status.name) continue;
+
+          // Fetch the associated hotel to check subscription status
+          final hotelDoc = await _firestore
+              .collection('hotels')
+              .doc(bookingData['hotelId'])
+              .get();
+
+          if (!hotelDoc.exists) continue;
+
+          final hotel = Hotel.fromFirestore(hotelDoc);
+
+          // Only add booking if the hotel is subscribed
+          if (hotel.isSubscribed) {
+            filteredBookings.add(bookingId);
+          }
         }
-      }
 
-      _bookingsController.add(filteredBookings);
+        _bookingsController.add(filteredBookings);
+      } catch (e) {
+        log('Error processing bookings: $e');
+        _bookingsController.add([]);
+      }
     }, onError: (e) => log('Error fetching bookings: $e'));
   }
 

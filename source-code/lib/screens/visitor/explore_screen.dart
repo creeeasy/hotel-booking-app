@@ -267,7 +267,7 @@ class _ExploreViewState extends State<ExploreView> {
             ),
             const SizedBox(height: 16),
             FutureBuilder<Map<int, int>>(
-              future: HotelService.getHotelStatistics(),
+              future: HotelService.getHotelStatistics(isAdmin: false),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CardLoadingIndicator(
@@ -484,8 +484,9 @@ class _ExploreViewState extends State<ExploreView> {
           : _currentFilters.location,
     );
     return _selectedTab == HotelListType.recommended
-        ? HotelService.getRecommendedHotels(params: params)
-        : HotelService.getNearbyHotels(userLocation, params: params);
+        ? HotelService.getRecommendedHotels(params: params, isAdmin: false)
+        : HotelService.getNearbyHotels(userLocation,
+            params: params, isAdmin: false);
   }
 
   String _getSectionTitle(int count) {
@@ -505,8 +506,10 @@ class _ExploreViewState extends State<ExploreView> {
               : L10n.of(context).hotelsNearYou,
           initialFilters: _currentFilters,
           filterFunction: (params) => _selectedTab == HotelListType.recommended
-              ? HotelService.getRecommendedHotels(params: params)
-              : HotelService.getNearbyHotels(userLocation, params: params),
+              ? HotelService.getRecommendedHotels(
+                  params: params, isAdmin: false)
+              : HotelService.getNearbyHotels(userLocation,
+                  params: params, isAdmin: false),
         ),
       ),
     );
@@ -521,8 +524,7 @@ class _ExploreViewState extends State<ExploreView> {
           useUserLocationOnly: true,
           initialFilters: _currentFilters.copyWith(location: wilaya.ind),
           filterFunction: (params) => HotelService.getRecommendedHotels(
-            params: params.copyWith(location: wilaya.ind),
-          ),
+              params: params.copyWith(location: wilaya.ind), isAdmin: false),
         ),
       ),
     );

@@ -31,7 +31,7 @@ class _HotelsManagementPageState extends State<HotelsManagementPage> {
   Future<void> _loadHotels() async {
     setState(() => _isLoading = true);
     try {
-      final hotels = await HotelService.getAllHotels();
+      final hotels = await HotelService.getAllHotels(isAdmin: true);
       setState(() {
         _allHotels = hotels;
         _applyFilters();

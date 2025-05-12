@@ -38,7 +38,7 @@ class _AllWilayaScreenState extends State<AllWilayaScreen> {
           children: [
             Expanded(
               child: FutureBuilder<Map<int, int>>(
-                future: HotelService.getHotelStatistics(),
+                future: HotelService.getHotelStatistics(isAdmin:false),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return _buildLoadingIndicator(context);

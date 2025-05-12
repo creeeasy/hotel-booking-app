@@ -41,8 +41,9 @@ class _SearchHotelViewState extends State<SearchHotelView> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (_searchController.text.isNotEmpty) {
         setState(() {
-          _searchResults =
-              HotelService.findHotelsByKeyword(_searchController.text);
+          _searchResults = HotelService.findHotelsByKeyword(
+              _searchController.text,
+              isAdmin: false);
         });
       } else {
         setState(() {
@@ -245,8 +246,9 @@ class _SearchHotelViewState extends State<SearchHotelView> {
           ElevatedButton(
             onPressed: () {
               setState(() {
-                _searchResults =
-                    HotelService.findHotelsByKeyword(_searchController.text);
+                _searchResults = HotelService.findHotelsByKeyword(
+                    _searchController.text,
+                    isAdmin: false);
               });
             },
             style: ElevatedButton.styleFrom(

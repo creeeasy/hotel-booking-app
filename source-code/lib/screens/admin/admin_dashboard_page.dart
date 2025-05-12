@@ -19,34 +19,76 @@ class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({Key? key}) : super(key: key);
 
   @override
-  _AdminDashboardPageState createState() => _AdminDashboardPageState();
+  State<AdminDashboardPage> createState() => _AdminDashboardPageState();
 }
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
-  List<BookingWithDetails> _bookings = [];
-  List<Hotel> _hotels = [];
-  int _totalVisitors = 0;
+  late List<BookingWithDetails> _bookings;
+  late List<Hotel> _hotels;
+  late int _totalVisitors;
   bool _isLoading = true;
   String _timeFilter = 'thisMonth';
-  List<ChartData> _earningsData = [];
-  List<ChartData> _bookingsData = [];
+  late List<ChartData> _earningsData;
+  late List<ChartData> _bookingsData;
   bool _showEarningsChart = true;
 
   @override
   void initState() {
     super.initState();
+    _bookings = [];
+    _hotels = [];
+    _totalVisitors = 0;
+    _earningsData = [];
+    _bookingsData = [];
     _loadDashboardData();
   }
 
   Future<void> _loadDashboardData() async {
+    if (!mounted) return;
+
     setState(() => _isLoading = true);
 
     try {
+      // Calculate date range based on current time filter
+      late DateTime startDate;
+      late DateTime endDate;
+      final now = DateTime.now();
+
+      switch (_timeFilter) {
+        case 'today':
+          startDate = DateTime(now.year, now.month, now.day);
+          endDate = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
+          break;
+        case 'last7days':
+          startDate = now.subtract(const Duration(days: 7));
+          endDate = now;
+          break;
+        case 'thisMonth':
+          startDate = DateTime(now.year, now.month, 1);
+          endDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59, 999);
+          break;
+        case 'lastMonth':
+          final lastMonth = DateTime(now.year, now.month - 1);
+          startDate = DateTime(lastMonth.year, lastMonth.month, 1);
+          endDate =
+              DateTime(lastMonth.year, lastMonth.month + 1, 0, 23, 59, 59, 999);
+          break;
+        default:
+          startDate = DateTime(now.year, 1, 1);
+          endDate = now;
+      }
+
       final results = await Future.wait([
-        BookingService.getRecentBookings(),
-        HotelService.getAllHotels(),
+        BookingService.getRecentBookings(
+          isAdmin: true,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+        HotelService.getAllHotels(isAdmin: true),
         BookingService.getTotalVisitors(),
       ]);
+
+      if (!mounted) return;
 
       setState(() {
         _bookings = results[0] as List<BookingWithDetails>;
@@ -57,40 +99,105 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      _showErrorSnackBar('Error loading dashboard data: $e');
+      _showErrorSnackBar(L10n.of(context).errorLoadingDashboard(e.toString()));
     }
   }
 
   void _generateChartData() {
     final now = DateTime.now();
-    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    DateTime startDate;
+    DateTime endDate;
 
-    Map<int, double> dailyEarnings = {};
-    Map<int, double> dailyBookingCounts = {};
-
-    for (int i = 1; i <= daysInMonth; i++) {
-      dailyEarnings[i] = 0;
-      dailyBookingCounts[i] = 0;
+    switch (_timeFilter) {
+      case 'today':
+        startDate = DateTime(now.year, now.month, now.day);
+        endDate = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
+        break;
+      case 'last7days':
+        startDate = now.subtract(const Duration(days: 7));
+        endDate = now;
+        break;
+      case 'thisMonth':
+        startDate = DateTime(now.year, now.month, 1);
+        endDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59, 999);
+        break;
+      case 'lastMonth':
+        final lastMonth = DateTime(now.year, now.month - 1);
+        startDate = DateTime(lastMonth.year, lastMonth.month, 1);
+        endDate =
+            DateTime(lastMonth.year, lastMonth.month + 1, 0, 23, 59, 59, 999);
+        break;
+      default:
+        startDate = DateTime(now.year, 1, 1);
+        endDate = now;
     }
 
-    for (var booking in _bookings) {
+    final dailyEarnings = <int, double>{};
+    final dailyBookingCounts = <int, double>{};
+
+    // Create a map to store days based on the time filter
+    final daysMap = <int, bool>{};
+    switch (_timeFilter) {
+      case 'today':
+        daysMap[now.day] = true;
+        break;
+      case 'last7days':
+        for (int i = 0; i < 7; i++) {
+          final day = now.subtract(Duration(days: i)).day;
+          daysMap[day] = true;
+        }
+        break;
+      case 'thisMonth':
+        final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+        for (int i = 1; i <= daysInMonth; i++) {
+          daysMap[i] = true;
+        }
+        break;
+      case 'lastMonth':
+        final lastMonth = DateTime(now.year, now.month - 1);
+        final daysInLastMonth =
+            DateTime(lastMonth.year, lastMonth.month + 1, 0).day;
+        for (int i = 1; i <= daysInLastMonth; i++) {
+          daysMap[i] = true;
+        }
+        break;
+    }
+
+    // Initialize the maps
+    daysMap.forEach((day, _) {
+      dailyEarnings[day] = 0;
+      dailyBookingCounts[day] = 0;
+    });
+
+    for (final booking in _bookings) {
       final bookingDate = booking.booking.createdAt;
-      if (bookingDate.month == now.month && bookingDate.year == now.year) {
+
+      // Check if booking is within the selected time range
+      if (bookingDate.isAfter(startDate) && bookingDate.isBefore(endDate)) {
         final day = bookingDate.day;
-        dailyEarnings[day] = (dailyEarnings[day] ?? 0) + booking.commission;
-        dailyBookingCounts[day] = (dailyBookingCounts[day] ?? 0) + 1;
+
+        // Only add if the day is in our allowed days map
+        if (daysMap.containsKey(day)) {
+          dailyEarnings[day] = (dailyEarnings[day] ?? 0) + booking.commission;
+          dailyBookingCounts[day] = (dailyBookingCounts[day] ?? 0) + 1;
+        }
       }
     }
 
     _earningsData = dailyEarnings.entries
         .map((entry) => ChartData(
-            x: DateTime(now.year, now.month, entry.key), y: entry.value))
+              x: DateTime(now.year, now.month, entry.key),
+              y: entry.value,
+            ))
         .toList();
 
     _bookingsData = dailyBookingCounts.entries
         .map((entry) => ChartData(
-            x: DateTime(now.year, now.month, entry.key), y: entry.value))
+              x: DateTime(now.year, now.month, entry.key),
+              y: entry.value,
+            ))
         .toList();
 
     _earningsData.sort((a, b) => a.x.compareTo(b.x));
@@ -101,7 +208,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   double get _totalEarnings =>
       _bookings.fold(0, (sum, booking) => sum + booking.commission);
   int get _activeHotels => _hotels.where((hotel) => hotel.isSubscribed).length;
-  double get _monthlyGrowth => 12.5;
   List<Hotel> get _topPerformingHotels => _hotels.take(5).toList();
   List<BookingWithDetails> get _recentBookings => _bookings.take(10).toList();
 
@@ -114,7 +220,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           backgroundColor: ThemeColors.background,
           body: _isLoading
               ? const Center(
-                  child: CircularProgressIndicator(color: ThemeColors.primary))
+                  child: CircularProgressIndicator(color: ThemeColors.primary),
+                )
               : NestedScrollView(
                   headerSliverBuilder: (context, innerBoxIsScrolled) {
                     return [
@@ -127,12 +234,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           background: _buildHeaderBackground(currentAdmin),
                           titlePadding:
                               const EdgeInsets.only(left: 16, bottom: 16),
-                          title: const Text(
-                            'Admin Dashboard',
-                            style: TextStyle(
-                              color: ThemeColors.textOnDark,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                          title: Text(
+                            L10n.of(context).dashboardTitle,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: ThemeColors.white,
                             ),
                           ),
                         ),
@@ -142,7 +249,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   body: _buildOverviewContent(),
                 ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => _loadDashboardData(),
+            onPressed: _loadDashboardData,
             backgroundColor: ThemeColors.primary,
             child: const Icon(Iconsax.refresh, color: ThemeColors.white),
           ),
@@ -161,9 +268,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           Positioned.fill(
             child: Opacity(
               opacity: 0.1,
-              child: Image.asset(
-                'assets/images/admin_bg_pattern.png',
-                fit: BoxFit.cover,
+              child: Icon(
+                Iconsax.chart_square,
+                color: ThemeColors.white.withOpacity(0.2),
+                size: 200,
               ),
             ),
           ),
@@ -207,12 +315,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             fontSize: 14,
                           ),
                         ),
-                        Text(
-                          admin.name,
-                          style: const TextStyle(
-                            color: ThemeColors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 200),
+                          child: Text(
+                            admin.name,
+                            style: const TextStyle(
+                              color: ThemeColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -227,114 +339,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildOverviewContent() {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Dashboard Overview',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: ThemeColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Monitor your platform performance',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: ThemeColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildTimeFilterChip('Today', 'today'),
-                      const SizedBox(width: 8),
-                      _buildTimeFilterChip('Last 7 Days', 'last7days'),
-                      const SizedBox(width: 8),
-                      _buildTimeFilterChip('This Month', 'thisMonth'),
-                      const SizedBox(width: 8),
-                      _buildTimeFilterChip('Last Month', 'lastMonth'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.6,
-            ),
-            delegate: SliverChildListDelegate([
-              _buildMetricCard(
-                title: 'Total Bookings',
-                value: _totalBookings.toString(),
-                icon: Iconsax.calendar,
-                color: ThemeColors.accentPurple,
-                trend: '+12% from last month',
-              ),
-              _buildMetricCard(
-                title: 'Total Earnings',
-                value: '\$${_totalEarnings.toStringAsFixed(2)}',
-                icon: Iconsax.money,
-                color: ThemeColors.success,
-                trend: '+8% from last month',
-              ),
-              _buildMetricCard(
-                title: 'Active Hotels',
-                value: _activeHotels.toString(),
-                icon: Iconsax.building,
-                color: ThemeColors.info,
-                trend: 'of ${_hotels.length} total',
-              ),
-              _buildMetricCard(
-                title: 'Total Visitors',
-                value: _totalVisitors.toString(),
-                icon: Iconsax.user,
-                color: ThemeColors.accentDeep,
-                trend: '+${_monthlyGrowth.toStringAsFixed(1)}% growth',
-              ),
-            ]),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: _buildChartSection(),
-        ),
-        SliverToBoxAdapter(
-          child: _buildTopHotelsSection(),
-        ),
-        SliverToBoxAdapter(
-          child: _buildRecentBookingsSection(),
-        ),
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 32),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTimeFilterChip(String label, String value) {
     final isSelected = _timeFilter == value;
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
-      onSelected: (_) => setState(() => _timeFilter = value),
+      onSelected: (_) => setState(() {
+        _timeFilter = value;
+        _loadDashboardData(); // Reload data when filter changes
+      }),
       selectedColor: ThemeColors.primary,
       backgroundColor: ThemeColors.surface,
       labelStyle: TextStyle(
@@ -354,9 +367,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     required String value,
     required IconData icon,
     required Color color,
-    String? trend,
   }) {
     return Container(
+      constraints: const BoxConstraints(minWidth: 150),
       decoration: BoxDecoration(
         color: ThemeColors.white,
         borderRadius: BorderRadius.circular(16),
@@ -384,65 +397,33 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   child: Icon(icon, color: color, size: 22),
                 ),
-                if (trend != null && trend.contains('+'))
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: ThemeColors.success.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Iconsax.arrow_up_2,
-                          color: ThemeColors.success,
-                          size: 14,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        value,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: ThemeColors.textPrimary,
                         ),
-                        const SizedBox(width: 2),
-                        Text(
-                          trend
-                              .replaceAll('+', '')
-                              .replaceAll('from last month', ''),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: ThemeColors.success,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: ThemeColors.textSecondary,
                         ),
-                      ],
-                    ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
+                ),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: ThemeColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 14,
-                color: ThemeColors.textSecondary,
-              ),
-            ),
-            if (trend != null && !trend.contains('+')) ...[
-              const SizedBox(height: 4),
-              Text(
-                trend,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: ThemeColors.textSecondary,
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -472,9 +453,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Performance Analytics',
-                    style: TextStyle(
+                  Text(
+                    L10n.of(context).performanceAnalytics,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: ThemeColors.textPrimary,
@@ -482,9 +463,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   Row(
                     children: [
-                      _buildChartToggleButton('Earnings', _showEarningsChart),
+                      _buildChartToggleButton(
+                          L10n.of(context).earnings, _showEarningsChart),
                       const SizedBox(width: 8),
-                      _buildChartToggleButton('Bookings', !_showEarningsChart),
+                      _buildChartToggleButton(
+                          L10n.of(context).bookings, !_showEarningsChart),
                     ],
                   ),
                 ],
@@ -492,83 +475,88 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               const SizedBox(height: 20),
               SizedBox(
                 height: 240,
-                child: SfCartesianChart(
-                  primaryXAxis: DateTimeAxis(
-                    dateFormat: DateFormat.MMMd(),
-                    intervalType: DateTimeIntervalType.days,
-                    majorGridLines: const MajorGridLines(width: 0),
-                    axisLine: const AxisLine(width: 0),
-                    labelStyle: const TextStyle(
-                      color: ThemeColors.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                  primaryYAxis: NumericAxis(
-                    axisLine: const AxisLine(width: 0),
-                    majorTickLines: const MajorTickLines(size: 0),
-                    majorGridLines: const MajorGridLines(
-                      width: 0.5,
-                      color: ThemeColors.border,
-                      dashArray: <double>[5, 5],
-                    ),
-                    labelStyle: const TextStyle(
-                      color: ThemeColors.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                  plotAreaBorderWidth: 0,
-                  plotAreaBackgroundColor: ThemeColors.white,
-                  legend: Legend(
-                    isVisible: false,
-                  ),
-                  series: <CartesianSeries>[
-                    if (_showEarningsChart)
-                      AreaSeries<ChartData, DateTime>(
-                        dataSource: _earningsData,
-                        xValueMapper: (data, _) => data.x,
-                        yValueMapper: (data, _) => data.y,
-                        color: ThemeColors.primary.withOpacity(0.2),
-                        borderColor: ThemeColors.primary,
-                        borderWidth: 3,
-                        animationDuration: 1000,
-                        markerSettings: const MarkerSettings(
-                          isVisible: true,
-                          shape: DataMarkerType.circle,
-                          color: ThemeColors.primary,
-                          borderColor: ThemeColors.white,
-                          borderWidth: 2,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SfCartesianChart(
+                      margin: EdgeInsets.zero,
+                      primaryXAxis: DateTimeAxis(
+                        dateFormat: DateFormat.MMMd(),
+                        intervalType: DateTimeIntervalType.days,
+                        majorGridLines: const MajorGridLines(width: 0),
+                        axisLine: const AxisLine(width: 0),
+                        labelStyle: const TextStyle(
+                          color: ThemeColors.textSecondary,
+                          fontSize: 12,
                         ),
-                      )
-                    else
-                      ColumnSeries<ChartData, DateTime>(
-                        dataSource: _bookingsData,
-                        xValueMapper: (data, _) => data.x,
-                        yValueMapper: (data, _) => data.y,
-                        color: ThemeColors.accentPurple,
-                        borderRadius: BorderRadius.circular(4),
-                        animationDuration: 1000,
                       ),
-                  ],
-                  tooltipBehavior: TooltipBehavior(
-                    enable: true,
-                    color: ThemeColors.darkBackground,
-                    textStyle: const TextStyle(color: ThemeColors.white),
-                  ),
+                      primaryYAxis: NumericAxis(
+                        axisLine: const AxisLine(width: 0),
+                        majorTickLines: const MajorTickLines(size: 0),
+                        majorGridLines: const MajorGridLines(
+                          width: 0.5,
+                          color: ThemeColors.border,
+                          dashArray: <double>[5, 5],
+                        ),
+                        labelStyle: const TextStyle(
+                          color: ThemeColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      plotAreaBorderWidth: 0,
+                      plotAreaBackgroundColor: ThemeColors.white,
+                      legend: Legend(isVisible: false),
+                      series: <CartesianSeries>[
+                        if (_showEarningsChart)
+                          AreaSeries<ChartData, DateTime>(
+                            dataSource: _earningsData,
+                            xValueMapper: (data, _) => data.x,
+                            yValueMapper: (data, _) => data.y,
+                            color: ThemeColors.primary.withOpacity(0.2),
+                            borderColor: ThemeColors.primary,
+                            borderWidth: 3,
+                            animationDuration: 1000,
+                            markerSettings: const MarkerSettings(
+                              isVisible: true,
+                              shape: DataMarkerType.circle,
+                              color: ThemeColors.primary,
+                              borderColor: ThemeColors.white,
+                              borderWidth: 2,
+                            ),
+                          )
+                        else
+                          ColumnSeries<ChartData, DateTime>(
+                            dataSource: _bookingsData,
+                            xValueMapper: (data, _) => data.x,
+                            yValueMapper: (data, _) => data.y,
+                            color: ThemeColors.accentPurple,
+                            borderRadius: BorderRadius.circular(4),
+                            animationDuration: 1000,
+                          ),
+                      ],
+                      tooltipBehavior: TooltipBehavior(
+                        enable: true,
+                        color: ThemeColors.darkBackground,
+                        textStyle: const TextStyle(color: ThemeColors.white),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 8),
               Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: ThemeColors.surface,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     _showEarningsChart
-                        ? 'Daily Earnings (USD)'
-                        : 'Daily Bookings Count',
+                        ? L10n.of(context).dailyEarnings
+                        : L10n.of(context).dailyBookings,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -586,7 +574,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   Widget _buildChartToggleButton(String label, bool isActive) {
     return InkWell(
-      onTap: () => setState(() => _showEarningsChart = label == 'Earnings'),
+      onTap: () => setState(
+          () => _showEarningsChart = label == L10n.of(context).earnings),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -641,33 +631,28 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Top Performing Hotels',
-                    style: TextStyle(
+                  Text(
+                    L10n.of(context).topPerformingHotels,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: ThemeColors.textPrimary,
                     ),
                   ),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Iconsax.arrow_right_3,
-                      size: 18,
-                      color: ThemeColors.primary,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                    label: const Text(
-                      'View All',
-                      style: TextStyle(
+                    decoration: BoxDecoration(
+                      color: ThemeColors.primaryTransparent,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      L10n.of(context).top5,
+                      style: const TextStyle(
                         color: ThemeColors.primary,
                         fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      backgroundColor: ThemeColors.primaryTransparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                   ),
@@ -675,12 +660,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
             ),
             if (_topPerformingHotels.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(20),
+              Padding(
+                padding: const EdgeInsets.all(20),
                 child: Center(
                   child: Text(
-                    'No hotels available',
-                    style: TextStyle(color: ThemeColors.textSecondary),
+                    L10n.of(context).noHotelsAvailable,
+                    style: const TextStyle(color: ThemeColors.textSecondary),
                   ),
                 ),
               )
@@ -691,6 +676,107 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildOverviewContent() {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  L10n.of(context).dashboardOverview,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: ThemeColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  L10n.of(context).monitorPerformance,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: ThemeColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildTimeFilterChip(L10n.of(context).today, 'today'),
+                      const SizedBox(width: 8),
+                      _buildTimeFilterChip(
+                          L10n.of(context).last7Days, 'last7days'),
+                      const SizedBox(width: 8),
+                      _buildTimeFilterChip(
+                          L10n.of(context).thisMonth, 'thisMonth'),
+                      const SizedBox(width: 8),
+                      _buildTimeFilterChip(
+                          L10n.of(context).lastMonth, 'lastMonth'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.6,
+            ),
+            delegate: SliverChildListDelegate([
+              _buildMetricCard(
+                title: L10n.of(context).totalBookings,
+                value: _totalBookings.toString(),
+                icon: Iconsax.calendar,
+                color: ThemeColors.accentPurple,
+              ),
+              _buildMetricCard(
+                title: L10n.of(context).totalEarnings,
+                value: '\$${_totalEarnings.toStringAsFixed(2)}',
+                icon: Iconsax.money,
+                color: ThemeColors.success,
+              ),
+              _buildMetricCard(
+                title: L10n.of(context).activeHotels,
+                value: _activeHotels.toString(),
+                icon: Iconsax.building,
+                color: ThemeColors.info,
+              ),
+              _buildMetricCard(
+                title: L10n.of(context).totalVisitors,
+                value: _totalVisitors.toString(),
+                icon: Iconsax.user,
+                color: ThemeColors.accentDeep,
+              ),
+            ]),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: _buildChartSection(),
+        ),
+        SliverToBoxAdapter(
+          child: _buildTopHotelsSection(),
+        ),
+        SliverToBoxAdapter(
+          child: _buildRecentBookingsSection(),
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 32),
+        ),
+      ],
     );
   }
 
@@ -717,46 +803,24 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Recent Bookings',
-                    style: TextStyle(
+                  Text(
+                    L10n.of(context).recentBookings,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: ThemeColors.textPrimary,
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Iconsax.arrow_right_3,
-                      size: 18,
-                      color: ThemeColors.primary,
-                    ),
-                    label: const Text(
-                      'View All',
-                      style: TextStyle(
-                        color: ThemeColors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      backgroundColor: ThemeColors.primaryTransparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
                     ),
                   ),
                 ],
               ),
             ),
             if (_recentBookings.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(20),
+              Padding(
+                padding: const EdgeInsets.all(20),
                 child: Center(
                   child: Text(
-                    'No bookings available',
-                    style: TextStyle(color: ThemeColors.textSecondary),
+                    L10n.of(context).noBookingsAvailable,
+                    style: const TextStyle(color: ThemeColors.textSecondary),
                   ),
                 ),
               )
@@ -771,94 +835,103 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildHotelListItem(Hotel hotel) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: ThemeColors.cardHighlight,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: hotel.images.isNotEmpty
-                  ? DecorationImage(
-                      image: NetworkImage(hotel.images.first),
-                      fit: BoxFit.cover,
-                    )
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: ThemeColors.cardHighlight,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: hotel.images.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage(hotel.images.first),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                color: ThemeColors.surface,
+              ),
+              child: hotel.images.isEmpty
+                  ? const Icon(Iconsax.building, color: ThemeColors.grey400)
                   : null,
-              color: ThemeColors.surface,
             ),
-            child: hotel.images.isEmpty
-                ? const Icon(Iconsax.building, color: ThemeColors.grey400)
-                : null,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  hotel.hotelName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: ThemeColors.textPrimary,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hotel.hotelName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: ThemeColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(
-                      Iconsax.star1,
-                      color: ThemeColors.primary,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      hotel.ratings.rating.toStringAsFixed(1),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Iconsax.star1,
                         color: ThemeColors.primary,
+                        size: 16,
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '(${hotel.ratings.totalRating} reviews)',
-                      style: const TextStyle(
-                        color: ThemeColors.textSecondary,
-                        fontSize: 12,
+                      const SizedBox(width: 4),
+                      Text(
+                        hotel.ratings.rating.toStringAsFixed(1),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: ThemeColors.primary,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: hotel.isSubscribed
-                  ? ThemeColors.success.withOpacity(0.15)
-                  : ThemeColors.error.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              hotel.isSubscribed ? 'Active' : 'Inactive',
-              style: TextStyle(
-                color: hotel.isSubscribed
-                    ? ThemeColors.success
-                    : ThemeColors.error,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          '(${hotel.ratings.totalRating} ${L10n.of(context).reviews})',
+                          style: const TextStyle(
+                            color: ThemeColors.textSecondary,
+                            fontSize: 12,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: hotel.isSubscribed
+                    ? ThemeColors.success.withOpacity(0.15)
+                    : ThemeColors.error.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                hotel.isSubscribed
+                    ? L10n.of(context).active
+                    : L10n.of(context).inactive,
+                style: TextStyle(
+                  color: hotel.isSubscribed
+                      ? ThemeColors.success
+                      : ThemeColors.error,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -867,72 +940,75 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final dateFormat = DateFormat('MMM dd, yyyy');
     final timeFormat = DateFormat('hh:mm a');
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: ThemeColors.primary.withOpacity(0.1),
-          ),
-          child: const Icon(Iconsax.receipt, color: ThemeColors.primary),
-        ),
-        title: Text(
-          'Booking #${booking.booking.id.substring(0, 8)}',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              '${dateFormat.format(booking.booking.checkInDate)} - ${dateFormat.format(booking.booking.checkOutDate)}',
-              style: const TextStyle(
-                color: ThemeColors.textSecondary,
-                fontSize: 12,
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: ThemeColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: ThemeColors.shadow.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '\$${booking.booking.totalPrice.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(16),
+          leading: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: ThemeColors.primary.withOpacity(0.1),
             ),
-            const SizedBox(height: 4),
-            Text(
-              timeFormat.format(booking.booking.createdAt),
-              style: const TextStyle(
-                color: ThemeColors.textSecondary,
-                fontSize: 12,
-              ),
+            child: const Icon(Iconsax.receipt, color: ThemeColors.primary),
+          ),
+          title: Text(
+            '${L10n.of(context).booking} #${booking.booking.id.substring(0, 8)}',
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
             ),
-          ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                '${dateFormat.format(booking.booking.checkInDate)} - '
+                '${dateFormat.format(booking.booking.checkOutDate)}',
+                style: const TextStyle(
+                  color: ThemeColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '\$${booking.booking.totalPrice.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                timeFormat.format(booking.booking.createdAt),
+                style: const TextStyle(
+                  color: ThemeColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          onTap: () {
+            // Navigate to booking details
+          },
         ),
-        onTap: () {
-          // Navigate to booking details
-        },
       ),
     );
   }
@@ -943,6 +1019,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         content: Text(message),
         backgroundColor: ThemeColors.error,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }

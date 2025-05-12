@@ -118,7 +118,8 @@ class _BookingScreenState extends State<BookingScreen>
 
   Widget _buildBookingContent(Visitor visitor) {
     return FutureBuilder<List<Booking>>(
-      future: BookingService.getBookingsByUser(visitor.id, _selectedTab),
+      future: BookingService.getBookingsByUser(visitor.id, _selectedTab,
+          isAdmin: false),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicatorWidget());

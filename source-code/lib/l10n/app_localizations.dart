@@ -1604,7 +1604,7 @@ abstract class AppLocalizations {
   /// No description provided for @noHotelsAvailable.
   ///
   /// In en, this message translates to:
-  /// **'No Hotels Available'**
+  /// **'No hotels available'**
   String get noHotelsAvailable;
 
   /// No description provided for @noHotelsMatchingCriteria.
@@ -3148,6 +3148,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dashboard'**
   String get dashboard;
+
+  /// No description provided for @wavingHand.
+  ///
+  /// In en, this message translates to:
+  /// **'👋'**
+  String get wavingHand;
+
+  /// No description provided for @subscriptionPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription is still pending'**
+  String get subscriptionPending;
+
+  /// No description provided for @subscriptionPendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t use the app until your account is activated by the admin. Please check back later.'**
+  String get subscriptionPendingMessage;
+
+  /// No description provided for @accountInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Information'**
+  String get accountInformation;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contact;
+
+  /// No description provided for @reviewApplicationNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Our team will review your application shortly'**
+  String get reviewApplicationNote;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboardTitle;
+
+  /// No description provided for @errorLoadingDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading dashboard data: {error}'**
+  String errorLoadingDashboard(Object error);
+
+  /// No description provided for @performanceAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Analytics'**
+  String get performanceAnalytics;
+
+  /// No description provided for @earnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get earnings;
+
+  /// No description provided for @dailyEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Earnings (USD)'**
+  String get dailyEarnings;
+
+  /// No description provided for @dailyBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Bookings Count'**
+  String get dailyBookings;
+
+  /// No description provided for @topPerformingHotels.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Performing Hotels'**
+  String get topPerformingHotels;
+
+  /// No description provided for @top5.
+  ///
+  /// In en, this message translates to:
+  /// **'Top 5'**
+  String get top5;
+
+  /// No description provided for @dashboardOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard Overview'**
+  String get dashboardOverview;
+
+  /// No description provided for @monitorPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor your platform performance'**
+  String get monitorPerformance;
+
+  /// No description provided for @activeHotels.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Hotels'**
+  String get activeHotels;
+
+  /// No description provided for @totalVisitors.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Visitors'**
+  String get totalVisitors;
+
+  /// No description provided for @recentBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Bookings'**
+  String get recentBookings;
+
+  /// No description provided for @noBookingsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings available'**
+  String get noBookingsAvailable;
+
+  /// No description provided for @booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking'**
+  String get booking;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

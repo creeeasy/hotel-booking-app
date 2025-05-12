@@ -1,4 +1,5 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
+import 'package:fatiel/l10n/l10n.dart';
 import 'package:fatiel/models/hotel.dart';
 import 'package:fatiel/services/auth/bloc/auth_bloc.dart';
 import 'package:fatiel/services/auth/bloc/auth_event.dart';
@@ -187,11 +188,11 @@ class _HotelSubscriptionPendingScreenState
                           // Welcome message with enhanced typography
                           RichText(
                             textAlign: TextAlign.center,
-                            text: const TextSpan(
+                            text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: "Hello, ",
-                                  style: TextStyle(
+                                  text: "${L10n.of(context).hello}, ",
+                                  style: const TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.w500,
                                     color: ThemeColors.textPrimary,
@@ -204,7 +205,7 @@ class _HotelSubscriptionPendingScreenState
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            "${hotel.hotelName} 👋",
+                            "${hotel.hotelName} ${L10n.of(context).wavingHand}",
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 32,
@@ -256,10 +257,10 @@ class _HotelSubscriptionPendingScreenState
                                       ),
                                     ),
                                     const SizedBox(width: 16),
-                                    const Expanded(
+                                    Expanded(
                                       child: Text(
-                                        "Your subscription is still pending",
-                                        style: TextStyle(
+                                        L10n.of(context).subscriptionPending,
+                                        style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700,
                                           color: ThemeColors.textPrimary,
@@ -271,9 +272,9 @@ class _HotelSubscriptionPendingScreenState
                                   ],
                                 ),
                                 const SizedBox(height: 20),
-                                const Text(
-                                  "You can't use the app until your account is activated by the admin. Please check back later.",
-                                  style: TextStyle(
+                                Text(
+                                  L10n.of(context).subscriptionPendingMessage,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                     color: ThemeColors.textSecondary,
@@ -325,9 +326,9 @@ class _HotelSubscriptionPendingScreenState
                                       ),
                                     ),
                                     const SizedBox(width: 16),
-                                    const Text(
-                                      "Account Information",
-                                      style: TextStyle(
+                                    Text(
+                                      L10n.of(context).accountInformation,
+                                      style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700,
                                         color: ThemeColors.primary,
@@ -344,7 +345,7 @@ class _HotelSubscriptionPendingScreenState
                                 _buildInfoRow(
                                   context,
                                   Iconsax.sms,
-                                  "Email",
+                                  L10n.of(context).email,
                                   hotel.email,
                                 ),
                                 if (hotel.contactInfo != null) ...[
@@ -352,7 +353,7 @@ class _HotelSubscriptionPendingScreenState
                                   _buildInfoRow(
                                     context,
                                     Iconsax.call,
-                                    "Contact",
+                                    L10n.of(context).contact,
                                     hotel.contactInfo!,
                                   ),
                                 ],
@@ -363,7 +364,7 @@ class _HotelSubscriptionPendingScreenState
 
                           // Additional subtle note at the bottom
                           Text(
-                            "Our team will review your application shortly",
+                            L10n.of(context).reviewApplicationNote,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14,
@@ -382,9 +383,9 @@ class _HotelSubscriptionPendingScreenState
                               size: 20,
                               color: Colors.red,
                             ),
-                            label: const Text(
-                              "Sign Out",
-                              style: TextStyle(
+                            label: Text(
+                              L10n.of(context).signOut,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.red,
@@ -399,7 +400,6 @@ class _HotelSubscriptionPendingScreenState
                                     color: Colors.red, width: 1.5),
                               ),
                               foregroundColor: Colors.red,
-
                               backgroundColor: ThemeColors.background,
                             ),
                             onPressed: () {

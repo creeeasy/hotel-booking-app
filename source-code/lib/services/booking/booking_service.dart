@@ -98,7 +98,9 @@ class BookingService {
       // Update visitor's bookings list
       await _updateVisitorBookings(visitorId, bookingRef.id);
 
-      final booking = await getBookingById(bookingRef.id);
+      final booking = await getBookingById(
+        bookingRef.id,
+      );
       return BookingSuccess(booking);
     } on FirebaseException catch (e) {
       log('Firebase error creating booking: $e');
@@ -191,8 +193,10 @@ class BookingService {
   }
 
   /// Fetches all bookings for a hotel
-  static Future<List<Booking>> fetchHotelBookings(
-      {required String hotelId}) async {
+  static Future<List<Booking>> fetchHotelBookings({
+    required String hotelId,
+    required bool isAdmin,
+  }) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('bookings')
@@ -200,9 +204,18 @@ class BookingService {
           .orderBy('createdAt', descending: true)
           .get();
 
-      return querySnapshot.docs
-          .map((doc) => Booking.fromFirestore(doc))
-          .toList();
+      final bookings =
+          querySnapshot.docs.map((doc) => Booking.fromFirestore(doc)).toList();
+
+      // For non-admin users, filter out bookings from unsubscribed hotels
+      if (!isAdmin) {
+        final isHotelSubscribed = await _isHotelSubscribed(hotelId);
+        if (!isHotelSubscribed) {
+          return [];
+        }
+      }
+
+      return bookings;
     } on FirebaseException catch (e) {
       log('Firebase error fetching hotel bookings: $e');
       return [];
@@ -261,11 +274,34 @@ class BookingService {
     }
   }
 
+  /// Checks if a hotel is subscribed
+  static Future<bool> _isHotelSubscribed(String hotelId) async {
+    try {
+      final hotelDoc = await FirebaseFirestore.instance
+          .collection('hotels')
+          .doc(hotelId)
+          .get();
+
+      if (!hotelDoc.exists) {
+        return false;
+      }
+
+      return hotelDoc.data()?['isSubscribed'] as bool? ?? false;
+    } on FirebaseException catch (e) {
+      log('Firebase error checking hotel subscription: $e');
+      return false;
+    } catch (e) {
+      log('Error checking hotel subscription: $e');
+      return false;
+    }
+  }
+
   /// Fetches bookings for a user filtered by status
   static Future<List<Booking>> getBookingsByUser(
     String visitorId,
-    BookingStatus status,
-  ) async {
+    BookingStatus status, {
+    required bool isAdmin,
+  }) async {
     try {
       final visitor = await VisitorService.getVisitorById(visitorId);
       if (visitor == null ||
@@ -275,10 +311,16 @@ class BookingService {
       }
 
       // Fetch all bookings at once for better performance
-      final bookings = await Future.wait(
-        visitor.bookings!.map((id) => getBookingById(id)),
+      final bookingsResults = await Future.wait(
+        visitor.bookings!.map((id) => getBookingById(
+              id,
+            )),
       );
 
+      // Remove null values (bookings from unsubscribed hotels for non-admins)
+      final bookings = bookingsResults.whereType<Booking>().toList();
+
+      // Filter by status
       return bookings.where((b) => b.status == status).toList();
     } on FirebaseException catch (e) {
       log('Firebase error fetching user bookings: $e');
@@ -289,61 +331,110 @@ class BookingService {
     }
   }
 
-  static Future<List<BookingWithDetails>> getRecentBookings() async {
+  static Future<List<BookingWithDetails>> getRecentBookings({
+    required bool isAdmin,
+    String? hotelId, // Optional parameter for hotel-specific filtering
+    DateTime? startDate, // New parameter for start date filtering
+    DateTime? endDate, // New parameter for end date filtering
+  }) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
+      Query query = FirebaseFirestore.instance
           .collection('bookings')
           .orderBy('createdAt', descending: true)
-          .limit(10)
-          .get();
+          .limit(10);
 
-      List<BookingWithDetails> bookingsWithDetails = [];
-
-      for (var doc in querySnapshot.docs) {
-        final booking = Booking.fromFirestore(doc);
-
-        // Fetch visitor, hotel, and room details
-        final visitor = await VisitorService.getVisitorById(booking.visitorId);
-        final hotelSnapshot = await FirebaseFirestore.instance
-            .collection('hotels')
-            .doc(booking.hotelId)
-            .get();
-        final roomSnapshot = await FirebaseFirestore.instance
-            .collection('rooms')
-            .doc(booking.roomId)
-            .get();
-
-        if (hotelSnapshot.exists && roomSnapshot.exists) {
-          final hotelName = hotelSnapshot['hotelName'] as String;
-          final roomName = roomSnapshot['roomName'] as String;
-          final commission = roomSnapshot['commission'] as double;
-
-          bookingsWithDetails.add(
-            BookingWithDetails(
-              booking: booking,
-              visitorName:
-                  '${visitor?.firstName ?? 'Unknown'} ${visitor?.lastName ?? ''}',
-              hotelName: hotelName,
-              roomName: roomName,
-              commission: commission,
-            ),
-          );
-        }
+      // Add hotelId filter if provided or if not an admin
+      if (hotelId != null || !isAdmin) {
+        query = query.where('hotelId', isEqualTo: hotelId ?? '');
       }
 
-      return bookingsWithDetails;
+      // Add date range filtering
+      if (startDate != null && endDate != null) {
+        query = query.where('createdAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
+            isLessThanOrEqualTo: Timestamp.fromDate(endDate));
+      }
+
+      final querySnapshot = await query.get();
+
+      // Convert query results to Booking objects
+      List<Booking> bookings = querySnapshot.docs
+          .map((doc) => Booking.fromFirestore(
+              doc as DocumentSnapshot<Map<String, dynamic>>))
+          .toList();
+
+      // Filter bookings by hotel subscription status for non-admins
+      if (!isAdmin && hotelId == null) {
+        final List<Booking> filteredBookings = [];
+
+        for (final booking in bookings) {
+          final isSubscribed = await _isHotelSubscribed(booking.hotelId);
+          if (isSubscribed) {
+            filteredBookings.add(booking);
+          }
+        }
+
+        bookings = filteredBookings;
+      }
+
+      // Fetch additional details for bookings
+      final List<BookingWithDetails?> bookingsWithDetails =
+          await Future.wait(bookings.map((booking) async {
+        try {
+          // Fetch visitor details
+          final visitor =
+              await VisitorService.getVisitorById(booking.visitorId);
+
+          // Fetch hotel details
+          final hotelSnapshot = await FirebaseFirestore.instance
+              .collection('hotels')
+              .doc(booking.hotelId)
+              .get();
+
+          // Fetch room details
+          final roomSnapshot = await FirebaseFirestore.instance
+              .collection('rooms')
+              .doc(booking.roomId)
+              .get();
+
+          // Validate snapshots exist
+          if (!hotelSnapshot.exists || !roomSnapshot.exists) {
+            log('Hotel or Room not found for booking: ${booking.id}');
+            return null;
+          }
+
+          // Extract details
+          final hotelName = hotelSnapshot['hotelName'] as String;
+          final roomName = roomSnapshot['name'] as String;
+          final commission =
+              booking.totalPrice * 0.1; // Assuming commission is 10%
+
+          return BookingWithDetails(
+            booking: booking,
+            visitorName:
+                '${visitor?.firstName ?? 'Unknown'} ${visitor?.lastName ?? ''}'
+                    .trim(),
+            hotelName: hotelName,
+            roomName: roomName,
+            commission: commission,
+          );
+        } catch (e) {
+          log('Error processing booking ${booking.id}: $e');
+          return null;
+        }
+      }));
+
+      // Remove any null entries (failed to process)
+      return bookingsWithDetails.whereType<BookingWithDetails>().toList();
     } on FirebaseException catch (e) {
-      print(e);
       log('Firebase error fetching recent bookings: $e');
       return [];
     } catch (e) {
-      print(e);
       log('Error fetching recent bookings: $e');
       return [];
     }
   }
 
-  /// Fetches the total number of visitors
   static Future<int> getTotalVisitors() async {
     try {
       final querySnapshot =
