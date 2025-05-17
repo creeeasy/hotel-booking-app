@@ -544,13 +544,6 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
                           tooltip: L10n.of(context).editAdmin,
                           onPressed: () => _showEditAdminDialog(admin),
                         ),
-                        const SizedBox(width: 8),
-                        _buildActionButton(
-                          icon: Iconsax.trash,
-                          color: ThemeColors.error,
-                          tooltip: L10n.of(context).deleteAdmin,
-                          onPressed: () => _showDeleteConfirmation(admin),
-                        ),
                       ],
                     ),
                   ),
@@ -1145,108 +1138,6 @@ class _AdminsManagementPageState extends State<AdminsManagementPage> {
                 ),
               ),
               child: Text(L10n.of(context).saveChanges),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeleteConfirmation(Admin admin) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            L10n.of(context).deleteAdminAccount,
-            style: const TextStyle(
-              color: ThemeColors.error,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                L10n.of(context).confirmDeleteAdmin,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: ThemeColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: ThemeColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: ThemeColors.border,
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: ThemeColors.error.withOpacity(0.1),
-                      child: Text(
-                        admin.name.isNotEmpty
-                            ? admin.name[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                          color: ThemeColors.error,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            admin.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: ThemeColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${L10n.of(context).createdOn} ${admin.createdAt.day}/${admin.createdAt.month}/${admin.createdAt.year}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: ThemeColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                L10n.of(context).actionCannotBeUndone,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: ThemeColors.error,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                L10n.of(context).cancel,
-                style: const TextStyle(
-                  color: ThemeColors.textSecondary,
-                ),
-              ),
             ),
           ],
         );

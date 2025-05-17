@@ -1,12 +1,11 @@
 import 'package:fatiel/constants/colors/theme_colors.dart';
 import 'package:fatiel/enum/booking_status.dart';
 import 'package:fatiel/l10n/l10n.dart';
-import 'package:fatiel/models/booking.dart';
 import 'package:fatiel/models/booking_with_details.dart';
 import 'package:fatiel/screens/visitor/widget/custom_back_app_bar_widget.dart';
+import 'package:fatiel/services/booking/booking_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AdminBookingsPage extends StatefulWidget {
@@ -41,68 +40,9 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
     });
 
     try {
-      // Fetch bookings from Firestore
-      final bookingsSnapshot = await FirebaseFirestore.instance
-          .collection('bookings')
-          .orderBy('createdAt', descending: true)
-          .get();
-
-      List<BookingWithDetails> bookingsWithDetails = [];
-
-      for (var bookingDoc in bookingsSnapshot.docs) {
-        final bookingData = bookingDoc.data();
-        final booking = Booking(
-          id: bookingDoc.id,
-          hotelId: bookingData['hotelId'],
-          roomId: bookingData['roomId'],
-          visitorId: bookingData['visitorId'],
-          checkInDate: (bookingData['checkInDate'] as Timestamp).toDate(),
-          checkOutDate: (bookingData['checkOutDate'] as Timestamp).toDate(),
-          totalPrice: bookingData['totalPrice'],
-          status: BookingStatus.values.firstWhere(
-              (e) => e.toString() == 'BookingStatus.${bookingData['status']}',
-              orElse: () => BookingStatus.pending),
-          createdAt: (bookingData['createdAt'] as Timestamp).toDate(),
-        );
-
-        // Fetch visitor details
-        final visitorDoc = await FirebaseFirestore.instance
-            .collection('visitors')
-            .doc(booking.visitorId)
-            .get();
-        final visitorData = visitorDoc.data();
-        final visitorName =
-            '${visitorData?['firstName'] ?? ''} ${visitorData?['lastName'] ?? ''}';
-
-        // Fetch hotel details
-        final hotelDoc = await FirebaseFirestore.instance
-            .collection('hotels')
-            .doc(booking.hotelId)
-            .get();
-        final hotelData = hotelDoc.data();
-        final hotelName =
-            hotelData?['hotelName'] ?? L10n.of(context).unknownHotel;
-
-        // Fetch room details
-        final roomDoc = await FirebaseFirestore.instance
-            .collection('rooms')
-            .doc(booking.roomId)
-            .get();
-        final roomData = roomDoc.data();
-        final roomName = roomData?['name'] ?? L10n.of(context).unknownRoom;
-
-        // Calculate commission
-        final commission = booking.totalPrice * _commissionRate;
-
-        // Create combined object
-        bookingsWithDetails.add(BookingWithDetails(
-          booking: booking,
-          visitorName: visitorName,
-          hotelName: hotelName,
-          roomName: roomName,
-          commission: commission,
-        ));
-      }
+      final bookingsWithDetails = await BookingService.getRecentBookings(
+        isAdmin: true,
+      );
 
       setState(() {
         _allBookings = bookingsWithDetails;
@@ -356,17 +296,22 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
     Color? valueColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: ThemeColors.shadow.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: ThemeColors.shadow.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+            spreadRadius: 1,
           ),
         ],
+        border: Border.all(
+          color: ThemeColors.border.withOpacity(0.5),
+          width: 0.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,18 +319,18 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: iconColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
                   color: iconColor,
-                  size: 18,
+                  size: 20,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   title,
@@ -402,7 +347,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage> {
           Text(
             value,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: valueColor ?? ThemeColors.textPrimary,
             ),

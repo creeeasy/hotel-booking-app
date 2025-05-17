@@ -234,14 +234,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           background: _buildHeaderBackground(currentAdmin),
                           titlePadding:
                               const EdgeInsets.only(left: 16, bottom: 16),
-                          title: Text(
-                            L10n.of(context).dashboardTitle,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: ThemeColors.white,
-                            ),
-                          ),
                         ),
                       ),
                     ];
@@ -731,7 +723,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           padding: const EdgeInsets.all(16),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+              crossAxisCount: 1,
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
               childAspectRatio: 1.6,
